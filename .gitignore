@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs / tmp
+*.log
+npm-debug.log*
+node_modules/
+
+# Build artifacts (none expected, but just in case)
+dist/
+build/
