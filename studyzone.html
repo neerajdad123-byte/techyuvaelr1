@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Zone — TechYuva</title>
+  <meta name="description" content="TechYuva Study Zone — Career roadmap, placement prep, job openings, study materials, and mock tests." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ============================================================
+       STUDY ZONE — Dedicated Page Styles
+       Career Chart · Placement · Jobs · Materials · Mock Tests
+       ============================================================ */
+
+    .sz-page {
+      padding-top: clamp(6rem, 14vh, 9rem);
+      padding-left: calc(var(--nav-edge) + var(--pad));
+      padding-right: var(--pad);
+      padding-bottom: clamp(4rem, 10vh, 7rem);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ---------- Page Header ---------- */
+    .sz-head {
+      margin-bottom: clamp(3rem, 6vh, 4.5rem);
+      position: relative;
+    }
+    .sz-head::before {
+      content: "study-zone/";
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .sz-head h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+      line-height: 1.05;
+      letter-spacing: -.01em;
+    }
+    .sz-head h1 em { font-style: italic; color: var(--accent); }
+    .sz-head p {
+      color: var(--ink-soft);
+      margin-top: 1rem;
+      max-width: 52ch;
+      font-size: .98rem;
+      line-height: 1.65;
+    }
+
+    /* ---------- Section Box Component ---------- */
+    .sz-section {
+      margin-bottom: clamp(3.5rem, 7vh, 5rem);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--paper);
+      transition: border-color .4s, box-shadow .4s;
+    }
+    .sz-section:hover {
+      border-color: rgba(184, 92, 56, .3);
+      box-shadow: 0 20px 50px -20px rgba(28, 25, 21, .1);
+    }
+
+    .sz-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.4rem 1.8rem;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper-2);
+      flex-wrap: wrap;
+    }
+    .sz-section__title {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+    }
+    .sz-section__icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      display: grid; place-items: center;
+      color: var(--accent);
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .sz-section__icon--green { background: rgba(74, 124, 89, .1); color: var(--good); }
+    .sz-section__icon--blue { background: rgba(90, 107, 138, .1); color: #5a6b8a; }
+    .sz-section__icon--purple { background: rgba(139, 69, 19, .08); color: var(--python); }
+    .sz-section__icon--red { background: rgba(160, 48, 48, .08); color: var(--bad); }
+
+    .sz-section__title h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+      line-height: 1.1;
+    }
+    .sz-section__title span {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--ink-soft);
+      margin-top: .2rem;
+    }
+    .sz-section__action {
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      transition: gap .3s;
+      white-space: nowrap;
+    }
+    .sz-section__action:hover { gap: .5rem; }
+    .sz-section__action svg { width: 1em; height: 1em; }
+
+    .sz-section__body {
+      padding: clamp(1.4rem, 3vw, 2rem);
+    }
+
+    /* ============================================================
+       1. CAREER CHART — Interactive Roadmap
+       ============================================================ */
+    .roadmap {
+      position: relative;
+      padding-left: 2.5rem;
+    }
+    .roadmap::before {
+      content: "";
+      position: absolute;
+      left: 11px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent), var(--good), var(--cpp));
+      border-radius: 2px;
+    }
+    .roadmap__stage {
+      position: relative;
+      margin-bottom: 1.8rem;
+    }
+    .roadmap__stage:last-child { margin-bottom: 0; }
+    .roadmap__dot {
+      position: absolute;
+      left: -2.5rem; top: 4px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--accent);
+      display: grid; place-items: center;
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      font-weight: 600;
+      color: var(--accent);
+      z-index: 2;
+      transition: transform .3s var(--ease-spring), background .3s;
+    }
+    .roadmap__stage:hover .roadmap__dot {
+      transform: scale(1.15);
+      background: var(--accent);
+      color: var(--paper);
+    }
+    .roadmap__dot--done {
+      border-color: var(--good);
+      color: var(--good);
+    }
+    .roadmap__dot--done:hover {
+      background: var(--good);
+      color: var(--paper);
+    }
+    .roadmap__dot--current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 4px var(--accent-glow); }
+      50% { box-shadow: 0 0 0 8px rgba(184,92,56,.05); }
+    }
+
+    .roadmap__card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.2rem 1.4rem;
+      background: var(--paper);
+      transition: border-color .3s, transform .3s var(--ease-out);
+      cursor: pointer;
+    }
+    .roadmap__card:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+    .roadmap__card h4 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 1.15rem;
+      margin-bottom: .35rem;
+    }
+    .roadmap__card p {
+      font-size: .88rem;
+      color: var(--ink-soft);
+      line-height: 1.55;
+      margin-bottom: .6rem;
+    }
+    .roadmap__skills {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+    }
+    .roadmap__skill {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: .25em .7em;
+      border-radius: 100px;
+      background: var(--paper-2);
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
+    }
+    .roadmap__skill--hot {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(184, 92, 56, .2);
+    }
+
+    /* ============================================================
+       2. PLACEMENT GUIDELINES
+       ============================================================ */
+    .guidelines {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+      gap: 1rem;
+    }
+    .guideline {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.3rem 1.4rem;
+      background: var(--paper);
+      transition: border-color .3s, transform .3s var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+    .guideline:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .guideline::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .4s var(--ease);
+    }
+    .guideline:hover::before { transform: scaleX(1); }
+
+    .guideline__num {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+    .guideline h4 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 1.05rem;
+      margin-bottom: .4rem;
+    }
+    .guideline p {
+      font-size: .85rem;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       3. JOB OPENINGS
+       ============================================================ */
+    .jobs-list {
+      display: grid;
+      gap: .8rem;
+    }
+    .job-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.1rem 1.4rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      transition: all .35s var(--ease-out);
+    }
+    .job-card:hover {
+      border-color: var(--accent);
+      background: var(--paper-2);
+      transform: translateX(4px);
+    }
+    .job-card__logo {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: var(--paper-3);
+      display: grid; place-items: center;
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .job-card__info h4 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 1.05rem;
+      margin-bottom: .2rem;
+    }
+    .job-card__meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .job-card__meta span {
+      font-family: var(--font-mono);
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--ink-soft);
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    .job-card__meta span::before {
+      content: "";
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--line);
+    }
+    .job-card__meta span.is-new::before { background: var(--good); }
+    .job-card__meta span.is-hot::before { background: var(--accent); }
+
+    .job-card__cta {
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      color: var(--accent);
+      padding: .5rem 1rem;
+      border: 1px solid var(--accent);
+      border-radius: 100px;
+      transition: all .3s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .job-card__cta:hover {
+      background: var(--accent);
+      color: var(--paper);
+    }
+
+    /* ============================================================
+       4. STUDENT MATERIALS — Library Grid
+       ============================================================ */
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+      gap: 1rem;
+    }
+    .material {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.3rem 1.2rem;
+      background: var(--paper);
+      transition: all .35s var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+    .material:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px -16px rgba(28, 25, 21, .12);
+    }
+    .material__type {
+      font-family: var(--font-mono);
+      font-size: .62rem;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: var(--accent);
+      margin-bottom: .7rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    .material__type svg { width: 14px; height: 14px; }
+    .material h4 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 1.05rem;
+      margin-bottom: .4rem;
+      line-height: 1.2;
+    }
+    .material p {
+      font-size: .82rem;
+      color: var(--ink-soft);
+      line-height: 1.55;
+      margin-bottom: 1rem;
+    }
+    .material__foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: .8rem;
+      border-top: 1px solid var(--line);
+    }
+    .material__size {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .material__dl {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+      transition: gap .3s;
+    }
+    .material__dl:hover { gap: .5rem; }
+    .material__dl svg { width: 14px; height: 14px; }
+
+    /* ============================================================
+       5. MOCK TEST — LeetCode Style
+       ============================================================ */
+    .mocktest__intro {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 1.8rem;
+      flex-wrap: wrap;
+    }
+    .mocktest__intro p {
+      color: var(--ink-soft);
+      font-size: .92rem;
+      line-height: 1.6;
+      max-width: 50ch;
+    }
+    .mocktest__stats {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .mocktest__stat {
+      text-align: center;
+    }
+    .mocktest__stat b {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    .mocktest__stat small {
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--ink-soft);
+    }
+
+    .problems-list {
+      display: grid;
+      gap: .6rem;
+    }
+    .problem-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto auto;
+      align-items: center;
+      gap: 1rem;
+      padding: .9rem 1.2rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      transition: all .3s var(--ease-out);
+      font-family: var(--font-mono);
+      font-size: .82rem;
+    }
+    .problem-row:hover {
+      border-color: var(--accent);
+      background: var(--paper-2);
+      transform: translateX(3px);
+    }
+    .problem-row__status {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .problem-row__status--easy { background: var(--good); }
+    .problem-row__status--medium { background: #c4a030; }
+    .problem-row__status--hard { background: var(--bad); }
+
+    .problem-row__title {
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .problem-row__title span {
+      color: var(--ink-faint);
+      font-weight: 400;
+      margin-left: .5rem;
+    }
+
+    .problem-row__diff {
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: .2em .6em;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .problem-row__diff--easy { background: rgba(74, 124, 89, .1); color: var(--good); }
+    .problem-row__diff--medium { background: rgba(196, 160, 48, .1); color: #a08020; }
+    .problem-row__diff--hard { background: rgba(160, 48, 48, .1); color: var(--bad); }
+
+    .problem-row__topic {
+      font-size: .68rem;
+      color: var(--ink-soft);
+      flex-shrink: 0;
+    }
+    .problem-row__solve {
+      font-size: .7rem;
+      color: var(--accent);
+      padding: .35rem .8rem;
+      border: 1px solid var(--accent);
+      border-radius: 100px;
+      transition: all .3s;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .problem-row__solve:hover {
+      background: var(--accent);
+      color: var(--paper);
+    }
+
+    /* Progress bar for mock test section */
+    .mocktest__progress {
+      margin-bottom: 1.5rem;
+    }
+    .mocktest__progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--ink-soft);
+      margin-bottom: .4rem;
+    }
+    .mocktest__progress-bar {
+      height: 4px;
+      background: var(--paper-3);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .mocktest__progress-bar span {
+      display: block;
+      height: 100%;
+      width: var(--p, 0%);
+      background: linear-gradient(90deg, var(--accent), var(--good));
+      border-radius: 100px;
+      transition: width 1s var(--ease);
+    }
+
+    /* ============================================================
+       Tiny Impressive Details
+       ============================================================ */
+    /* Sticky section labels on scroll */
+    .sz-section__header {
+      position: sticky;
+      top: 64px;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--paper-2) 90%, transparent);
+    }
+
+    /* Keyboard shortcut hint */
+    .sz-kbd-hint {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      z-index: 500;
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      color: var(--ink-faint);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: .5rem .8rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .4s, transform .4s;
+      pointer-events: none;
+    }
+    .sz-kbd-hint.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Section entrance stagger */
+    .sz-section.reveal { transition-delay: 0s; }
+    .sz-section.reveal:nth-of-type(2) { transition-delay: .06s; }
+    .sz-section.reveal:nth-of-type(3) { transition-delay: .12s; }
+    .sz-section.reveal:nth-of-type(4) { transition-delay: .18s; }
+    .sz-section.reveal:nth-of-type(5) { transition-delay: .24s; }
+
+    @media (max-width: 900px) {
+      .sz-page { padding-left: var(--pad); }
+      .job-card { grid-template-columns: 1fr; gap: .8rem; }
+      .job-card__cta { justify-self: start; }
+      .mocktest__intro { grid-template-columns: 1fr; }
+      .problem-row { grid-template-columns: auto 1fr auto; gap: .6rem; }
+      .problem-row__topic { display: none; }
+    }
+    @media (max-width: 640px) {
+      .roadmap { padding-left: 2rem; }
+      .roadmap__dot { left: -2rem; width: 20px; height: 20px; font-size: .55rem; }
+      .materials-grid { grid-template-columns: 1fr; }
+      .problem-row { grid-template-columns: auto 1fr; }
+      .problem-row__diff, .problem-row__solve { display: none; }
+    }
+  </style>
+</head>
+<body data-theme="paper">
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"><span></span></div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Grain -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- File Explorer Nav -->
+  <header class="nav" id="nav">
+    <button class="nav__expand" id="navExpand" aria-label="Show explorer">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="nav__explorer" id="navExplorer">
+      <div class="nav__explorer-head">
+        <span class="nav__explorer-title">EXPLORER</span>
+        <button class="nav__explorer-toggle" id="explorerToggle" aria-label="Toggle explorer">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="nav__tree" id="navTree">
+        <div class="nav__tree-item nav__tree-item--root">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
+          <span>techyuva</span>
+        </div>
+        <div class="nav__tree-children">
+          <a href="index.html#top" class="nav__tree-item" data-file="index.html">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>index.html</span>
+          </a>
+          <a href="index.html#about" class="nav__tree-item" data-file="about.md">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>about.md</span>
+          </a>
+          <div class="nav__tree-folder">
+            <div class="nav__tree-item nav__tree-item--folder" data-folder="courses">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
+              <span>courses/</span>
+            </div>
+            <div class="nav__tree-children is-collapsed" id="folder-courses">
+              <a href="menu.html#java" class="nav__tree-item" data-file="java.md">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>java.md</span>
+              </a>
+              <a href="menu.html#cpp" class="nav__tree-item" data-file="cpp.md">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>cpp.md</span>
+              </a>
+              <a href="menu.html#python" class="nav__tree-item" data-file="python.md">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>python.md</span>
+              </a>
+            </div>
+          </div>
+          <a href="#" class="nav__tree-item is-active" data-file="student-zone/">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>student-zone/</span>
+          </a>
+          <a href="index.html#analysis" class="nav__tree-item" data-file="practice.md">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>practice.md</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="nav__bar">
+      <a href="index.html#top" class="nav__logo" data-magnetic>
+        <span class="nav__logo-mark">>_</span>TechYuva
+      </a>
+      <div class="nav__actions">
+        <a href="index.html" class="link-arrow" style="font-size:.78rem;" data-magnetic>← Back home</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="sz-page">
+
+    <!-- Page Header -->
+    <div class="sz-head reveal">
+      <h1>Study <em>Zone</em></h1>
+      <p>Everything you need after enrollment — roadmap your career, prep for placements, find openings, access materials, and sharpen your skills with mock tests.</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         1. CAREER CHART — Interactive Roadmap
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="sz-section reveal" id="career">
+      <div class="sz-section__header">
+        <div class="sz-section__title">
+          <div class="sz-section__icon">🗺</div>
+          <div>
+            <h2>Career Roadmap</h2>
+            <span>Your path from learner to engineer</span>
+          </div>
+        </div>
+        <span class="sz-section__action">
+          5 stages
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <div class="sz-section__body">
+        <div class="roadmap">
+
+          <div class="roadmap__stage">
+            <div class="roadmap__dot roadmap__dot--done">1</div>
+            <div class="roadmap__card">
+              <h4>Foundation Builder</h4>
+              <p>Master core syntax, data structures, and object-oriented principles. Build your first console projects.</p>
+              <div class="roadmap__skills">
+                <span class="roadmap__skill">Variables & Types</span>
+                <span class="roadmap__skill">Arrays & Strings</span>
+                <span class="roadmap__skill">OOP Basics</span>
+                <span class="roadmap__skill">Git & GitHub</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="roadmap__stage">
+            <div class="roadmap__dot roadmap__dot--done">2</div>
+            <div class="roadmap__card">
+              <h4>Algorithm Thinker</h4>
+              <p>Solve 100+ problems on arrays, strings, and basic DP. Learn to analyze time and space complexity.</p>
+              <div class="roadmap__skills">
+                <span class="roadmap__skill">Two Pointers</span>
+                <span class="roadmap__skill">Sliding Window</span>
+                <span class="roadmap__skill roadmap__skill--hot">Recursion</span>
+                <span class="roadmap__skill">Hash Maps</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="roadmap__stage">
+            <div class="roadmap__dot roadmap__dot--current">3</div>
+            <div class="roadmap__card">
+              <h4>Data Structure Specialist</h4>
+              <p>Deep dive into trees, graphs, heaps, and advanced DP. Start mock interviews and system design basics.</p>
+              <div class="roadmap__skills">
+                <span class="roadmap__skill">Binary Trees</span>
+                <span class="roadmap__skill">Graph Traversal</span>
+                <span class="roadmap__skill roadmap__skill--hot">Dynamic Programming</span>
+                <span class="roadmap__skill">Heaps & Tries</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="roadmap__stage">
+            <div class="roadmap__dot">4</div>
+            <div class="roadmap__card">
+              <h4>Project Engineer</h4>
+              <p>Ship real-world projects. Learn frameworks, databases, and deployment. Build a portfolio that speaks.</p>
+              <div class="roadmap__skills">
+                <span class="roadmap__skill">REST APIs</span>
+                <span class="roadmap__skill">SQL & NoSQL</span>
+                <span class="roadmap__skill">Docker Basics</span>
+                <span class="roadmap__skill">CI/CD</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="roadmap__stage">
+            <div class="roadmap__dot">5</div>
+            <div class="roadmap__card">
+              <h4>Interview Ready</h4>
+              <p>Mock interviews, resume reviews, and company-specific prep. Target FAANG, startups, or remote roles.</p>
+              <div class="roadmap__skills">
+                <span class="roadmap__skill">System Design</span>
+                <span class="roadmap__skill">Behavioral</span>
+                <span class="roadmap__skill">Resume Craft</span>
+                <span class="roadmap__skill roadmap__skill--hot">Negotiation</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         2. PLACEMENT GUIDELINES
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="sz-section reveal" id="placement">
+      <div class="sz-section__header">
+        <div class="sz-section__title">
+          <div class="sz-section__icon sz-section__icon--green">📋</div>
+          <div>
+            <h2>Placement Guidelines</h2>
+            <span>What it takes to get hired</span>
+          </div>
+        </div>
+        <span class="sz-section__action">
+          6 rules
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <div class="sz-section__body">
+        <div class="guidelines">
+          <div class="guideline">
+            <div class="guideline__num">01</div>
+            <h4>Resume First</h4>
+            <p>Your resume gets 6 seconds. One page, clear metrics, no fluff. We review every student's resume before they apply.</p>
+          </div>
+          <div class="guideline">
+            <div class="guideline__num">02</div>
+            <h4>GitHub Portfolio</h4>
+            <p>Companies check your code. Maintain clean repos with READMEs, commit history, and live demos where possible.</p>
+          </div>
+          <div class="guideline">
+            <div class="guideline__num">03</div>
+            <h4>250+ Problems</h4>
+            <p>That's the threshold where patterns start clicking. Easy → Medium → Hard. Consistency beats intensity.</p>
+          </div>
+          <div class="guideline">
+            <div class="guideline__num">04</div>
+            <h4>Mock Interviews</h4>
+            <p>Practice verbalizing your thought process. We pair you with mentors for weekly mock sessions.</p>
+          </div>
+          <div class="guideline">
+            <div class="guideline__num">05</div>
+            <h4>System Design Basics</h4>
+            <p>Even junior roles expect high-level design thinking. Learn scalability, caching, and database choices.</p>
+          </div>
+          <div class="guideline">
+            <div class="guideline__num">06</div>
+            <h4>Apply Strategically</h4>
+            <p>Don't spray and pray. Target 10 companies deeply rather than 100 shallowly. Research culture and stack.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         3. JOB OPENINGS
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="sz-section reveal" id="jobs">
+      <div class="sz-section__header">
+        <div class="sz-section__title">
+          <div class="sz-section__icon sz-section__icon--blue">💼</div>
+          <div>
+            <h2>Job Openings</h2>
+            <span>Curated opportunities for our students</span>
+          </div>
+        </div>
+        <span class="sz-section__action">
+          View all 24
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <div class="sz-section__body">
+        <div class="jobs-list">
+
+          <div class="job-card">
+            <div class="job-card__logo">G</div>
+            <div class="job-card__info">
+              <h4>Software Engineer — New Grad</h4>
+              <div class="job-card__meta">
+                <span>Google</span>
+                <span>Bangalore, IN</span>
+                <span class="is-new">New</span>
+                <span>Full-time</span>
+              </div>
+            </div>
+            <a class="job-card__cta" href="https://wa.me/919876543210?text=Hi%20TechYuva%2C%20I%20want%20to%20apply%20for%20the%20Google%20Software%20Engineer%20role.%20Please%20guide%20me." target="_blank" rel="noopener">Apply via WhatsApp</a>
+          </div>
+
+          <div class="job-card">
+            <div class="job-card__logo">M</div>
+            <div class="job-card__info">
+              <h4>Backend Developer — Java</h4>
+              <div class="job-card__meta">
+                <span>Microsoft</span>
+                <span>Hyderabad, IN</span>
+                <span class="is-hot">Hot</span>
+                <span>Full-time</span>
+              </div>
+            </div>
+            <a class="job-card__cta" href="https://wa.me/919876543210?text=Hi%20TechYuva%2C%20I%20want%20to%20apply%20for%20the%20Microsoft%20Backend%20Developer%20role.%20Please%20guide%20me." target="_blank" rel="noopener">Apply via WhatsApp</a>
+          </div>
+
+          <div class="job-card">
+            <div class="job-card__logo">F</div>
+            <div class="job-card__info">
+              <h4>Frontend Engineer — React</h4>
+              <div class="job-card__meta">
+                <span>Flipkart</span>
+                <span>Bangalore, IN</span>
+                <span class="is-new">New</span>
+                <span>Full-time</span>
+              </div>
+            </div>
+            <a class="job-card__cta" href="https://wa.me/919876543210?text=Hi%20TechYuva%2C%20I%20want%20to%20apply%20for%20the%20Flipkart%20Frontend%20Engineer%20role.%20Please%20guide%20me." target="_blank" rel="noopener">Apply via WhatsApp</a>
+          </div>
+
+          <div class="job-card">
+            <div class="job-card__logo">P</div>
+            <div class="job-card__info">
+              <h4>Data Engineer — Python</h4>
+              <div class="job-card__meta">
+                <span>PhonePe</span>
+                <span>Remote, IN</span>
+                <span>Full-time</span>
+              </div>
+            </div>
+            <a class="job-card__cta" href="https://wa.me/919876543210?text=Hi%20TechYuva%2C%20I%20want%20to%20apply%20for%20the%20PhonePe%20Data%20Engineer%20role.%20Please%20guide%20me." target="_blank" rel="noopener">Apply via WhatsApp</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         4. STUDENT MATERIALS
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="sz-section reveal" id="materials">
+      <div class="sz-section__header">
+        <div class="sz-section__title">
+          <div class="sz-section__icon sz-section__icon--purple">📚</div>
+          <div>
+            <h2>Study Materials</h2>
+            <span>Notes, cheatsheets, and reference guides</span>
+          </div>
+        </div>
+        <span class="sz-section__action">
+          12 resources
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <div class="sz-section__body">
+        <div class="materials-grid">
+
+          <div class="material">
+            <div class="material__type">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+              PDF
+            </div>
+            <h4>Java Complete Cheatsheet</h4>
+            <p>Syntax, collections, streams, and concurrency patterns in one place.</p>
+            <div class="material__foot">
+              <span class="material__size">2.4 MB · 24 pages</span>
+              <span class="material__dl">
+                Download
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="material">
+            <div class="material__type">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+              PDF
+            </div>
+            <h4>C++ STL Reference</h4>
+            <p>Vector, map, set, algorithm library with complexity notes.</p>
+            <div class="material__foot">
+              <span class="material__size">1.8 MB · 16 pages</span>
+              <span class="material__dl">
+                Download
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="material">
+            <div class="material__type">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+              PDF
+            </div>
+            <h4>Python Data Science Kit</h4>
+            <p>NumPy, Pandas, Matplotlib quick-start with real datasets.</p>
+            <div class="material__foot">
+              <span class="material__size">3.1 MB · 32 pages</span>
+              <span class="material__dl">
+                Download
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="material">
+            <div class="material__type">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
+              Folder
+            </div>
+            <h4>DSA Pattern Library</h4>
+            <p>15 patterns with code templates in Java, C++, and Python.</p>
+            <div class="material__foot">
+              <span class="material__size">4.7 MB · 45 files</span>
+              <span class="material__dl">
+                Download
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="material">
+            <div class="material__type">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+              PDF
+            </div>
+            <h4>System Design Primer</h4>
+            <p>Scalability basics, caching, load balancing, and database sharding.</p>
+            <div class="material__foot">
+              <span class="material__size">1.2 MB · 12 pages</span>
+              <span class="material__dl">
+                Download
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="material">
+            <div class="material__type">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
+              Folder
+            </div>
+            <h4>Interview Question Bank</h4>
+            <p>500+ curated questions sorted by company, difficulty, and topic.</p>
+            <div class="material__foot">
+              <span class="material__size">8.3 MB · 120 files</span>
+              <span class="material__dl">
+                Download
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         5. MOCK TEST — LeetCode Style
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="sz-section reveal" id="mocktest">
+      <div class="sz-section__header">
+        <div class="sz-section__title">
+          <div class="sz-section__icon sz-section__icon--red">⚔</div>
+          <div>
+            <h2>Mock Test Arena</h2>
+            <span>Practice problems. Track progress. Level up.</span>
+          </div>
+        </div>
+        <span class="sz-section__action">
+          Start test
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <div class="sz-section__body">
+
+        <div class="mocktest__intro">
+          <p>Curated problems from LeetCode, HackerRank, and our own question bank. Filter by difficulty, topic, or company. Time yourself and compare with peers.</p>
+          <div class="mocktest__stats">
+            <div class="mocktest__stat">
+              <b>47</b>
+              <small>Problems</small>
+            </div>
+            <div class="mocktest__stat">
+              <b>12</b>
+              <small>Topics</small>
+            </div>
+            <div class="mocktest__stat">
+              <b>8</b>
+              <small>Companies</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="mocktest__progress">
+          <div class="mocktest__progress-label">
+            <span>Your progress</span>
+            <span>23 / 47 solved</span>
+          </div>
+          <div class="mocktest__progress-bar">
+            <span style="--p:49%"></span>
+          </div>
+        </div>
+
+        <div class="problems-list">
+
+          <div class="problem-row">
+            <div class="problem-row__status problem-row__status--easy"></div>
+            <div class="problem-row__title">Two Sum <span>#1</span></div>
+            <span class="problem-row__diff problem-row__diff--easy">Easy</span>
+            <span class="problem-row__topic">Array</span>
+            <button class="problem-row__solve" onclick="alert('Opens problem editor (demo)')">Solve</button>
+          </div>
+
+          <div class="problem-row">
+            <div class="problem-row__status problem-row__status--easy"></div>
+            <div class="problem-row__title">Valid Parentheses <span>#20</span></div>
+            <span class="problem-row__diff problem-row__diff--easy">Easy</span>
+            <span class="problem-row__topic">Stack</span>
+            <button class="problem-row__solve" onclick="alert('Opens problem editor (demo)')">Solve</button>
+          </div>
+
+          <div class="problem-row">
+            <div class="problem-row__status problem-row__status--medium"></div>
+            <div class="problem-row__title">Longest Substring Without Repeating <span>#3</span></div>
+            <span class="problem-row__diff problem-row__diff--medium">Medium</span>
+            <span class="problem-row__topic">Sliding Window</span>
+            <button class="problem-row__solve" onclick="alert('Opens problem editor (demo)')">Solve</button>
+          </div>
+
+          <div class="problem-row">
+            <div class="problem-row__status problem-row__status--medium"></div>
+            <div class="problem-row__title">Merge Intervals <span>#56</span></div>
+            <span class="problem-row__diff problem-row__diff--medium">Medium</span>
+            <span class="problem-row__topic">Sorting</span>
+            <button class="problem-row__solve" onclick="alert('Opens problem editor (demo)')">Solve</button>
+          </div>
+
+          <div class="problem-row">
+            <div class="problem-row__status problem-row__status--hard"></div>
+            <div class="problem-row__title">Trapping Rain Water <span>#42</span></div>
+            <span class="problem-row__diff problem-row__diff--hard">Hard</span>
+            <span class="problem-row__topic">Two Pointers</span>
+            <button class="problem-row__solve" onclick="alert('Opens problem editor (demo)')">Solve</button>
+          </div>
+
+          <div class="problem-row">
+            <div class="problem-row__status problem-row__status--hard"></div>
+            <div class="problem-row__title">Median of Two Sorted Arrays <span>#4</span></div>
+            <span class="problem-row__diff problem-row__diff--hard">Hard</span>
+            <span class="problem-row__topic">Binary Search</span>
+            <button class="problem-row__solve" onclick="alert('Opens problem editor (demo)')">Solve</button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="padding-left: calc(var(--nav-edge) + var(--pad));">
+    <span class="footer__logo">>_TechYuva</span>
+    <p>Online coding institute. Built for learners, by engineers.</p>
+    <span class="footer__year">© 2026 TechYuva</span>
+  </footer>
+
+  <!-- Keyboard hint -->
+  <div class="sz-kbd-hint" id="kbdHint">
+    Press <kbd>1</kbd>–<kbd>5</kbd> to jump sections
+  </div>
+
+  <script>
+    /* ===== Shared utilities ===== */
+    const $  = (s, c = document) => c.querySelector(s);
+    const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isTouch = matchMedia("(hover: none), (pointer: coarse)").matches;
+
+    /* ===== File Explorer Nav ===== */
+    const nav = $("#nav");
+    $("#explorerToggle")?.addEventListener("click", () => nav.classList.add("is-collapsed"));
+    $("#navExpand")?.addEventListener("click", () => nav.classList.remove("is-collapsed"));
+
+    $$('[data-folder]').forEach(folder => {
+      folder.addEventListener("click", () => {
+        const id = folder.dataset.folder;
+        const children = $(`#folder-${id}`);
+        if (children) {
+          children.classList.toggle("is-collapsed");
+          folder.classList.toggle("is-open");
+        }
+      });
+    });
+
+    /* ===== Scroll Progress ===== */
+    const bar = $("#scrollProgress")?.querySelector("span");
+    if (bar) {
+      const update = () => {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        bar.style.width = max > 0 ? (scrollY / max) * 100 + "%" : "0%";
+      };
+      addEventListener("scroll", update, { passive: true });
+      addEventListener("resize", update);
+      update();
+    }
+
+    /* ===== Custom Cursor ===== */
+    if (!isTouch) {
+      const ring = $("#cursor");
+      const dot  = $("#cursorDot");
+      let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+      addEventListener("mousemove", e => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+      });
+      addEventListener("mousedown", () => ring.classList.add("is-down"));
+      addEventListener("mouseup",   () => ring.classList.remove("is-down"));
+      const loop = () => {
+        rx += (mx - rx) * 0.14;
+        ry += (my - ry) * 0.14;
+        ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+        requestAnimationFrame(loop);
+      };
+      loop();
+      document.addEventListener("mouseover", e => {
+        if (e.target.closest("a, button, [data-magnetic], .roadmap__card, .guideline, .job-card, .material, .problem-row, .faq-item__q"))
+          ring.classList.add("is-hover");
+      });
+      document.addEventListener("mouseout", e => {
+        if (e.target.closest("a, button, [data-magnetic], .roadmap__card, .guideline, .job-card, .material, .problem-row, .faq-item__q"))
+          ring.classList.remove("is-hover");
+      });
+    }
+
+    /* ===== Magnetic Elements ===== */
+    if (!isTouch && !reducedMotion) {
+      $$("[data-magnetic]").forEach(el => {
+        const strength = 0.3;
+        el.addEventListener("mousemove", e => {
+          const r = el.getBoundingClientRect();
+          el.style.transform = `translate(${(e.clientX - r.left - r.width/2)*strength}px, ${(e.clientY - r.top - r.height/2)*strength}px)`;
+          el.style.transition = "transform .12s ease-out";
+        });
+        el.addEventListener("mouseleave", () => {
+          el.style.transition = "transform .5s cubic-bezier(.16,1,.3,1)";
+          el.style.transform = "";
+        });
+      });
+    }
+
+    /* ===== Scroll Reveals ===== */
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("is-visible");
+        revealObserver.unobserve(en.target);
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -5% 0px" });
+    $$(".reveal").forEach(el => revealObserver.observe(el));
+
+    /* ===== Keyboard Section Jump (1-5) ===== */
+    const sections = ['#career', '#placement', '#jobs', '#materials', '#mocktest'];
+    addEventListener('keydown', e => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 5) {
+        const target = $(sections[num - 1]);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+          // Flash the section header
+          const header = target.querySelector('.sz-section__header');
+          if (header) {
+            header.style.background = 'var(--accent-soft)';
+            setTimeout(() => header.style.background = '', 600);
+          }
+        }
+      }
+    });
+
+    /* ===== Keyboard hint visibility ===== */
+    const kbdHint = $("#kbdHint");
+    let kbdTimer;
+    addEventListener('keydown', () => {
+      if (kbdHint) {
+        kbdHint.classList.add('is-visible');
+        clearTimeout(kbdTimer);
+        kbdTimer = setTimeout(() => kbdHint.classList.remove('is-visible'), 3000);
+      }
+    });
+    // Show hint briefly on load
+    setTimeout(() => {
+      if (kbdHint) {
+        kbdHint.classList.add('is-visible');
+        setTimeout(() => kbdHint.classList.remove('is-visible'), 4000);
+      }
+    }, 1500);
+
+    /* ===== Smooth Anchor Scroll ===== */
+    $$('a[href^="#"]').forEach(link => {
+      link.addEventListener("click", e => {
+        const target = $(link.getAttribute("href"));
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      });
+    });
+
+    /* ===== Roadmap card click expand ===== */
+    $$('.roadmap__card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.style.borderColor = 'var(--accent)';
+        setTimeout(() => card.style.borderColor = '', 800);
+      });
+    });
+
+    /* ===== Animate progress bar on scroll into view ===== */
+    const progressBar = $('.mocktest__progress-bar span');
+    if (progressBar) {
+      const progObserver = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            const p = progressBar.style.getPropertyValue('--p') || '0%';
+            progressBar.style.width = '0%';
+            setTimeout(() => { progressBar.style.width = p; }, 100);
+            progObserver.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.5 });
+      progObserver.observe(progressBar.parentElement);
+    }
+  </script>
+</body>
+</html>
