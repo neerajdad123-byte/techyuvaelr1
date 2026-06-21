@@ -852,6 +852,30 @@
       </div>
     </div>
 
+    <!-- This Month Summary -->
+    <div class="stats-grid reveal" style="grid-template-columns:repeat(4,1fr);margin-bottom:2rem;">
+      <div class="stat-card stat-card--green">
+        <div class="stat-card__label" style="font-size:.6rem;">This Month — New Students</div>
+        <div class="stat-card__value" id="monthNewStudents">0</div>
+        <div class="stat-card__meta"><i class="up"></i>Joined this month</div>
+      </div>
+      <div class="stat-card stat-card--green">
+        <div class="stat-card__label" style="font-size:.6rem;">This Month — Fees Collected</div>
+        <div class="stat-card__value" id="monthFeesCollected">₹0</div>
+        <div class="stat-card__meta"><i class="up"></i>Collected this month</div>
+      </div>
+      <div class="stat-card stat-card--red">
+        <div class="stat-card__label" style="font-size:.6rem;">This Month — Expenses</div>
+        <div class="stat-card__value" id="monthExpenses">₹0</div>
+        <div class="stat-card__meta"><i class="down"></i>Spent this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__label" style="font-size:.6rem;">This Month — Net</div>
+        <div class="stat-card__value" id="monthNet">₹0</div>
+        <div class="stat-card__meta"><i class="flat"></i>Collected − Expenses</div>
+      </div>
+    </div>
+
     <!-- Charts Row -->
     <div class="charts-row reveal">
       <div class="chart-card">
@@ -1160,13 +1184,57 @@
 
     <!-- TAB: Courses -->
     <div class="owner-tab-panel" id="panel-courses">
+      <!-- Add Course Section -->
+      <div class="owner-section reveal">
+        <div class="owner-section__header">
+          <div class="owner-section__title">
+            <div class="owner-section__icon owner-section__icon--green">+</div>
+            <div>
+              <h2>Manage Courses</h2>
+              <span>Add or edit courses offered by the institute</span>
+            </div>
+          </div>
+        </div>
+        <div class="owner-section__body">
+          <div class="form-grid">
+            <div class="field">
+              <span>Course Name</span>
+              <input type="text" id="courseName" placeholder="e.g. Web Development" />
+            </div>
+            <div class="field">
+              <span>Duration</span>
+              <input type="text" id="courseDuration" placeholder="e.g. 12 weeks" />
+            </div>
+            <div class="field">
+              <span>Fee (₹)</span>
+              <input type="number" id="courseFee" placeholder="25000" />
+            </div>
+            <div class="field">
+              <span>Badge / Tag</span>
+              <input type="text" id="courseBadge" placeholder="e.g. Backend · OOP" />
+            </div>
+          </div>
+          <input type="hidden" id="editCourseId" value="" />
+          <div class="form-actions">
+            <button class="btn btn--primary" onclick="saveCourse()" data-magnetic>
+              <span>$ save course</span>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="btn" onclick="clearCourseForm()" data-magnetic>
+              <span>$ clear</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Reports -->
       <div class="owner-section reveal">
         <div class="owner-section__header">
           <div class="owner-section__title">
             <div class="owner-section__icon owner-section__icon--green">📊</div>
             <div>
               <h2>Course Reports</h2>
-              <span>Performance by course</span>
+              <span>Performance by course — click a course name for details</span>
             </div>
           </div>
           <button class="owner-section__action" onclick="exportToCSV('courses')">
@@ -1184,6 +1252,7 @@
                 <th>Collected</th>
                 <th>Pending</th>
                 <th>Collection Rate</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="coursesTable"></tbody>
@@ -1545,6 +1614,17 @@
     </div>
   </div>
 
+  <!-- Course Detail Modal -->
+  <div class="modal-overlay" id="courseDetailModal">
+    <div class="modal" style="max-width:600px;">
+      <div class="modal__header">
+        <div class="modal__title" id="courseDetailTitle">Course Details</div>
+        <button class="modal__close" onclick="closeCourseDetail()">&times;</button>
+      </div>
+      <div class="modal__body" id="courseDetailBody"></div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
@@ -1674,6 +1754,19 @@
       $('#dashFeesCollected').textContent = '₹' + totalCollected.toLocaleString('en-IN');
       $('#dashPendingFees').textContent = '₹' + totalPending.toLocaleString('en-IN');
       $('#dashActiveCourses').textContent = activeCourses;
+
+      // This Month stats
+      const now = new Date();
+      const thisMonth = now.toISOString().slice(0,7);
+      const monthStudents = students.filter(s => s.joinDate && s.joinDate.startsWith(thisMonth));
+      const monthFees = monthStudents.reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const monthExp = expenses.filter(e => e.date && e.date.startsWith(thisMonth));
+      const monthExpTotal = monthExp.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      $('#monthNewStudents').textContent = monthStudents.length;
+      $('#monthFeesCollected').textContent = '₹' + monthFees.toLocaleString('en-IN');
+      $('#monthExpenses').textContent = '₹' + monthExpTotal.toLocaleString('en-IN');
+      $('#monthNet').textContent = '₹' + (monthFees - monthExpTotal).toLocaleString('en-IN');
+
       const paidCount = students.filter(s => s.status === 'Paid').length;
       const partialCount = students.filter(s => s.status === 'Partial').length;
       const pendingCount = students.filter(s => s.status === 'Pending').length;
@@ -1752,8 +1845,20 @@
     }
 
     function updateCourseFilters() {
-      const s1 = $('#studentCourseFilter'); const v1 = s1.value; s1.innerHTML = '<option value="">All Courses</option>' + COURSES.map(c => `<option value="${c}">${c}</option>`).join(''); s1.value = v1;
+      const list = getCourseList();
+      const s1 = $('#studentCourseFilter'); const v1 = s1.value; s1.innerHTML = '<option value="">All Courses</option>' + list.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); s1.value = v1;
       const s2 = $('#studentBatchFilter'); const v2 = s2.value; s2.innerHTML = '<option value="">All Batches</option>' + BATCHES.map(b => `<option value="${b}">${b.replace(/ \(\d+ days\)/, '')}</option>`).join(''); s2.value = v2;
+    }
+    function populateCourseSelects() {
+      const list = getCourseList();
+      const selects = ['studentCourse', 'editCourse'];
+      selects.forEach(id => {
+        const sel = $(`#${id}`);
+        if (!sel) return;
+        const v = sel.value;
+        sel.innerHTML = '<option value="">Select Course</option>' + list.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        if (v) sel.value = v;
+      });
     }
     function filterStudents() { updateStudentsTable(); }
 
@@ -1937,17 +2042,116 @@
 
     // ==================== COURSES ====================
     function updateCourses() {
+      const courseList = getCourseList();
       const courseData = {};
-      COURSES.forEach(c => { courseData[c] = { students:0, totalRevenue:0, collected:0, pending:0 }; });
+      courseList.forEach(c => { courseData[c.name] = { students:0, totalRevenue:0, collected:0, pending:0 }; });
       students.forEach(s => { if (courseData[s.course]) { courseData[s.course].students++; courseData[s.course].totalRevenue += parseFloat(s.totalFee) || 0; courseData[s.course].collected += parseFloat(s.paidFee) || 0; courseData[s.course].pending += (parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0); }});
       const tbody = $('#coursesTable');
-      tbody.innerHTML = Object.entries(courseData).map(([course, data]) => {
+      tbody.innerHTML = courseList.map(c => {
+        const data = courseData[c.name] || { students:0, totalRevenue:0, collected:0, pending:0 };
         const rate = data.totalRevenue > 0 ? Math.round((data.collected / data.totalRevenue) * 100) : 0;
         let pcls = rate >= 80 ? 'progress-fill--green' : rate >= 50 ? 'progress-fill--orange' : 'progress-fill--red';
-        return `<tr><td><div class="owner-table__name">${course}</div></td><td><strong>${data.students}</strong></td><td>₹${data.totalRevenue.toLocaleString('en-IN')}</td><td style="color:var(--good);font-weight:600;">₹${data.collected.toLocaleString('en-IN')}</td><td style="color:var(--bad);font-weight:600;">₹${data.pending.toLocaleString('en-IN')}</td><td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${rate}%"></div></div><span class="progress-text">${rate}%</span></div></td></tr>`;
+        return `<tr><td><a href="#" onclick="showCourseDetail('${c.name}');return false;" style="color:var(--accent);text-decoration:underline;font-weight:500;">${c.name}</a><div class="owner-table__meta">${c.duration || ''}</div></td><td><strong>${data.students}</strong></td><td>₹${data.totalRevenue.toLocaleString('en-IN')}</td><td style="color:var(--good);font-weight:600;">₹${data.collected.toLocaleString('en-IN')}</td><td style="color:var(--bad);font-weight:600;">₹${data.pending.toLocaleString('en-IN')}</td><td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${rate}%"></div></div><span class="progress-text">${rate}%</span></div></td><td><div class="action-btns"><button class="action-btn" onclick="editCourse('${c.name}')" title="Edit">✏</button><button class="action-btn action-btn--danger" onclick="deleteCourse('${c.name}')" title="Delete">✕</button></div></td></tr>`;
+      }).join('') || emptyRow(7, 'No courses added', 'Add a course using the form above');
+      $('#courseCards').innerHTML = courseList.map(c => {
+        const data = courseData[c.name] || { students:0, totalRevenue:0, collected:0, pending:0 };
+        return `<div class="course-mini-card" onclick="showCourseDetail('${c.name}')" style="cursor:pointer;"><div class="course-mini-card__head"><div class="course-mini-card__name">${c.name}</div><div><div class="course-mini-card__students">${data.students}</div><div class="course-mini-card__students-label">students</div></div></div><div class="course-mini-card__stats"><div><div class="course-mini-card__stat-label">Fee</div><div class="course-mini-card__stat-value">₹${(parseFloat(c.fee)||0).toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Duration</div><div class="course-mini-card__stat-value">${c.duration || '-'}</div></div><div><div class="course-mini-card__stat-label">Collected</div><div class="course-mini-card__stat-value course-mini-card__stat-value--green">₹${data.collected.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Pending</div><div class="course-mini-card__stat-value course-mini-card__stat-value--red">₹${data.pending.toLocaleString('en-IN')}</div></div></div></div>`;
       }).join('');
-      $('#courseCards').innerHTML = Object.entries(courseData).map(([course, data]) => `<div class="course-mini-card"><div class="course-mini-card__head"><div class="course-mini-card__name">${course}</div><div><div class="course-mini-card__students">${data.students}</div><div class="course-mini-card__students-label">students</div></div></div><div class="course-mini-card__stats"><div><div class="course-mini-card__stat-label">Collected</div><div class="course-mini-card__stat-value course-mini-card__stat-value--green">₹${data.collected.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Pending</div><div class="course-mini-card__stat-value course-mini-card__stat-value--red">₹${data.pending.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Total</div><div class="course-mini-card__stat-value">₹${data.totalRevenue.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Rate</div><div class="course-mini-card__stat-value">${data.students > 0 ? Math.round((data.collected / data.totalRevenue) * 100) : 0}%</div></div></div></div>`).join('');
     }
+
+    // ==================== COURSE CRUD ====================
+    function getCourseList() {
+      let stored = JSON.parse(localStorage.getItem('techyuva_courses'));
+      if (!stored || stored.length === 0) {
+        stored = [
+          { id:1, name:'Web Development', duration:'12 weeks', fee:25000, badge:'Frontend · Backend' },
+          { id:2, name:'Data Science', duration:'14 weeks', fee:35000, badge:'Python · ML · Stats' },
+          { id:3, name:'Mobile App Development', duration:'10 weeks', fee:30000, badge:'Android · iOS' },
+          { id:4, name:'UI/UX Design', duration:'8 weeks', fee:20000, badge:'Design · Research' },
+          { id:5, name:'Cloud Computing', duration:'10 weeks', fee:28000, badge:'AWS · Azure · GCP' },
+          { id:6, name:'Cybersecurity', duration:'12 weeks', fee:32000, badge:'Network · Security' },
+          { id:7, name:'AI & Machine Learning', duration:'16 weeks', fee:40000, badge:'ML · Deep Learning' },
+          { id:8, name:'Digital Marketing', duration:'8 weeks', fee:18000, badge:'SEO · Social Media' }
+        ];
+        localStorage.setItem('techyuva_courses', JSON.stringify(stored));
+      }
+      return stored;
+    }
+    function saveCourseData(list) { localStorage.setItem('techyuva_courses', JSON.stringify(list)); }
+
+    function saveCourse() {
+      const name = $('#courseName').value.trim();
+      const duration = $('#courseDuration').value.trim();
+      const fee = parseFloat($('#courseFee').value) || 0;
+      const badge = $('#courseBadge').value.trim();
+      const editId = $('#editCourseId').value;
+      if (!name) { showToast('Please enter a course name', 'error'); return; }
+      let list = getCourseList();
+      if (editId) {
+        const c = list.find(x => x.id == editId);
+        if (c) { c.name = name; c.duration = duration; c.fee = fee; c.badge = badge; }
+        showToast('Course updated!', 'success');
+      } else {
+        if (list.find(c => c.name.toLowerCase() === name.toLowerCase())) { showToast('Course already exists', 'error'); return; }
+        list.push({ id: Date.now(), name, duration, fee, badge });
+        showToast('Course added!', 'success');
+      }
+      saveCourseData(list); clearCourseForm(); updateCourses(); updateCourseFilters();
+      if (typeof populateCourseSelects === 'function') populateCourseSelects();
+    }
+
+    function editCourse(name) {
+      const list = getCourseList();
+      const c = list.find(x => x.name === name);
+      if (!c) return;
+      $('#editCourseId').value = c.id;
+      $('#courseName').value = c.name; $('#courseDuration').value = c.duration || '';
+      $('#courseFee').value = c.fee || ''; $('#courseBadge').value = c.badge || '';
+      $('#courseName').focus();
+    }
+
+    function deleteCourse(name) {
+      if (!confirm('Delete "' + name + '" course? Students enrolled will not be affected.')) return;
+      let list = getCourseList();
+      list = list.filter(c => c.name !== name);
+      saveCourseData(list); updateCourses(); updateCourseFilters();
+      if (typeof populateCourseSelects === 'function') populateCourseSelects();
+      showToast('Course deleted', 'success');
+    }
+
+    function clearCourseForm() {
+      $('#editCourseId').value = '';
+      $('#courseName').value = ''; $('#courseDuration').value = '';
+      $('#courseFee').value = ''; $('#courseBadge').value = '';
+    }
+
+    function showCourseDetail(courseName) {
+      const studentsInCourse = students.filter(s => s.course === courseName);
+      const total = studentsInCourse.reduce((s, x) => s + (parseFloat(x.totalFee) || 0), 0);
+      const collected = studentsInCourse.reduce((s, x) => s + (parseFloat(x.paidFee) || 0), 0);
+      const pending = total - collected;
+      const list = getCourseList();
+      const course = list.find(c => c.name === courseName);
+      const onlinePaid = studentsInCourse.filter(s => s.paymentMode === 'online').reduce((s, x) => s + (parseFloat(x.paidFee) || 0), 0);
+      const offlinePaid = studentsInCourse.filter(s => s.paymentMode === 'offline').reduce((s, x) => s + (parseFloat(x.paidFee) || 0), 0);
+      const batchCounts = {};
+      studentsInCourse.forEach(s => { const b = s.batch ? s.batch.replace(/ \(\d+ days\)/, '') : 'N/A'; batchCounts[b] = (batchCounts[b] || 0) + 1; });
+      const batchesHtml = Object.entries(batchCounts).map(([b, n]) => '<span class="badge badge--paid" style="font-size:.6rem;margin:.15rem;">' + b + ': ' + n + ' students</span>').join(' ');
+
+      $('#courseDetailTitle').textContent = courseName;
+      $('#courseDetailBody').innerHTML = '<div style="display:grid;gap:.8rem;">' +
+        (course ? '<div style="display:flex;gap:1rem;flex-wrap:wrap;padding-bottom:.8rem;border-bottom:1px solid var(--line);"><div class="badge badge--paid">₹' + (parseFloat(course.fee)||0).toLocaleString('en-IN') + '</div><div class="badge badge--partial">' + (course.duration||'-') + '</div><div class="badge badge--pending">' + (course.badge||'') + '</div></div>' : '') +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;"><div class="stat-card" style="padding:.8rem;text-align:center;"><div class="stat-card__value" style="font-size:1.6rem;">' + studentsInCourse.length + '</div><div class="stat-card__label">Students</div></div>' +
+        '<div class="stat-card stat-card--green" style="padding:.8rem;text-align:center;"><div class="stat-card__value" style="font-size:1.2rem;color:var(--good);">₹' + collected.toLocaleString('en-IN') + '</div><div class="stat-card__label">Collected</div></div>' +
+        '<div class="stat-card stat-card--red" style="padding:.8rem;text-align:center;"><div class="stat-card__value" style="font-size:1.2rem;color:var(--bad);">₹' + pending.toLocaleString('en-IN') + '</div><div class="stat-card__label">Pending</div></div></div>' +
+        (batchesHtml ? '<div style="padding-top:.4rem;border-top:1px solid var(--line);"><div class="stat-card__label" style="margin-bottom:.4rem;">Batch Distribution</div><div>' + batchesHtml + '</div></div>' : '') +
+        '<div style="padding-top:.4rem;border-top:1px solid var(--line);"><div class="stat-card__label" style="margin-bottom:.4rem;">Payment Mode Split</div><div style="display:flex;gap:1rem;font-family:var(--font-mono);font-size:.78rem;"><span>🟢 Online: ₹' + onlinePaid.toLocaleString('en-IN') + '</span><span>🔴 Offline: ₹' + offlinePaid.toLocaleString('en-IN') + '</span></div></div>' +
+        '<div style="padding-top:.4rem;border-top:1px solid var(--line);"><div class="stat-card__label" style="margin-bottom:.4rem;">Enrolled Students</div><div style="max-height:180px;overflow-y:auto;font-family:var(--font-mono);font-size:.75rem;">' +
+        (studentsInCourse.length > 0 ? studentsInCourse.map(s => '<div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--line-soft);"><span>' + (s.regNo||'-') + ' · ' + s.name + '</span><span style="color:var(--good);">₹' + (parseFloat(s.paidFee)||0).toLocaleString('en-IN') + '</span></div>').join('') : '<div class="stat-card__label">No students enrolled</div>') +
+        '</div></div></div>';
+      $('#courseDetailModal').classList.add('is-active');
+    }
+    function closeCourseDetail() { $('#courseDetailModal').classList.remove('is-active'); }
 
     // ==================== EXPENSES ====================
     function renderExpenses() {
@@ -2041,8 +2245,9 @@
       students.forEach(s => { const d = new Date(s.joinDate); const key = d.toLocaleString('en-US', { month: 'short' }); if (monthlyCollection.hasOwnProperty(key)) monthlyCollection[key] += parseFloat(s.paidFee) || 0; });
       if (charts.collectionTrend) charts.collectionTrend.destroy();
       charts.collectionTrend = new Chart($('#collectionTrendChart'), { type:'bar', data:{ labels:Object.keys(monthlyCollection), datasets:[{ label:'Fees Collected (₹)', data:Object.values(monthlyCollection), backgroundColor:'#4a7c59', borderRadius:5, barThickness:24 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#e8e3d6' }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#9CA3AF', callback:v => '₹' + (v / 1000) + 'k' } }, x:{ grid:{ display:false }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#6B7280' } } } } });
+      const cl = getCourseList();
       const courseRevenue = {};
-      COURSES.forEach(c => { courseRevenue[c] = { collected:0, pending:0 }; });
+      cl.forEach(c => { courseRevenue[c.name] = { collected:0, pending:0 }; });
       students.forEach(s => { if (courseRevenue[s.course]) { courseRevenue[s.course].collected += parseFloat(s.paidFee) || 0; courseRevenue[s.course].pending += (parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0); } });
       if (charts.revenueCompare) charts.revenueCompare.destroy();
       charts.revenueCompare = new Chart($('#revenueComparisonChart'), { type:'bar', data:{ labels:Object.keys(courseRevenue), datasets:[ { label:'Collected', data:Object.values(courseRevenue).map(d => d.collected), backgroundColor:'#4a7c59', borderRadius:5, barThickness:18 }, { label:'Pending', data:Object.values(courseRevenue).map(d => d.pending), backgroundColor:'#a03030', borderRadius:5, barThickness:18 } ] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', align:'end', labels:{ usePointStyle:true, padding:16, font:{ family:'JetBrains Mono', size:11 } } } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#e8e3d6' }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#9CA3AF', callback:v => '₹' + (v / 1000) + 'k' } }, x:{ grid:{ display:false }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#6B7280', maxRotation:30 } } } } });
@@ -2059,7 +2264,8 @@
         data = students.map(s => ({ Name:s.name, Course:s.course, Batch:s.batch?s.batch.replace(/ \(\d+ days\)/, ''):'-', Type:s.paymentMode, 'Total Fee':s.totalFee, 'Paid Fee':s.paidFee, Balance:(parseFloat(s.totalFee)||0)-(parseFloat(s.paidFee)||0), Status:s.status }));
       } else if (type === 'courses') {
         filename = 'course_reports.csv'; headers = ['Course','Students','Total Revenue','Collected','Pending','Collection Rate %'];
-        const cd = {}; COURSES.forEach(c => { cd[c] = { students:0, total:0, collected:0, pending:0 }; });
+        const cl = getCourseList();
+        const cd = {}; cl.forEach(c => { cd[c.name] = { students:0, total:0, collected:0, pending:0 }; });
         students.forEach(s => { if (cd[s.course]) { cd[s.course].students++; cd[s.course].total += parseFloat(s.totalFee)||0; cd[s.course].collected += parseFloat(s.paidFee)||0; cd[s.course].pending += (parseFloat(s.totalFee)||0)-(parseFloat(s.paidFee)||0); } });
         data = Object.entries(cd).map(([course, d]) => ({ Course:course, Students:d.students, 'Total Revenue':d.total, Collected:d.collected, Pending:d.pending, 'Collection Rate %':d.total > 0 ? Math.round((d.collected/d.total)*100) : 0 }));
       }
@@ -2091,6 +2297,7 @@
     updateDashboard();
     updateStudentsTable();
     updateCourseFilters();
+    populateCourseSelects();
   </script>
 </body>
 </html>
