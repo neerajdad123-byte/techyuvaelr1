@@ -897,8 +897,20 @@
               <input type="text" id="studentRegNo" placeholder="e.g. TY2025001" />
             </div>
             <div class="field">
-              <span>Phone Number</span>
+              <span>Phone Number 1</span>
               <input type="tel" id="studentPhone" placeholder="+91 98765 43210" />
+            </div>
+            <div class="field">
+              <span>Phone Number 2</span>
+              <input type="tel" id="studentPhone2" placeholder="+91 98765 43210 (optional)" />
+            </div>
+            <div class="field field--full">
+              <span>Address</span>
+              <textarea id="studentAddress" rows="2" placeholder="Enter full address" style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;resize:vertical;box-sizing:border-box;"></textarea>
+            </div>
+            <div class="field field--full">
+              <span>Reference</span>
+              <textarea id="studentReference" rows="1" placeholder="How did they hear about us? (optional)" style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;resize:vertical;box-sizing:border-box;"></textarea>
             </div>
             <div class="field">
               <span>Course</span>
@@ -922,6 +934,22 @@
                 <option value="Batch 2 (45 days)">Batch 2 (45 days)</option>
                 <option value="Batch 3 (45 days)">Batch 3 (45 days)</option>
                 <option value="Batch 4 (45 days)">Batch 4 (45 days)</option>
+              </select>
+            </div>
+            <div class="field">
+              <span>Enrollment Type</span>
+              <select id="studentPaymentMode">
+                <option value="offline">Offline</option>
+                <option value="online">Online</option>
+                <option value="internship">Internship</option>
+              </select>
+            </div>
+            <div class="field">
+              <span>Course Status</span>
+              <select id="studentCourseStatus">
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+                <option value="dropped">Dropped</option>
               </select>
             </div>
             <div class="field">
@@ -1000,10 +1028,13 @@
                 <th>Reg No</th>
                 <th>Student</th>
                 <th>Course + Batch</th>
+                <th>Type</th>
                 <th>Join Date</th>
                 <th>Expected End</th>
                 <th>Total Fee</th>
                 <th>Paid</th>
+                <th>Certificate</th>
+                <th>Course Status</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -1065,12 +1096,49 @@
               <option value="Partial">Partial</option>
               <option value="Pending">Pending</option>
             </select>
+            <select class="filter-select" id="feeMonthFilter" onchange="filterFees()">
+              <option value="">All Months</option>
+            </select>
+            <select class="filter-select" id="feeModeFilter" onchange="filterFees()">
+              <option value="">All Types</option>
+              <option value="online">Online</option>
+              <option value="offline">Offline</option>
+              <option value="internship">Internship</option>
+            </select>
             <div style="display:flex;align-items:center;gap:.4rem;">
               <input type="date" id="feeDateFrom" onchange="filterFees()" style="font:inherit;font-family:var(--font-mono);font-size:.72rem;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.6rem .7rem;width:140px;" />
               <span style="color:var(--ink-faint);font-size:.7rem;">to</span>
               <input type="date" id="feeDateTo" onchange="filterFees()" style="font:inherit;font-family:var(--font-mono);font-size:.72rem;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.6rem .7rem;width:140px;" />
             </div>
           </div>
+          <table class="owner-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Course + Batch</th>
+                <th>Type</th>
+                <th>Total Fee</th>
+                <th>Paid</th>
+                <th>Balance</th>
+                <th>Progress</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="feesTable"></tbody>
+            <tfoot id="feesTableFoot" style="font-family:var(--font-mono);font-size:.78rem;border-top:2px solid var(--ink);">
+              <tr>
+                <td colspan="2" style="padding:.8rem 1rem;font-weight:600;">Totals</td>
+                <td id="feeFootType" style="padding:.8rem .4rem;"></td>
+                <td id="feeFootTotal" style="padding:.8rem .4rem;font-weight:600;"></td>
+                <td id="feeFootPaid" style="padding:.8rem .4rem;font-weight:600;color:var(--good);"></td>
+                <td id="feeFootBalance" style="padding:.8rem .4rem;font-weight:600;color:var(--bad);"></td>
+                <td id="feeFootProgress" style="padding:.8rem .4rem;"></td>
+                <td id="feeFootOnline" style="padding:.8rem .4rem;"></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
           <table class="owner-table">
             <thead>
               <tr>
@@ -1171,6 +1239,13 @@
               <input type="number" id="expAmount" placeholder="0" />
             </div>
             <div class="field">
+              <span>Mode</span>
+              <select id="expMode" style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;box-sizing:border-box;">
+                <option value="cash">Cash</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
+            <div class="field">
               <span>Date</span>
               <input type="date" id="expDate" />
             </div>
@@ -1207,6 +1282,11 @@
               <span class="search-icon">$</span>
               <input type="text" placeholder="Search expenses..." id="expSearch" onkeyup="renderExpenses()" />
             </div>
+            <select class="filter-select" id="expModeFilter" onchange="renderExpenses()">
+              <option value="">All Modes</option>
+              <option value="cash">Cash</option>
+              <option value="online">Online</option>
+            </select>
             <div style="display:flex;align-items:center;gap:.4rem;">
               <input type="date" id="expDateFrom" onchange="renderExpenses()" style="font:inherit;font-family:var(--font-mono);font-size:.72rem;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.6rem .7rem;width:140px;" />
               <span style="color:var(--ink-faint);font-size:.7rem;">to</span>
@@ -1219,11 +1299,20 @@
                 <th>#</th>
                 <th>Expense Name</th>
                 <th>Amount</th>
+                <th>Mode</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="expensesTable"></tbody>
+            <tfoot id="expensesTableFoot" style="font-family:var(--font-mono);font-size:.78rem;border-top:2px solid var(--ink);">
+              <tr>
+                <td colspan="2" style="padding:.8rem 1rem;font-weight:600;">Totals</td>
+                <td id="expFootTotal" style="padding:.8rem .4rem;font-weight:600;"></td>
+                <td id="expFootMode" style="padding:.8rem .4rem;"></td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
@@ -1231,6 +1320,50 @@
 
     <!-- TAB: Analytics -->
     <div class="owner-tab-panel" id="panel-analytics">
+      <div class="stats-grid reveal" style="margin-bottom:1.5rem;">
+        <div class="stat-card stat-card--green">
+          <div class="stat-card__label">Total Fees Collected</div>
+          <div class="stat-card__value" id="analyticsFeesCollected">₹0</div>
+          <div class="stat-card__meta"><i class="up"></i>From students</div>
+        </div>
+        <div class="stat-card stat-card--red">
+          <div class="stat-card__label">Total Expenses</div>
+          <div class="stat-card__value" id="analyticsTotalExpenses">₹0</div>
+          <div class="stat-card__meta"><i class="down"></i>All spending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Net Balance</div>
+          <div class="stat-card__value" id="analyticsNetBalance">₹0</div>
+          <div class="stat-card__meta"><i class="flat"></i>Collected − Expenses</div>
+        </div>
+        <div class="stat-card stat-card--green">
+          <div class="stat-card__label">Pending Fees</div>
+          <div class="stat-card__value" id="analyticsPendingFees">₹0</div>
+          <div class="stat-card__meta"><i class="down"></i>Yet to collect</div>
+        </div>
+      </div>
+      <div class="stats-grid reveal" style="margin-bottom:2rem;grid-template-columns:repeat(4,1fr);">
+        <div class="stat-card">
+          <div class="stat-card__label">Online Fees</div>
+          <div class="stat-card__value stat-card__value--small" id="analyticsOnlineFees" style="font-size:1.2rem;">₹0</div>
+          <div class="stat-card__meta"><i class="up"></i>From online payments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Offline Fees</div>
+          <div class="stat-card__value stat-card__value--small" id="analyticsOfflineFees" style="font-size:1.2rem;">₹0</div>
+          <div class="stat-card__meta"><i class="up"></i>From offline payments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Cash Expenses</div>
+          <div class="stat-card__value stat-card__value--small" id="analyticsCashExp" style="font-size:1.2rem;">₹0</div>
+          <div class="stat-card__meta"><i class="down"></i>Cash spending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Online Expenses</div>
+          <div class="stat-card__value stat-card__value--small" id="analyticsOnlineExp" style="font-size:1.2rem;">₹0</div>
+          <div class="stat-card__meta"><i class="down"></i>Online spending</div>
+        </div>
+      </div>
       <div class="analytics-grid reveal">
         <div class="chart-card">
           <div class="chart-title">Monthly Enrollment</div>
@@ -1286,6 +1419,13 @@
           <span>Amount to Pay Now (₹)</span>
           <input type="number" id="paymentAmount" placeholder="Enter amount" />
         </div>
+        <div class="field" style="margin-top:.4rem;">
+          <span>Payment Mode</span>
+          <select id="paymentModeSelect" style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;box-sizing:border-box;">
+            <option value="online">Online</option>
+            <option value="offline">Offline</option>
+          </select>
+        </div>
         <div class="fee-breakdown" id="paymentBreakdown"></div>
       </div>
       <div class="modal__footer">
@@ -1317,8 +1457,20 @@
             <input type="text" id="editRegNo" />
           </div>
           <div class="field">
-            <span>Phone</span>
+            <span>Phone 1</span>
             <input type="tel" id="editPhone" />
+          </div>
+          <div class="field">
+            <span>Phone 2</span>
+            <input type="tel" id="editPhone2" />
+          </div>
+          <div class="field field--full">
+            <span>Address</span>
+            <textarea id="editAddress" rows="2" style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;resize:vertical;box-sizing:border-box;"></textarea>
+          </div>
+          <div class="field field--full">
+            <span>Reference</span>
+            <textarea id="editReference" rows="1" style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;resize:vertical;box-sizing:border-box;"></textarea>
           </div>
           <div class="field">
             <span>Course</span>
@@ -1340,6 +1492,29 @@
               <option value="Batch 2 (45 days)">Batch 2 (45 days)</option>
               <option value="Batch 3 (45 days)">Batch 3 (45 days)</option>
               <option value="Batch 4 (45 days)">Batch 4 (45 days)</option>
+            </select>
+          </div>
+          <div class="field">
+            <span>Enrollment Type</span>
+            <select id="editPaymentMode">
+              <option value="offline">Offline</option>
+              <option value="online">Online</option>
+              <option value="internship">Internship</option>
+            </select>
+          </div>
+          <div class="field">
+            <span>Course Status</span>
+            <select id="editCourseStatus">
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+              <option value="dropped">Dropped</option>
+            </select>
+          </div>
+          <div class="field">
+            <span>Certificate Issued</span>
+            <select id="editCertificate">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
             </select>
           </div>
           <div class="field">
@@ -1391,41 +1566,39 @@
       const match = batch && batch.match(/(\d+)\s*days/);
       return match ? parseInt(match[1]) : 45;
     }
-
     function calcExpectedEndDate(joinDate, batch) {
       if (!joinDate || !batch) return '';
       const d = new Date(joinDate);
-      const dur = getBatchDuration(batch);
-      d.setDate(d.getDate() + dur);
+      d.setDate(d.getDate() + getBatchDuration(batch));
       return d.toISOString().split('T')[0];
     }
 
     function loadDemoData() {
       if (students.length === 0) {
         students = [
-          { id:1, regNo:'TY2025001', name:'Rahul Sharma', phone:'+91 98765 43210', course:'Web Development', batch:'Batch 1 (45 days)', joinDate:'2025-01-15', expectedEndDate:'2025-03-01', totalFee:25000, paidFee:25000, status:'Paid' },
-          { id:2, regNo:'TY2025002', name:'Priya Patel', phone:'+91 87654 32109', course:'Data Science', batch:'Batch 1 (45 days)', joinDate:'2025-01-20', expectedEndDate:'2025-03-06', totalFee:35000, paidFee:17500, status:'Partial' },
-          { id:3, regNo:'TY2025003', name:'Amit Kumar', phone:'+91 76543 21098', course:'Web Development', batch:'Batch 2 (45 days)', joinDate:'2025-02-01', expectedEndDate:'2025-03-18', totalFee:25000, paidFee:10000, status:'Partial' },
-          { id:4, regNo:'TY2025004', name:'Sneha Gupta', phone:'+91 65432 10987', course:'UI/UX Design', batch:'Batch 1 (45 days)', joinDate:'2025-02-10', expectedEndDate:'2025-03-27', totalFee:20000, paidFee:20000, status:'Paid' },
-          { id:5, regNo:'TY2025005', name:'Vikram Rao', phone:'+91 54321 09876', course:'Mobile App Development', batch:'Batch 1 (45 days)', joinDate:'2025-02-15', expectedEndDate:'2025-04-01', totalFee:30000, paidFee:0, status:'Pending' },
-          { id:6, regNo:'TY2025006', name:'Ananya Desai', phone:'+91 43210 98765', course:'Cloud Computing', batch:'Batch 2 (45 days)', joinDate:'2025-03-01', expectedEndDate:'2025-04-15', totalFee:28000, paidFee:28000, status:'Paid' },
-          { id:7, regNo:'TY2025007', name:'Karan Mehta', phone:'+91 32109 87654', course:'Web Development', batch:'Batch 1 (45 days)', joinDate:'2025-03-05', expectedEndDate:'2025-04-19', totalFee:25000, paidFee:5000, status:'Partial' },
-          { id:8, regNo:'TY2025008', name:'Divya Iyer', phone:'+91 21098 76543', course:'Cybersecurity', batch:'Batch 1 (45 days)', joinDate:'2025-03-10', expectedEndDate:'2025-04-24', totalFee:32000, paidFee:0, status:'Pending' },
-          { id:9, regNo:'TY2025009', name:'Arjun Nair', phone:'+91 10987 65432', course:'AI & Machine Learning', batch:'Batch 3 (45 days)', joinDate:'2025-03-15', expectedEndDate:'2025-04-29', totalFee:40000, paidFee:20000, status:'Partial' },
-          { id:10, regNo:'TY2025010', name:'Meera Joshi', phone:'+91 09876 54321', course:'Digital Marketing', batch:'Batch 1 (45 days)', joinDate:'2025-03-20', expectedEndDate:'2025-05-04', totalFee:18000, paidFee:18000, status:'Paid' },
-          { id:11, regNo:'TY2025011', name:'Raj Malhotra', phone:'+91 98760 12345', course:'Data Science', batch:'Batch 2 (45 days)', joinDate:'2025-04-01', expectedEndDate:'2025-05-16', totalFee:35000, paidFee:0, status:'Pending' },
-          { id:12, regNo:'TY2025012', name:'Kavita Reddy', phone:'+91 87651 23456', course:'Web Development', batch:'Batch 3 (45 days)', joinDate:'2025-04-05', expectedEndDate:'2025-05-20', totalFee:25000, paidFee:25000, status:'Paid' }
+          { id:1, regNo:'TY2025001', name:'Rahul Sharma', phone:'+91 98765 43210', phone2:'', address:'123, MG Road, Mumbai', reference:'Friend', paymentMode:'online', course:'Web Development', batch:'Batch 1 (45 days)', joinDate:'2025-01-15', expectedEndDate:'2025-03-01', totalFee:25000, paidFee:25000, status:'Paid', certificateIssued:'yes', courseStatus:'completed', payments:[{id:1,amount:25000,date:'2025-01-15',mode:'online'}] },
+          { id:2, regNo:'TY2025002', name:'Priya Patel', phone:'+91 87654 32109', phone2:'', address:'456, Lake Road, Pune', reference:'Instagram', paymentMode:'offline', course:'Data Science', batch:'Batch 1 (45 days)', joinDate:'2025-01-20', expectedEndDate:'2025-03-06', totalFee:35000, paidFee:17500, status:'Partial', certificateIssued:'no', courseStatus:'ongoing', payments:[{id:1,amount:10000,date:'2025-01-20',mode:'offline'},{id:2,amount:7500,date:'2025-02-15',mode:'offline'}] },
+          { id:3, regNo:'TY2025003', name:'Amit Kumar', phone:'+91 76543 21098', phone2:'+91 99887 76655', address:'789, Park Street, Delhi', reference:'Google', paymentMode:'online', course:'Web Development', batch:'Batch 2 (45 days)', joinDate:'2025-02-01', expectedEndDate:'2025-03-18', totalFee:25000, paidFee:10000, status:'Partial', certificateIssued:'no', courseStatus:'ongoing', payments:[{id:1,amount:10000,date:'2025-02-01',mode:'online'}] },
+          { id:4, regNo:'TY2025004', name:'Sneha Gupta', phone:'+91 65432 10987', phone2:'', address:'321, Green Avenue, Bangalore', reference:'Friend', paymentMode:'offline', course:'UI/UX Design', batch:'Batch 1 (45 days)', joinDate:'2025-02-10', expectedEndDate:'2025-03-27', totalFee:20000, paidFee:20000, status:'Paid', certificateIssued:'yes', courseStatus:'completed', payments:[{id:1,amount:20000,date:'2025-02-10',mode:'offline'}] },
+          { id:5, regNo:'TY2025005', name:'Vikram Rao', phone:'+91 54321 09876', phone2:'', address:'654, Hill View, Hyderabad', reference:'YouTube', paymentMode:'internship', course:'Mobile App Development', batch:'Batch 1 (45 days)', joinDate:'2025-02-15', expectedEndDate:'2025-04-01', totalFee:30000, paidFee:0, status:'Pending', certificateIssued:'no', courseStatus:'ongoing', payments:[] },
+          { id:6, regNo:'TY2025006', name:'Ananya Desai', phone:'+91 43210 98765', phone2:'+91 88776 65544', address:'987, Royal Road, Chennai', reference:'Newspaper', paymentMode:'online', course:'Cloud Computing', batch:'Batch 2 (45 days)', joinDate:'2025-03-01', expectedEndDate:'2025-04-15', totalFee:28000, paidFee:28000, status:'Paid', certificateIssued:'yes', courseStatus:'completed', payments:[{id:1,amount:28000,date:'2025-03-01',mode:'online'}] },
+          { id:7, regNo:'TY2025007', name:'Karan Mehta', phone:'+91 32109 87654', phone2:'', address:'111, Sunshine Colony, Ahmedabad', reference:'Friend', paymentMode:'offline', course:'Web Development', batch:'Batch 1 (45 days)', joinDate:'2025-03-05', expectedEndDate:'2025-04-19', totalFee:25000, paidFee:5000, status:'Partial', certificateIssued:'no', courseStatus:'ongoing', payments:[{id:1,amount:5000,date:'2025-03-05',mode:'offline'}] },
+          { id:8, regNo:'TY2025008', name:'Divya Iyer', phone:'+91 21098 76543', phone2:'', address:'222, Temple Road, Coimbatore', reference:'Instagram', paymentMode:'online', course:'Cybersecurity', batch:'Batch 1 (45 days)', joinDate:'2025-03-10', expectedEndDate:'2025-04-24', totalFee:32000, paidFee:0, status:'Pending', certificateIssued:'no', courseStatus:'ongoing', payments:[] },
+          { id:9, regNo:'TY2025009', name:'Arjun Nair', phone:'+91 10987 65432', phone2:'', address:'333, Lake View, Kochi', reference:'Google', paymentMode:'online', course:'AI & Machine Learning', batch:'Batch 3 (45 days)', joinDate:'2025-03-15', expectedEndDate:'2025-04-29', totalFee:40000, paidFee:20000, status:'Partial', certificateIssued:'no', courseStatus:'ongoing', payments:[{id:1,amount:20000,date:'2025-03-15',mode:'online'}] },
+          { id:10, regNo:'TY2025010', name:'Meera Joshi', phone:'+91 09876 54321', phone2:'', address:'444, River Side, Jaipur', reference:'Friend', paymentMode:'offline', course:'Digital Marketing', batch:'Batch 1 (45 days)', joinDate:'2025-03-20', expectedEndDate:'2025-05-04', totalFee:18000, paidFee:18000, status:'Paid', certificateIssued:'yes', courseStatus:'completed', payments:[{id:1,amount:18000,date:'2025-03-20',mode:'offline'}] },
+          { id:11, regNo:'TY2025011', name:'Raj Malhotra', phone:'+91 98760 12345', phone2:'+91 77665 54433', address:'555, Mall Road, Chandigarh', reference:'YouTube', paymentMode:'online', course:'Data Science', batch:'Batch 2 (45 days)', joinDate:'2025-04-01', expectedEndDate:'2025-05-16', totalFee:35000, paidFee:0, status:'Pending', certificateIssued:'no', courseStatus:'ongoing', payments:[] },
+          { id:12, regNo:'TY2025012', name:'Kavita Reddy', phone:'+91 87651 23456', phone2:'', address:'666, Tech Park, Bangalore', reference:'Friend', paymentMode:'offline', course:'Web Development', batch:'Batch 3 (45 days)', joinDate:'2025-04-05', expectedEndDate:'2025-05-20', totalFee:25000, paidFee:25000, status:'Paid', certificateIssued:'yes', courseStatus:'completed', payments:[{id:1,amount:25000,date:'2025-04-05',mode:'offline'}] }
         ];
         saveData();
         showToast('Demo data loaded for preview', 'success');
       }
       if (expenses.length === 0) {
         expenses = [
-          { id:1, name:'Electricity Bill', amount:4500, date:'2025-06-01' },
-          { id:2, name:'Stationery', amount:1200, date:'2025-06-05' },
-          { id:3, name:'Internet Recharge', amount:2000, date:'2025-06-10' },
-          { id:4, name:'Projector Repair', amount:3500, date:'2025-06-15' },
-          { id:5, name:'Cleaning Supplies', amount:800, date:'2025-06-18' }
+          { id:1, name:'Electricity Bill', amount:4500, date:'2025-06-01', mode:'online' },
+          { id:2, name:'Stationery', amount:1200, date:'2025-06-05', mode:'cash' },
+          { id:3, name:'Internet Recharge', amount:2000, date:'2025-06-10', mode:'online' },
+          { id:4, name:'Projector Repair', amount:3500, date:'2025-06-15', mode:'cash' },
+          { id:5, name:'Cleaning Supplies', amount:800, date:'2025-06-18', mode:'cash' }
         ];
         saveExpenses();
       }
@@ -1433,7 +1606,7 @@
     function saveData() { localStorage.setItem('techyuva_students', JSON.stringify(students)); }
     function saveExpenses() { localStorage.setItem('techyuva_expenses', JSON.stringify(expenses)); }
 
-    // ==================== SHARED UTILITIES (from style.css) ====================
+    // ==================== SHARED UTILITIES ====================
     const $ = (s, c=document) => c.querySelector(s);
     const $$ = (s, c=document) => [...c.querySelectorAll(s)];
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1450,59 +1623,29 @@
         if (children) { children.classList.toggle('is-collapsed'); folder.classList.toggle('is-open'); }
       });
     });
-
-    // Scroll Progress
     const bar = $('#scrollProgress')?.querySelector('span');
     if (bar) {
-      const update = () => {
-        const max = document.documentElement.scrollHeight - innerHeight;
-        bar.style.width = max > 0 ? (scrollY / max) * 100 + '%' : '0%';
-      };
-      addEventListener('scroll', update, { passive: true });
-      addEventListener('resize', update);
-      update();
+      const update = () => { const max = document.documentElement.scrollHeight - innerHeight; bar.style.width = max > 0 ? (scrollY / max) * 100 + '%' : '0%'; };
+      addEventListener('scroll', update, { passive: true }); addEventListener('resize', update); update();
     }
-
-    // Custom Cursor
     if (!isTouch) {
       const ring = $('#cursor'), dot = $('#cursorDot');
       let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
-      addEventListener('mousemove', e => {
-        mx = e.clientX; my = e.clientY;
-        dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
-      });
+      addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`; });
       addEventListener('mousedown', () => ring.classList.add('is-down'));
       addEventListener('mouseup', () => ring.classList.remove('is-down'));
-      const loop = () => {
-        rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14;
-        ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
-        requestAnimationFrame(loop);
-      };
-      loop();
+      const loop = () => { rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14; ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`; requestAnimationFrame(loop); }; loop();
       document.addEventListener('mouseover', e => { if (e.target.closest('a, button, [data-magnetic], input, select, .owner-tab, .action-btn')) ring.classList.add('is-hover'); });
       document.addEventListener('mouseout', e => { if (e.target.closest('a, button, [data-magnetic], input, select, .owner-tab, .action-btn')) ring.classList.remove('is-hover'); });
     }
-
-    // Magnetic Elements
     if (!isTouch && !reducedMotion) {
       $$('[data-magnetic]').forEach(el => {
         const strength = 0.3;
-        el.addEventListener('mousemove', e => {
-          const r = el.getBoundingClientRect();
-          el.style.transform = `translate(${(e.clientX - r.left - r.width/2)*strength}px, ${(e.clientY - r.top - r.height/2)*strength}px)`;
-          el.style.transition = 'transform .12s ease-out';
-        });
-        el.addEventListener('mouseleave', () => {
-          el.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)';
-          el.style.transform = '';
-        });
+        el.addEventListener('mousemove', e => { const r = el.getBoundingClientRect(); el.style.transform = `translate(${(e.clientX - r.left - r.width/2)*strength}px, ${(e.clientY - r.top - r.height/2)*strength}px)`; el.style.transition = 'transform .12s ease-out'; });
+        el.addEventListener('mouseleave', () => { el.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)'; el.style.transform = ''; });
       });
     }
-
-    // Scroll Reveals
-    const revealObserver = new IntersectionObserver(entries => {
-      entries.forEach(en => { if (!en.isIntersecting) return; en.target.classList.add('is-visible'); revealObserver.unobserve(en.target); });
-    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    const revealObserver = new IntersectionObserver(entries => { entries.forEach(en => { if (!en.isIntersecting) return; en.target.classList.add('is-visible'); revealObserver.unobserve(en.target); }); }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
     $$('.reveal').forEach(el => revealObserver.observe(el));
 
     // ==================== TABS ====================
@@ -1514,7 +1657,7 @@
         tab.classList.add('is-active');
         $(`#panel-${panelId}`).classList.add('is-active');
         if (panelId === 'students') { updateStudentsTable(); updateCourseFilters(); }
-        if (panelId === 'fees') updateFeesTable();
+        if (panelId === 'fees') { populateMonthFilter(); updateFeesTable(); }
         if (panelId === 'courses') updateCourses();
         if (panelId === 'expenses') renderExpenses();
         if (panelId === 'analytics') updateAnalytics();
@@ -1527,78 +1670,42 @@
       const totalCollected = students.reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
       const totalPending = students.reduce((sum, s) => sum + ((parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0)), 0);
       const activeCourses = [...new Set(students.map(s => s.course))].filter(c => c).length;
-
       $('#dashTotalStudents').textContent = totalStudents;
       $('#dashFeesCollected').textContent = '₹' + totalCollected.toLocaleString('en-IN');
       $('#dashPendingFees').textContent = '₹' + totalPending.toLocaleString('en-IN');
       $('#dashActiveCourses').textContent = activeCourses;
-
       const paidCount = students.filter(s => s.status === 'Paid').length;
       const partialCount = students.filter(s => s.status === 'Partial').length;
       const pendingCount = students.filter(s => s.status === 'Pending').length;
-
       if (charts.paymentStatus) charts.paymentStatus.destroy();
-      charts.paymentStatus = new Chart($('#paymentStatusChart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Paid', 'Partial', 'Pending'],
-          datasets: [{
-            data: [paidCount, partialCount, pendingCount],
-            backgroundColor: ['#4a7c59', '#c4a030', '#a03030'],
-            borderWidth: 0, hoverOffset: 4
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          cutout: '68%',
-          plugins: {
-            legend: { position: 'bottom', labels: { padding: 16, font: { family: 'JetBrains Mono', size: 11 }, usePointStyle: true, boxWidth: 8 } }
-          }
-        }
-      });
-
+      charts.paymentStatus = new Chart($('#paymentStatusChart'), { type:'doughnut', data:{ labels:['Paid','Partial','Pending'], datasets:[{ data:[paidCount,partialCount,pendingCount], backgroundColor:['#4a7c59','#c4a030','#a03030'], borderWidth:0, hoverOffset:4 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{ legend:{ position:'bottom', labels:{ padding:16, font:{ family:'JetBrains Mono', size:11 }, usePointStyle:true, boxWidth:8 } } } } });
       const courseBatchCounts = {};
-      students.forEach(s => {
-        const key = s.course + (s.batch ? ' · ' + s.batch.replace(/ \(\d+ days\)/, '') : '');
-        courseBatchCounts[key] = (courseBatchCounts[key] || 0) + 1;
-      });
-
+      students.forEach(s => { const key = s.course + (s.batch ? ' · ' + s.batch.replace(/ \(\d+ days\)/, '') : ''); courseBatchCounts[key] = (courseBatchCounts[key] || 0) + 1; });
       if (charts.courseDist) charts.courseDist.destroy();
-      charts.courseDist = new Chart($('#courseDistributionChart'), {
-        type: 'bar',
-        data: {
-          labels: Object.keys(courseBatchCounts),
-          datasets: [{
-            label: 'Students',
-            data: Object.values(courseBatchCounts),
-            backgroundColor: '#b85c38',
-            borderRadius: 5, barThickness: 22
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, grid: { color: '#e8e3d6' }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#9CA3AF' } },
-            x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#6B7280', maxRotation: 35 } }
-          }
-        }
-      });
+      charts.courseDist = new Chart($('#courseDistributionChart'), { type:'bar', data:{ labels:Object.keys(courseBatchCounts), datasets:[{ label:'Students', data:Object.values(courseBatchCounts), backgroundColor:'#b85c38', borderRadius:5, barThickness:22 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#e8e3d6' }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#9CA3AF' } }, x:{ grid:{ display:false }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#6B7280', maxRotation:35 } } } } });
     }
 
-    // ==================== BATCH / END DATE HELPERS ====================
+    // ==================== BATCH HELPERS ====================
     function updateBatchesForCourse() {
-      const course = $('#studentCourse').value;
       const batchSelect = $('#studentBatch');
-      batchSelect.innerHTML = '<option value="">Select Batch</option>' +
-        BATCHES.map(b => `<option value="${b}">${b}</option>`).join('');
+      batchSelect.innerHTML = '<option value="">Select Batch</option>' + BATCHES.map(b => `<option value="${b}">${b}</option>`).join('');
       updateExpectedEndDate();
     }
-
     function updateExpectedEndDate() {
-      const joinDate = $('#studentJoinDate').value;
-      const batch = $('#studentBatch').value;
-      $('#studentExpectedEndDate').value = calcExpectedEndDate(joinDate, batch);
+      $('#studentExpectedEndDate').value = calcExpectedEndDate($('#studentJoinDate').value, $('#studentBatch').value);
+    }
+
+    // ==================== MONTH FILTER ====================
+    function populateMonthFilter() {
+      const sel = $('#feeMonthFilter');
+      if (sel.options.length > 1) return;
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const now = new Date();
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(now.getFullYear(), i, 1);
+        const val = d.toISOString().slice(0,7);
+        sel.innerHTML += `<option value="${val}">${months[i]} ${now.getFullYear()}</option>`;
+      }
     }
 
     // ==================== STUDENTS ====================
@@ -1609,7 +1716,6 @@
       const statusFilter = $('#studentStatusFilter').value;
       const dateFrom = $('#studentDateFrom').value;
       const dateTo = $('#studentDateTo').value;
-
       let filtered = students.filter(s => {
         const matchSearch = s.name.toLowerCase().includes(search) || (s.regNo || '').toLowerCase().includes(search) || s.course.toLowerCase().includes(search);
         const matchCourse = !courseFilter || s.course === courseFilter;
@@ -1620,44 +1726,34 @@
       });
       const tbody = $('#studentsTable');
       tbody.innerHTML = filtered.map(s => {
-        const balance = (parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0);
         const courseBatch = s.course + (s.batch ? ' · ' + s.batch.replace(/ \(\d+ days\)/, '') : '');
         const endLabel = s.expectedEndDate ? formatDate(s.expectedEndDate) : '-';
-        return `
-          <tr>
-            <td><span class="owner-table__name">${s.regNo || '-'}</span></td>
-            <td>
-              <div class="owner-table__name">${s.name}</div>
-              <div class="owner-table__meta">${s.phone}</div>
-            </td>
-            <td>${courseBatch}</td>
-            <td>${formatDate(s.joinDate)}</td>
-            <td>${endLabel}</td>
-            <td>₹${(parseFloat(s.totalFee) || 0).toLocaleString('en-IN')}</td>
-            <td>₹${(parseFloat(s.paidFee) || 0).toLocaleString('en-IN')}</td>
-            <td>${getBadge(s.status)}</td>
-            <td>
-              <div class="action-btns">
-                <button class="action-btn" onclick="editStudent(${s.id})" title="Edit">✏</button>
-                <button class="action-btn action-btn--success" onclick="openPaymentModal(${s.id})" title="Record Payment">₹</button>
-                <button class="action-btn action-btn--danger" onclick="deleteStudent(${s.id})" title="Delete">✕</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('') || emptyRow(9, 'No students found', 'Add a student or adjust filters');
+        const certBadge = s.certificateIssued === 'yes' ? '<span class="badge badge--paid" style="font-size:.6rem;">✓ Issued</span>' : '<span class="badge badge--pending" style="font-size:.6rem;">✗ Not Issued</span>';
+        const statusLabel = s.courseStatus === 'completed' ? '<span class="badge badge--paid" style="font-size:.6rem;">Completed</span>' : s.courseStatus === 'dropped' ? '<span class="badge badge--pending" style="font-size:.6rem;">Dropped</span>' : '<span class="badge badge--partial" style="font-size:.6rem;">Ongoing</span>';
+        const typeLabel = s.paymentMode === 'online' ? '<span style="color:var(--good);font-weight:600;">Online</span>' : s.paymentMode === 'internship' ? '<span style="color:#5a6b8a;font-weight:600;">Internship</span>' : '<span style="color:var(--ink-soft);font-weight:600;">Offline</span>';
+        return `<tr>
+          <td><span class="owner-table__name">${s.regNo || '-'}</span></td>
+          <td><div class="owner-table__name">${s.name}</div><div class="owner-table__meta">${s.phone}</div></td>
+          <td>${courseBatch}</td>
+          <td>${typeLabel}</td>
+          <td>${formatDate(s.joinDate)}</td>
+          <td>${endLabel}</td>
+          <td>₹${(parseFloat(s.totalFee) || 0).toLocaleString('en-IN')}</td>
+          <td>₹${(parseFloat(s.paidFee) || 0).toLocaleString('en-IN')}</td>
+          <td>${certBadge}</td>
+          <td>${statusLabel}</td>
+          <td>${getBadge(s.status)}</td>
+          <td><div class="action-btns">
+            <button class="action-btn" onclick="editStudent(${s.id})" title="Edit">✏</button>
+            <button class="action-btn action-btn--success" onclick="openPaymentModal(${s.id})" title="Record Payment">₹</button>
+            <button class="action-btn action-btn--danger" onclick="deleteStudent(${s.id})" title="Delete">✕</button>
+          </div></td></tr>`;
+      }).join('') || emptyRow(12, 'No students found', 'Add a student or adjust filters');
     }
 
     function updateCourseFilters() {
-      const select = $('#studentCourseFilter');
-      const currentVal = select.value;
-      select.innerHTML = '<option value="">All Courses</option>' + COURSES.map(c => `<option value="${c}">${c}</option>`).join('');
-      select.value = currentVal;
-
-      const batchSelect = $('#studentBatchFilter');
-      const currentBatch = batchSelect.value;
-      batchSelect.innerHTML = '<option value="">All Batches</option>' + BATCHES.map(b => `<option value="${b}">${b.replace(/ \(\d+ days\)/, '')}</option>`).join('');
-      batchSelect.value = currentBatch;
+      const s1 = $('#studentCourseFilter'); const v1 = s1.value; s1.innerHTML = '<option value="">All Courses</option>' + COURSES.map(c => `<option value="${c}">${c}</option>`).join(''); s1.value = v1;
+      const s2 = $('#studentBatchFilter'); const v2 = s2.value; s2.innerHTML = '<option value="">All Batches</option>' + BATCHES.map(b => `<option value="${b}">${b.replace(/ \(\d+ days\)/, '')}</option>`).join(''); s2.value = v2;
     }
     function filterStudents() { updateStudentsTable(); }
 
@@ -1665,17 +1761,21 @@
       const name = $('#studentName').value.trim();
       const regNo = $('#studentRegNo').value.trim();
       const phone = $('#studentPhone').value.trim();
+      const phone2 = $('#studentPhone2').value.trim();
+      const address = $('#studentAddress').value.trim();
+      const reference = $('#studentReference').value.trim();
+      const paymentMode = $('#studentPaymentMode').value;
       const course = $('#studentCourse').value;
       const batch = $('#studentBatch').value;
+      const courseStatus = $('#studentCourseStatus').value;
       const joinDate = $('#studentJoinDate').value;
       const expectedEndDate = $('#studentExpectedEndDate').value;
       const totalFee = parseFloat($('#studentTotalFee').value) || 0;
       const paidFee = parseFloat($('#studentPaidFee').value) || 0;
       if (!name || !course || !batch || !joinDate) { showToast('Please fill name, course, batch, and join date', 'error'); return; }
       const status = paidFee >= totalFee && totalFee > 0 ? 'Paid' : paidFee > 0 ? 'Partial' : 'Pending';
-      const newStudent = {
-        id: Date.now(), regNo, name, phone, course, batch, joinDate, expectedEndDate, totalFee, paidFee, status
-      };
+      const payments = paidFee > 0 ? [{ id:Date.now()+1, amount:paidFee, date:joinDate, mode:paymentMode === 'internship' ? 'offline' : paymentMode }] : [];
+      const newStudent = { id:Date.now(), regNo, name, phone, phone2, address, reference, paymentMode, course, batch, courseStatus, certificateIssued:'no', joinDate, expectedEndDate, totalFee, paidFee, status, payments };
       students.push(newStudent); saveData(); clearStudentForm(); updateStudentsTable(); updateDashboard(); updateFeesTable(); updateCourses();
       showToast('Student registered successfully!', 'success');
       $$('.owner-tab').forEach(t => t.classList.remove('is-active'));
@@ -1685,23 +1785,37 @@
     }
 
     function clearStudentForm() {
-      $('#studentName').value = ''; $('#studentRegNo').value = ''; $('#studentPhone').value = '';
+      ['studentName','studentRegNo','studentPhone','studentPhone2'].forEach(id => $('#'+id).value = '');
+      $('#studentAddress').value = ''; $('#studentReference').value = '';
       $('#studentCourse').value = ''; $('#studentBatch').value = ''; $('#studentJoinDate').value = '';
       $('#studentExpectedEndDate').value = ''; $('#studentTotalFee').value = ''; $('#studentPaidFee').value = '0';
+      $('#studentPaymentMode').value = 'offline'; $('#studentCourseStatus').value = 'ongoing';
     }
+
     function deleteStudent(id) { if (!confirm('Delete this student?')) return; students = students.filter(s => s.id !== id); saveData(); updateStudentsTable(); updateDashboard(); updateFeesTable(); updateCourses(); showToast('Student deleted', 'success'); }
+
     function editStudent(id) {
       const s = students.find(x => x.id === id); if (!s) return;
       $('#editStudentId').value = s.id; $('#editName').value = s.name; $('#editRegNo').value = s.regNo || '';
-      $('#editPhone').value = s.phone; $('#editCourse').value = s.course; $('#editBatch').value = s.batch || 'Batch 1 (45 days)';
+      $('#editPhone').value = s.phone; $('#editPhone2').value = s.phone2 || '';
+      $('#editAddress').value = s.address || ''; $('#editReference').value = s.reference || '';
+      $('#editCourse').value = s.course; $('#editBatch').value = s.batch || 'Batch 1 (45 days)';
+      $('#editPaymentMode').value = s.paymentMode || 'offline';
+      $('#editCourseStatus').value = s.courseStatus || 'ongoing';
+      $('#editCertificate').value = s.certificateIssued || 'no';
       $('#editTotalFee').value = s.totalFee; $('#editPaidFee').value = s.paidFee; $('#editStatus').value = s.status;
       $('#editModal').classList.add('is-active');
     }
+
     function saveEditStudent() {
       const id = parseInt($('#editStudentId').value);
       const s = students.find(x => x.id === id); if (!s) return;
-      s.regNo = $('#editRegNo').value.trim(); s.name = $('#editName').value.trim(); s.phone = $('#editPhone').value.trim();
+      s.regNo = $('#editRegNo').value.trim(); s.name = $('#editName').value.trim();
+      s.phone = $('#editPhone').value.trim(); s.phone2 = $('#editPhone2').value.trim();
+      s.address = $('#editAddress').value.trim(); s.reference = $('#editReference').value.trim();
       s.course = $('#editCourse').value; s.batch = $('#editBatch').value;
+      s.paymentMode = $('#editPaymentMode').value; s.courseStatus = $('#editCourseStatus').value;
+      s.certificateIssued = $('#editCertificate').value;
       s.totalFee = parseFloat($('#editTotalFee').value) || 0; s.paidFee = parseFloat($('#editPaidFee').value) || 0;
       s.status = $('#editStatus').value;
       s.expectedEndDate = calcExpectedEndDate(s.joinDate, s.batch);
@@ -1712,6 +1826,45 @@
       showToast('Student updated successfully!', 'success');
     }
     function closeEditModal() { $('#editModal').classList.remove('is-active'); }
+
+    // ==================== PAYMENT MODAL (INSTALLMENTS) ====================
+    function openPaymentModal(id) {
+      const s = students.find(x => x.id === id); if (!s) return;
+      currentPaymentId = id;
+      const total = parseFloat(s.totalFee) || 0; const paid = parseFloat(s.paidFee) || 0; const balance = total - paid;
+      $('#paymentStudentName').value = s.name;
+      $('#paymentTotalFee').value = '₹' + total.toLocaleString('en-IN');
+      $('#paymentAlreadyPaid').value = '₹' + paid.toLocaleString('en-IN');
+      $('#paymentRemaining').value = '₹' + balance.toLocaleString('en-IN');
+      $('#paymentAmount').value = ''; $('#paymentAmount').max = balance; $('#paymentAmount').placeholder = 'Max ₹' + balance.toLocaleString('en-IN');
+      let instHtml = '<div class="fee-breakdown__item" style="font-weight:600;color:var(--ink);"><span>Total Fee</span><span>₹' + total.toLocaleString('en-IN') + '</span></div>';
+      const payments = s.payments || [];
+      payments.forEach((p, i) => {
+        const modeLabel = p.mode === 'online' ? '🟢 Online' : '🔴 Offline';
+        instHtml += '<div class="fee-breakdown__item"><span>Installment ' + (i+1) + ' · ' + formatDate(p.date) + ' · ' + modeLabel + '</span><span>₹' + (parseFloat(p.amount)||0).toLocaleString('en-IN') + '</span></div>';
+      });
+      instHtml += '<div class="fee-breakdown__item"><span>Paid So Far</span><span>₹' + paid.toLocaleString('en-IN') + '</span></div>';
+      instHtml += '<div class="fee-breakdown__item" style="color:var(--bad);font-weight:600;"><span>Remaining</span><span>₹' + balance.toLocaleString('en-IN') + '</span></div>';
+      $('#paymentBreakdown').innerHTML = instHtml;
+      $('#paymentModal').classList.add('is-active');
+    }
+    function closePaymentModal() { $('#paymentModal').classList.remove('is-active'); currentPaymentId = null; }
+    function recordPayment() {
+      if (!currentPaymentId) return;
+      const amount = parseFloat($('#paymentAmount').value) || 0;
+      const mode = $('#paymentModeSelect') ? $('#paymentModeSelect').value : 'offline';
+      if (amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
+      const s = students.find(x => x.id === currentPaymentId);
+      const balance = (parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0);
+      if (amount > balance) { showToast('Amount exceeds balance', 'error'); return; }
+      s.paidFee = (parseFloat(s.paidFee) || 0) + amount;
+      if (!s.payments) s.payments = [];
+      s.payments.push({ id:Date.now(), amount, date:new Date().toISOString().split('T')[0], mode });
+      if (s.paidFee >= s.totalFee && s.totalFee > 0) s.status = 'Paid';
+      else if (s.paidFee > 0) s.status = 'Partial';
+      saveData(); closePaymentModal(); updateFeesTable(); updateStudentsTable(); updateDashboard(); updateCourses();
+      showToast('Payment of ₹' + amount.toLocaleString('en-IN') + ' recorded', 'success');
+    }
 
     // ==================== FEES ====================
     function updateFeesTable() {
@@ -1726,77 +1879,61 @@
 
       const search = $('#feeSearch').value.toLowerCase();
       const statusFilter = $('#feeStatusFilter').value;
+      const modeFilter = $('#feeModeFilter').value;
+      const monthFilter = $('#feeMonthFilter').value;
       const dateFrom = $('#feeDateFrom').value;
       const dateTo = $('#feeDateTo').value;
+
       let filtered = students.filter(s => {
         const matchSearch = s.name.toLowerCase().includes(search) || s.course.toLowerCase().includes(search);
         const matchStatus = !statusFilter || s.status === statusFilter;
+        const matchMode = !modeFilter || s.paymentMode === modeFilter;
+        const matchMonth = !monthFilter || (s.joinDate && s.joinDate.startsWith(monthFilter));
         const matchDate = (!dateFrom || s.joinDate >= dateFrom) && (!dateTo || s.joinDate <= dateTo);
-        return matchSearch && matchStatus && matchDate;
+        return matchSearch && matchStatus && matchMode && matchMonth && matchDate;
       });
+
       const tbody = $('#feesTable');
       tbody.innerHTML = filtered.map(s => {
         const total = parseFloat(s.totalFee) || 0; const paid = parseFloat(s.paidFee) || 0;
         const balance = total - paid; const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
         let pcls = pct >= 100 ? 'progress-fill--green' : pct >= 50 ? 'progress-fill--orange' : 'progress-fill--red';
         const courseBatch = s.course + (s.batch ? ' · ' + s.batch.replace(/ \(\d+ days\)/, '') : '');
-        return `
-          <tr>
-            <td>
-              <div class="owner-table__name">${s.name}</div>
-              <div class="owner-table__meta">${s.phone}</div>
-            </td>
-            <td>${courseBatch}</td>
-            <td>₹${total.toLocaleString('en-IN')}</td>
-            <td>₹${paid.toLocaleString('en-IN')}</td>
-            <td style="color:var(--bad); font-weight:600;">₹${balance.toLocaleString('en-IN')}</td>
-            <td>
-              <div class="progress-wrap">
-                <div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${pct}%"></div></div>
-                <span class="progress-text">${pct}%</span>
-              </div>
-            </td>
-            <td>${getBadge(s.status)}</td>
-            <td>
-              <div class="action-btns">
-                <button class="action-btn action-btn--success" onclick="openPaymentModal(${s.id})" title="Record Payment">₹</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('') || emptyRow(8, 'No fee records', 'Add students to see data');
+        const modeLabel = s.paymentMode === 'online' ? '<span style="color:var(--good);font-weight:600;">Online</span>' : s.paymentMode === 'internship' ? '<span style="color:#5a6b8a;font-weight:600;">Internship</span>' : '<span>Offline</span>';
+        return `<tr>
+          <td><div class="owner-table__name">${s.name}</div><div class="owner-table__meta">${s.phone}</div></td>
+          <td>${courseBatch}</td>
+          <td>${modeLabel}</td>
+          <td>₹${total.toLocaleString('en-IN')}</td>
+          <td>₹${paid.toLocaleString('en-IN')}</td>
+          <td style="color:var(--bad);font-weight:600;">₹${balance.toLocaleString('en-IN')}</td>
+          <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${pct}%"></div></div><span class="progress-text">${pct}%</span></div></td>
+          <td>${getBadge(s.status)}</td>
+          <td><div class="action-btns"><button class="action-btn action-btn--success" onclick="openPaymentModal(${s.id})" title="Record Payment">₹</button></div></td></tr>`;
+      }).join('') || emptyRow(9, 'No fee records', 'Add students to see data');
+
+      // Footer totals
+      const tTotal = filtered.reduce((sum, s) => sum + (parseFloat(s.totalFee) || 0), 0);
+      const tPaid = filtered.reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const tBal = tTotal - tPaid;
+      const onlinePaid = filtered.filter(s => s.paymentMode === 'online').reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const offlinePaid = filtered.filter(s => s.paymentMode === 'offline').reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const internPaid = filtered.filter(s => s.paymentMode === 'internship').reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const onlineTotal = filtered.filter(s => s.paymentMode === 'online').reduce((sum, s) => sum + (parseFloat(s.totalFee) || 0), 0);
+      const offlineTotal = filtered.filter(s => s.paymentMode === 'offline').reduce((sum, s) => sum + (parseFloat(s.totalFee) || 0), 0);
+      const internTotal = filtered.filter(s => s.paymentMode === 'internship').reduce((sum, s) => sum + (parseFloat(s.totalFee) || 0), 0);
+      const opct = tTotal > 0 ? Math.round((tPaid / tTotal) * 100) : 0;
+      let opcls = opct >= 100 ? 'progress-fill--green' : opct >= 50 ? 'progress-fill--orange' : 'progress-fill--red';
+      $('#feeFootType').innerHTML = '💰 Online: ₹' + onlinePaid.toLocaleString('en-IN') + ' / ₹' + onlineTotal.toLocaleString('en-IN') + '<br>📄 Offline: ₹' + offlinePaid.toLocaleString('en-IN') + ' / ₹' + offlineTotal.toLocaleString('en-IN') + (internTotal > 0 ? '<br>🎓 Internship: ₹' + internPaid.toLocaleString('en-IN') + ' / ₹' + internTotal.toLocaleString('en-IN') : '');
+      $('#feeFootTotal').textContent = '₹' + tTotal.toLocaleString('en-IN');
+      $('#feeFootPaid').textContent = '₹' + tPaid.toLocaleString('en-IN');
+      $('#feeFootBalance').textContent = '₹' + tBal.toLocaleString('en-IN');
+      $('#feeFootProgress').innerHTML = '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ' + opcls + '" style="width:' + opct + '%"></div></div><span class="progress-text">' + opct + '%</span></div>';
+      const onlineStr = onlinePaid > 0 ? '🟢 Online: ₹' + onlinePaid.toLocaleString('en-IN') : '';
+      const offlineStr = offlinePaid > 0 ? '🔴 Offline: ₹' + offlinePaid.toLocaleString('en-IN') : '';
+      $('#feeFootOnline').innerHTML = [onlineStr, offlineStr].filter(Boolean).join('<br>');
     }
     function filterFees() { updateFeesTable(); }
-
-    function openPaymentModal(id) {
-      const s = students.find(x => x.id === id); if (!s) return;
-      currentPaymentId = id;
-      const total = parseFloat(s.totalFee) || 0; const paid = parseFloat(s.paidFee) || 0; const balance = total - paid;
-      $('#paymentStudentName').value = s.name; $('#paymentTotalFee').value = '₹' + total.toLocaleString('en-IN');
-      $('#paymentAlreadyPaid').value = '₹' + paid.toLocaleString('en-IN');
-      $('#paymentRemaining').value = '₹' + balance.toLocaleString('en-IN');
-      $('#paymentAmount').value = ''; $('#paymentAmount').max = balance; $('#paymentAmount').placeholder = 'Max ₹' + balance.toLocaleString('en-IN');
-      $('#paymentBreakdown').innerHTML = `
-        <div class="fee-breakdown__item"><span>Total Fee</span><span>₹${total.toLocaleString('en-IN')}</span></div>
-        <div class="fee-breakdown__item"><span>Paid So Far</span><span>₹${paid.toLocaleString('en-IN')}</span></div>
-        <div class="fee-breakdown__item"><span>Remaining</span><span>₹${balance.toLocaleString('en-IN')}</span></div>
-      `;
-      $('#paymentModal').classList.add('is-active');
-    }
-    function closePaymentModal() { $('#paymentModal').classList.remove('is-active'); currentPaymentId = null; }
-    function recordPayment() {
-      if (!currentPaymentId) return;
-      const amount = parseFloat($('#paymentAmount').value) || 0;
-      if (amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
-      const s = students.find(x => x.id === currentPaymentId);
-      const balance = (parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0);
-      if (amount > balance) { showToast('Amount exceeds balance', 'error'); return; }
-      s.paidFee = (parseFloat(s.paidFee) || 0) + amount;
-      if (s.paidFee >= s.totalFee && s.totalFee > 0) s.status = 'Paid';
-      else if (s.paidFee > 0) s.status = 'Partial';
-      saveData(); closePaymentModal(); updateFeesTable(); updateStudentsTable(); updateDashboard(); updateCourses();
-      showToast(`Payment of ₹${amount.toLocaleString('en-IN')} recorded`, 'success');
-    }
 
     // ==================== COURSES ====================
     function updateCourses() {
@@ -1807,63 +1944,16 @@
       tbody.innerHTML = Object.entries(courseData).map(([course, data]) => {
         const rate = data.totalRevenue > 0 ? Math.round((data.collected / data.totalRevenue) * 100) : 0;
         let pcls = rate >= 80 ? 'progress-fill--green' : rate >= 50 ? 'progress-fill--orange' : 'progress-fill--red';
-        return `
-          <tr>
-            <td><div class="owner-table__name">${course}</div></td>
-            <td><strong>${data.students}</strong></td>
-            <td>₹${data.totalRevenue.toLocaleString('en-IN')}</td>
-            <td style="color:var(--good); font-weight:600;">₹${data.collected.toLocaleString('en-IN')}</td>
-            <td style="color:var(--bad); font-weight:600;">₹${data.pending.toLocaleString('en-IN')}</td>
-            <td>
-              <div class="progress-wrap">
-                <div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${rate}%"></div></div>
-                <span class="progress-text">${rate}%</span>
-              </div>
-            </td>
-          </tr>
-        `;
+        return `<tr><td><div class="owner-table__name">${course}</div></td><td><strong>${data.students}</strong></td><td>₹${data.totalRevenue.toLocaleString('en-IN')}</td><td style="color:var(--good);font-weight:600;">₹${data.collected.toLocaleString('en-IN')}</td><td style="color:var(--bad);font-weight:600;">₹${data.pending.toLocaleString('en-IN')}</td><td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${rate}%"></div></div><span class="progress-text">${rate}%</span></div></td></tr>`;
       }).join('');
-      $('#courseCards').innerHTML = Object.entries(courseData).map(([course, data]) => `
-        <div class="course-mini-card">
-          <div class="course-mini-card__head">
-            <div class="course-mini-card__name">${course}</div>
-            <div>
-              <div class="course-mini-card__students">${data.students}</div>
-              <div class="course-mini-card__students-label">students</div>
-            </div>
-          </div>
-          <div class="course-mini-card__stats">
-            <div>
-              <div class="course-mini-card__stat-label">Collected</div>
-              <div class="course-mini-card__stat-value course-mini-card__stat-value--green">₹${data.collected.toLocaleString('en-IN')}</div>
-            </div>
-            <div>
-              <div class="course-mini-card__stat-label">Pending</div>
-              <div class="course-mini-card__stat-value course-mini-card__stat-value--red">₹${data.pending.toLocaleString('en-IN')}</div>
-            </div>
-            <div>
-              <div class="course-mini-card__stat-label">Total</div>
-              <div class="course-mini-card__stat-value">₹${data.totalRevenue.toLocaleString('en-IN')}</div>
-            </div>
-            <div>
-              <div class="course-mini-card__stat-label">Rate</div>
-              <div class="course-mini-card__stat-value">${data.students > 0 ? Math.round((data.collected / data.totalRevenue) * 100) : 0}%</div>
-            </div>
-          </div>
-        </div>
-      `).join('');
+      $('#courseCards').innerHTML = Object.entries(courseData).map(([course, data]) => `<div class="course-mini-card"><div class="course-mini-card__head"><div class="course-mini-card__name">${course}</div><div><div class="course-mini-card__students">${data.students}</div><div class="course-mini-card__students-label">students</div></div></div><div class="course-mini-card__stats"><div><div class="course-mini-card__stat-label">Collected</div><div class="course-mini-card__stat-value course-mini-card__stat-value--green">₹${data.collected.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Pending</div><div class="course-mini-card__stat-value course-mini-card__stat-value--red">₹${data.pending.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Total</div><div class="course-mini-card__stat-value">₹${data.totalRevenue.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Rate</div><div class="course-mini-card__stat-value">${data.students > 0 ? Math.round((data.collected / data.totalRevenue) * 100) : 0}%</div></div></div></div>`).join('');
     }
 
     // ==================== EXPENSES ====================
     function renderExpenses() {
       const totalAmount = expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
       const now = new Date();
-      const thisMonth = now.getMonth();
-      const thisYear = now.getFullYear();
-      const monthExpenses = expenses.filter(e => {
-        const d = new Date(e.date);
-        return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
-      });
+      const monthExpenses = expenses.filter(e => { const d = new Date(e.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
       const monthTotal = monthExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
       $('#expTotalAmount').textContent = '₹' + totalAmount.toLocaleString('en-IN');
       $('#expMonthAmount').textContent = '₹' + monthTotal.toLocaleString('en-IN');
@@ -1871,104 +1961,102 @@
       $('#expAvgAmount').textContent = expenses.length > 0 ? '₹' + Math.round(totalAmount / expenses.length).toLocaleString('en-IN') : '₹0';
 
       const search = ($('#expSearch').value || '').toLowerCase();
+      const modeFilter = $('#expModeFilter').value;
       const dateFrom = $('#expDateFrom').value;
       const dateTo = $('#expDateTo').value;
       let filtered = expenses.filter(e => {
         const matchSearch = e.name.toLowerCase().includes(search);
+        const matchMode = !modeFilter || e.mode === modeFilter;
         const matchDate = (!dateFrom || e.date >= dateFrom) && (!dateTo || e.date <= dateTo);
-        return matchSearch && matchDate;
+        return matchSearch && matchMode && matchDate;
       });
+
       const tbody = $('#expensesTable');
-      tbody.innerHTML = filtered.map((e, i) => `
-        <tr>
-          <td>${i + 1}</td>
-          <td><div class="owner-table__name">${e.name}</div></td>
-          <td style="color:var(--bad); font-weight:600;">₹${(parseFloat(e.amount) || 0).toLocaleString('en-IN')}</td>
-          <td>${formatDate(e.date)}</td>
-          <td>
-            <div class="action-btns">
-              <button class="action-btn action-btn--danger" onclick="deleteExpense(${e.id})" title="Delete">✕</button>
-            </div>
-          </td>
-        </tr>
-      `).join('') || emptyRow(5, 'No expenses found', 'Add an expense or adjust filters');
+      tbody.innerHTML = filtered.map((e, i) => {
+        const modeLabel = e.mode === 'online' ? '<span style="color:var(--good);font-weight:600;">Online</span>' : '<span style="color:var(--ink-soft);font-weight:600;">Cash</span>';
+        return `<tr><td>${i + 1}</td><td><div class="owner-table__name">${e.name}</div></td><td style="color:var(--bad);font-weight:600;">₹${(parseFloat(e.amount) || 0).toLocaleString('en-IN')}</td><td>${modeLabel}</td><td>${formatDate(e.date)}</td><td><div class="action-btns"><button class="action-btn action-btn--danger" onclick="deleteExpense(${e.id})" title="Delete">✕</button></div></td></tr>`;
+      }).join('') || emptyRow(6, 'No expenses found', 'Add an expense or adjust filters');
+
+      const fTotal = filtered.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      const cashTotal = filtered.filter(e => e.mode === 'cash').reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      const onlineTotal = filtered.filter(e => e.mode === 'online').reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      $('#expFootTotal').textContent = '₹' + fTotal.toLocaleString('en-IN');
+      const modeParts = [];
+      if (cashTotal > 0) modeParts.push('💵 Cash: ₹' + cashTotal.toLocaleString('en-IN'));
+      if (onlineTotal > 0) modeParts.push('🟢 Online: ₹' + onlineTotal.toLocaleString('en-IN'));
+      $('#expFootMode').innerHTML = modeParts.join('<br>');
     }
 
     function addExpense() {
       const name = $('#expName').value.trim();
       const amount = parseFloat($('#expAmount').value) || 0;
+      const mode = $('#expMode').value;
       const date = $('#expDate').value;
       if (!name || amount <= 0 || !date) { showToast('Please fill name, amount, and date', 'error'); return; }
-      expenses.push({ id: Date.now(), name, amount, date });
+      expenses.push({ id: Date.now(), name, amount, date, mode });
       saveExpenses(); clearExpenseForm(); renderExpenses();
       showToast('Expense added!', 'success');
     }
-
     function clearExpenseForm() {
-      $('#expName').value = ''; $('#expAmount').value = ''; $('#expDate').value = new Date().toISOString().split('T')[0];
+      $('#expName').value = ''; $('#expAmount').value = ''; $('#expDate').value = new Date().toISOString().split('T')[0]; $('#expMode').value = 'cash';
     }
-
-    function deleteExpense(id) {
-      if (!confirm('Delete this expense?')) return;
-      expenses = expenses.filter(e => e.id !== id);
-      saveExpenses(); renderExpenses();
-      showToast('Expense deleted', 'success');
-    }
-
+    function deleteExpense(id) { if (!confirm('Delete this expense?')) return; expenses = expenses.filter(e => e.id !== id); saveExpenses(); renderExpenses(); showToast('Expense deleted', 'success'); }
     function exportExpensesCSV() {
       if (expenses.length === 0) { showToast('No expenses to export', 'error'); return; }
-      const headers = ['#', 'Expense Name', 'Amount', 'Date'];
-      const data = expenses.map((e, i) => ({ '#': i + 1, 'Expense Name': e.name, Amount: e.amount, Date: e.date }));
+      const headers = ['#', 'Expense Name', 'Amount', 'Mode', 'Date'];
+      const data = expenses.map((e, i) => ({ '#': i + 1, 'Expense Name': e.name, Amount: e.amount, Mode: e.mode, Date: e.date }));
       const csv = [headers.join(','), ...data.map(row => headers.map(h => `"${row[h]}"`).join(','))].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'expenses.csv'; link.click();
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'expenses.csv'; link.click();
       showToast('Exported expenses.csv', 'success');
     }
 
     // ==================== ANALYTICS ====================
     function updateAnalytics() {
-      const monthlyData = {};
-      const now = new Date();
+      const feesCollected = students.reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const totalExp = expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      const pendingFees = students.reduce((sum, s) => sum + ((parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0)), 0);
+      const netBal = feesCollected - totalExp;
+      $('#analyticsFeesCollected').textContent = '₹' + feesCollected.toLocaleString('en-IN');
+      $('#analyticsTotalExpenses').textContent = '₹' + totalExp.toLocaleString('en-IN');
+      $('#analyticsNetBalance').textContent = '₹' + netBal.toLocaleString('en-IN');
+      $('#analyticsPendingFees').textContent = '₹' + pendingFees.toLocaleString('en-IN');
+
+      const onlineFees = students.filter(s => s.paymentMode === 'online').reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const offlineFees = students.filter(s => s.paymentMode === 'offline').reduce((sum, s) => sum + (parseFloat(s.paidFee) || 0), 0);
+      const cashExp = expenses.filter(e => e.mode === 'cash').reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      const onlineExp = expenses.filter(e => e.mode === 'online').reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      $('#analyticsOnlineFees').textContent = '₹' + onlineFees.toLocaleString('en-IN');
+      $('#analyticsOfflineFees').textContent = '₹' + offlineFees.toLocaleString('en-IN');
+      $('#analyticsCashExp').textContent = '₹' + cashExp.toLocaleString('en-IN');
+      $('#analyticsOnlineExp').textContent = '₹' + onlineExp.toLocaleString('en-IN');
+
+      // Charts
+      const monthlyData = {}; const now = new Date();
       for (let i = 5; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); monthlyData[d.toLocaleString('en-US', { month: 'short' })] = 0; }
       students.forEach(s => { const d = new Date(s.joinDate); const key = d.toLocaleString('en-US', { month: 'short' }); if (monthlyData.hasOwnProperty(key)) monthlyData[key]++; });
       if (charts.enrollmentTrend) charts.enrollmentTrend.destroy();
-      charts.enrollmentTrend = new Chart($('#enrollmentTrendChart'), {
-        type: 'line',
-        data: { labels: Object.keys(monthlyData), datasets: [{ label: 'New Students', data: Object.values(monthlyData), borderColor: '#b85c38', backgroundColor: 'rgba(184,92,56,0.08)', fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#b85c38', pointBorderColor: '#f7f4ed', pointBorderWidth: 2 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#e8e3d6' }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#9CA3AF' } }, x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#6B7280' } } } }
-      });
+      charts.enrollmentTrend = new Chart($('#enrollmentTrendChart'), { type:'line', data:{ labels:Object.keys(monthlyData), datasets:[{ label:'New Students', data:Object.values(monthlyData), borderColor:'#b85c38', backgroundColor:'rgba(184,92,56,0.08)', fill:true, tension:0.4, pointRadius:5, pointBackgroundColor:'#b85c38', pointBorderColor:'#f7f4ed', pointBorderWidth:2 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#e8e3d6' }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#9CA3AF' } }, x:{ grid:{ display:false }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#6B7280' } } } } });
       const monthlyCollection = {};
       for (let i = 5; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); monthlyCollection[d.toLocaleString('en-US', { month: 'short' })] = 0; }
       students.forEach(s => { const d = new Date(s.joinDate); const key = d.toLocaleString('en-US', { month: 'short' }); if (monthlyCollection.hasOwnProperty(key)) monthlyCollection[key] += parseFloat(s.paidFee) || 0; });
       if (charts.collectionTrend) charts.collectionTrend.destroy();
-      charts.collectionTrend = new Chart($('#collectionTrendChart'), {
-        type: 'bar',
-        data: { labels: Object.keys(monthlyCollection), datasets: [{ label: 'Fees Collected (₹)', data: Object.values(monthlyCollection), backgroundColor: '#4a7c59', borderRadius: 5, barThickness: 24 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#e8e3d6' }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#9CA3AF', callback: v => '₹' + (v / 1000) + 'k' } }, x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#6B7280' } } } }
-      });
+      charts.collectionTrend = new Chart($('#collectionTrendChart'), { type:'bar', data:{ labels:Object.keys(monthlyCollection), datasets:[{ label:'Fees Collected (₹)', data:Object.values(monthlyCollection), backgroundColor:'#4a7c59', borderRadius:5, barThickness:24 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#e8e3d6' }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#9CA3AF', callback:v => '₹' + (v / 1000) + 'k' } }, x:{ grid:{ display:false }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#6B7280' } } } } });
       const courseRevenue = {};
-      COURSES.forEach(c => { courseRevenue[c] = { collected: 0, pending: 0 }; });
+      COURSES.forEach(c => { courseRevenue[c] = { collected:0, pending:0 }; });
       students.forEach(s => { if (courseRevenue[s.course]) { courseRevenue[s.course].collected += parseFloat(s.paidFee) || 0; courseRevenue[s.course].pending += (parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0); } });
       if (charts.revenueCompare) charts.revenueCompare.destroy();
-      charts.revenueCompare = new Chart($('#revenueComparisonChart'), {
-        type: 'bar',
-        data: { labels: Object.keys(courseRevenue), datasets: [
-          { label: 'Collected', data: Object.values(courseRevenue).map(d => d.collected), backgroundColor: '#4a7c59', borderRadius: 5, barThickness: 18 },
-          { label: 'Pending', data: Object.values(courseRevenue).map(d => d.pending), backgroundColor: '#a03030', borderRadius: 5, barThickness: 18 }
-        ] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end', labels: { usePointStyle: true, padding: 16, font: { family: 'JetBrains Mono', size: 11 } } } }, scales: { y: { beginAtZero: true, grid: { color: '#e8e3d6' }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#9CA3AF', callback: v => '₹' + (v / 1000) + 'k' } }, x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#6B7280', maxRotation: 30 } } } }
-      });
+      charts.revenueCompare = new Chart($('#revenueComparisonChart'), { type:'bar', data:{ labels:Object.keys(courseRevenue), datasets:[ { label:'Collected', data:Object.values(courseRevenue).map(d => d.collected), backgroundColor:'#4a7c59', borderRadius:5, barThickness:18 }, { label:'Pending', data:Object.values(courseRevenue).map(d => d.pending), backgroundColor:'#a03030', borderRadius:5, barThickness:18 } ] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', align:'end', labels:{ usePointStyle:true, padding:16, font:{ family:'JetBrains Mono', size:11 } } } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#e8e3d6' }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#9CA3AF', callback:v => '₹' + (v / 1000) + 'k' } }, x:{ grid:{ display:false }, ticks:{ font:{ family:'JetBrains Mono', size:10 }, color:'#6B7280', maxRotation:30 } } } } });
     }
 
-    // ==================== EXPORT CSV ====================
+    // ==================== EXPORTS ====================
     function exportToCSV(type) {
       let data = [], headers = [], filename = '';
       if (type === 'students') {
-        filename = 'students.csv'; headers = ['ID','Reg No','Name','Phone','Course','Batch','Join Date','Expected End','Total Fee','Paid Fee','Balance','Status'];
-        data = students.map(s => ({ ID:s.id, 'Reg No':s.regNo || '-', Name:s.name, Phone:s.phone, Course:s.course, Batch:s.batch ? s.batch.replace(/ \(\d+ days\)/, '') : '-', 'Join Date':s.joinDate, 'Expected End':s.expectedEndDate || '-', 'Total Fee':s.totalFee, 'Paid Fee':s.paidFee, Balance:(parseFloat(s.totalFee)||0)-(parseFloat(s.paidFee)||0), Status:s.status }));
+        filename = 'students.csv'; headers = ['ID','Reg No','Name','Phone','Phone 2','Address','Reference','Type','Course','Batch','Join Date','Expected End','Total Fee','Paid Fee','Balance','Status','Certificate','Course Status'];
+        data = students.map(s => ({ ID:s.id, 'Reg No':s.regNo||'-', Name:s.name, Phone:s.phone, 'Phone 2':s.phone2||'', Address:s.address||'', Reference:s.reference||'', Type:s.paymentMode, Course:s.course, Batch:s.batch?s.batch.replace(/ \(\d+ days\)/,''):'-', 'Join Date':s.joinDate, 'Expected End':s.expectedEndDate||'-', 'Total Fee':s.totalFee, 'Paid Fee':s.paidFee, Balance:(parseFloat(s.totalFee)||0)-(parseFloat(s.paidFee)||0), Status:s.status, Certificate:s.certificateIssued||'no', 'Course Status':s.courseStatus||'ongoing' }));
       } else if (type === 'fees') {
-        filename = 'fee_payments.csv'; headers = ['Name','Course','Batch','Total Fee','Paid Fee','Balance','Status'];
-        data = students.map(s => ({ Name:s.name, Course:s.course, Batch:s.batch ? s.batch.replace(/ \(\d+ days\)/, '') : '-', 'Total Fee':s.totalFee, 'Paid Fee':s.paidFee, Balance:(parseFloat(s.totalFee)||0)-(parseFloat(s.paidFee)||0), Status:s.status }));
+        filename = 'fee_payments.csv'; headers = ['Name','Course','Batch','Type','Total Fee','Paid Fee','Balance','Status'];
+        data = students.map(s => ({ Name:s.name, Course:s.course, Batch:s.batch?s.batch.replace(/ \(\d+ days\)/, ''):'-', Type:s.paymentMode, 'Total Fee':s.totalFee, 'Paid Fee':s.paidFee, Balance:(parseFloat(s.totalFee)||0)-(parseFloat(s.paidFee)||0), Status:s.status }));
       } else if (type === 'courses') {
         filename = 'course_reports.csv'; headers = ['Course','Students','Total Revenue','Collected','Pending','Collection Rate %'];
         const cd = {}; COURSES.forEach(c => { cd[c] = { students:0, total:0, collected:0, pending:0 }; });
@@ -1977,32 +2065,20 @@
       }
       if (data.length === 0) { showToast('No data to export', 'error'); return; }
       const csv = [headers.join(','), ...data.map(row => headers.map(h => `"${row[h]}"`).join(','))].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; link.click();
-      showToast(`Exported ${filename}`, 'success');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; link.click();
+      showToast('Exported ' + filename, 'success');
     }
 
     // ==================== UTILITIES ====================
-    function getBadge(status) {
-      const classes = { 'Paid':'badge--paid', 'Partial':'badge--partial', 'Pending':'badge--pending' };
-      return `<span class="badge ${classes[status] || 'badge--pending'}">${status}</span>`;
-    }
-    function formatDate(dateStr) { if (!dateStr) return '-'; const d = new Date(dateStr); return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
-    function showToast(message, type = 'success') {
-      const container = $('#toastContainer');
-      const toast = document.createElement('div');
-      toast.className = `toast toast--${type}`;
-      toast.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span> ${message}`;
-      container.appendChild(toast); setTimeout(() => toast.remove(), 3000);
-    }
-    function emptyRow(cols, title, desc) {
-      return `<tr><td colspan="${cols}"><div class="empty-state"><div class="empty-state__icon">—</div><div class="empty-state__title">${title}</div><div class="empty-state__desc">${desc}</div></div></td></tr>`;
-    }
+    function getBadge(status) { const classes = { 'Paid':'badge--paid', 'Partial':'badge--partial', 'Pending':'badge--pending' }; return '<span class="badge ' + (classes[status]||'badge--pending') + '">' + status + '</span>'; }
+    function formatDate(dateStr) { if (!dateStr) return '-'; const d = new Date(dateStr); return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }); }
+    function showToast(message, type) { const container = $('#toastContainer'); const toast = document.createElement('div'); toast.className = 'toast toast--' + (type||'success'); toast.innerHTML = '<span>' + ((type||'success') === 'success' ? '✓' : '✕') + '</span> ' + message; container.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+    function emptyRow(cols, title, desc) { return '<tr><td colspan="' + cols + '"><div class="empty-state"><div class="empty-state__icon">—</div><div class="empty-state__title">' + title + '</div><div class="empty-state__desc">' + desc + '</div></div></td></tr>'; }
 
     // Modal overlay click
     $$('.modal-overlay').forEach(el => { el.addEventListener('click', e => { if (e.target === el) el.classList.remove('is-active'); }); });
 
-    // Auto-calculate expected end date on form changes
+    // Auto-calculate expected end date
     $('#studentJoinDate')?.addEventListener('change', updateExpectedEndDate);
     $('#studentBatch')?.addEventListener('change', updateExpectedEndDate);
 
