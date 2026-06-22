@@ -23,10 +23,10 @@ function initFirebase() {
       admin.initializeApp({ credential: admin.credential.cert(sa) });
       console.log('✓ Firebase: loaded key file at', foundKeyPath);
     }
-    // Strategy 2: Service account JSON as env var (for Vercel)
+    // Strategy 2: Service account JSON as env var (for Vercel - DEPRECATED, use Strategy 3)
     else if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
       try {
-        const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON.replace(/\n/g, '\\n'));
+        const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
         admin.initializeApp({ credential: admin.credential.cert(sa) });
         console.log('✓ Firebase: initialized via FIREBASE_SERVICE_ACCOUNT_JSON');
       } catch (e) {
@@ -38,7 +38,7 @@ function initFirebase() {
     else if (process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
       admin.initializeApp({
         credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
+          projectId: 'techyuya',
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
           privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
         }),
@@ -54,8 +54,6 @@ function initFirebase() {
       admin.initializeApp({ projectId: process.env.FIREBASE_PROJECT_ID || 'techyuya' });
       console.log('⚠ Firebase: no credentials found, using fallback (will fail at runtime)');
     }
-
-    db = admin.firestore();
 
     db = admin.firestore();
     return true;
