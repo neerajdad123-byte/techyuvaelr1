@@ -1227,6 +1227,45 @@
         </div>
       </div>
 
+      <!-- Manage Batches -->
+      <div class="owner-section reveal">
+        <div class="owner-section__header">
+          <div class="owner-section__title">
+            <div class="owner-section__icon owner-section__icon--orange">📅</div>
+            <div>
+              <h2>Manage Batches</h2>
+              <span>Add, edit or remove batch slots</span>
+            </div>
+          </div>
+        </div>
+        <div class="owner-section__body">
+          <div class="form-grid" style="grid-template-columns:1fr 1fr auto;">
+            <div class="field">
+              <span>Batch Name</span>
+              <input type="text" id="batchName" placeholder="e.g. Batch 5" />
+            </div>
+            <div class="field">
+              <span>Duration (days)</span>
+              <input type="number" id="batchDuration" placeholder="45" />
+            </div>
+            <div class="field" style="align-self:end;">
+              <input type="hidden" id="editBatchId" value="" />
+              <button class="btn btn--primary" onclick="saveBatch()" data-magnetic style="white-space:nowrap;">
+                <span>$ save batch</span>
+              </button>
+            </div>
+          </div>
+          <div style="margin-top:1rem;">
+            <table class="owner-table">
+              <thead>
+                <tr><th>Batch</th><th>Duration</th><th>Label</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="batchesTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- Course Reports -->
       <div class="owner-section reveal">
         <div class="owner-section__header">
@@ -1637,11 +1676,12 @@
     let students = [];
     let expenses = [];
     let courses = [];
+    let batches = [];
     let currentPaymentId = null;
     let charts = {};
-    const BATCHES = [
-      'Batch 1 (45 days)', 'Batch 2 (45 days)', 'Batch 3 (45 days)', 'Batch 4 (45 days)'
-    ];
+
+    function batchLabel(b) { return `${b.name} (${b.duration} days)`; }
+    function getBatches() { return batches.length ? batches : [{id:'batch-1',name:'Batch 1',duration:45},{id:'batch-2',name:'Batch 2',duration:45},{id:'batch-3',name:'Batch 3',duration:45},{id:'batch-4',name:'Batch 4',duration:45}]; }
 
     async function api(path, options = {}) {
       const config = { headers: { 'Content-Type': 'application/json' }, ...options };
@@ -1716,7 +1756,7 @@
         $(`#panel-${panelId}`).classList.add('is-active');
         if (panelId === 'students') { updateStudentsTable(); updateCourseFilters(); }
         if (panelId === 'fees') { populateMonthFilter(); updateFeesTable(); }
-        if (panelId === 'courses') updateCourses();
+        if (panelId === 'courses') { updateCourses(); renderBatchesTable(); }
         if (panelId === 'expenses') renderExpenses();
         if (panelId === 'analytics') updateAnalytics();
       });
@@ -1759,7 +1799,7 @@
     // ==================== BATCH HELPERS ====================
     function updateBatchesForCourse() {
       const batchSelect = $('#studentBatch');
-      batchSelect.innerHTML = '<option value="">Select Batch</option>' + BATCHES.map(b => `<option value="${b}">${b}</option>`).join('');
+      batchSelect.innerHTML = '<option value="">Select Batch</option>' + getBatches().map(b => `<option value="${batchLabel(b)}">${batchLabel(b)}</option>`).join('');
       updateExpectedEndDate();
     }
     function updateExpectedEndDate() {
@@ -1825,7 +1865,7 @@
     function updateCourseFilters() {
       const list = getCourseList();
       const s1 = $('#studentCourseFilter'); const v1 = s1.value; s1.innerHTML = '<option value="">All Courses</option>' + list.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); s1.value = v1;
-      const s2 = $('#studentBatchFilter'); const v2 = s2.value; s2.innerHTML = '<option value="">All Batches</option>' + BATCHES.map(b => `<option value="${b}">${b.replace(/ \(\d+ days\)/, '')}</option>`).join(''); s2.value = v2;
+      const s2 = $('#studentBatchFilter'); const v2 = s2.value; s2.innerHTML = '<option value="">All Batches</option>' + getBatches().map(b => `<option value="${batchLabel(b)}">${b.name}</option>`).join(''); s2.value = v2;
     }
     function populateCourseSelects() {
       const list = getCourseList();
@@ -2032,6 +2072,64 @@
       $('#feeFootOnline').innerHTML = [onlineStr, offlineStr].filter(Boolean).join('<br>');
     }
     function filterFees() { updateFeesTable(); }
+
+    // ==================== BATCHES ====================
+    function renderBatchesTable() {
+      const list = getBatches();
+      $('#batchesTable').innerHTML = list.map(b => `<tr>
+        <td><span class="owner-table__name">${b.name}</span></td>
+        <td>${b.duration} days</td>
+        <td><span class="badge badge--partial">${batchLabel(b)}</span></td>
+        <td><div class="action-btns">
+          <button class="action-btn" onclick="editBatch('${b.id}')" title="Edit">✏</button>
+          <button class="action-btn action-btn--danger" onclick="deleteBatch('${b.id}')" title="Delete">✕</button>
+        </div></td>
+      </tr>`).join('') || '<tr><td colspan="4"><div class="empty-state"><div class="empty-state__title">No batches</div><div class="empty-state__desc">Add a batch above</div></div></td></tr>';
+    }
+
+    function editBatch(id) {
+      const b = getBatches().find(x => x.id === id);
+      if (!b) return;
+      $('#editBatchId').value = b.id;
+      $('#batchName').value = b.name;
+      $('#batchDuration').value = b.duration;
+    }
+
+    async function saveBatch() {
+      const name = $('#batchName').value.trim();
+      const duration = parseInt($('#batchDuration').value);
+      const editId = $('#editBatchId').value;
+      if (!name || !duration) { showToast('Enter name and duration', 'error'); return; }
+      try {
+        if (editId) {
+          await api(`/batches/${editId}`, { method: 'PUT', body: JSON.stringify({ name, duration }) });
+          const b = batches.find(x => x.id === editId);
+          if (b) { b.name = name; b.duration = duration; }
+        } else {
+          const saved = await api('/batches', { method: 'POST', body: JSON.stringify({ name, duration }) });
+          batches.push(saved);
+        }
+        $('#editBatchId').value = '';
+        $('#batchName').value = '';
+        $('#batchDuration').value = '';
+        renderBatchesTable();
+        updateBatchesForCourse();
+        updateCourseFilters();
+        showToast(editId ? 'Batch updated!' : 'Batch added!', 'success');
+      } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+    }
+
+    async function deleteBatch(id) {
+      if (!confirm('Delete this batch?')) return;
+      try {
+        await api(`/batches/${id}`, { method: 'DELETE' });
+        batches = batches.filter(b => b.id !== id);
+        renderBatchesTable();
+        updateBatchesForCourse();
+        updateCourseFilters();
+        showToast('Batch deleted', 'success');
+      } catch (err) { showToast('Delete failed: ' + err.message, 'error'); }
+    }
 
     // ==================== COURSES ====================
     function updateCourses() {
@@ -2297,17 +2395,20 @@
     // Init — load from Firestore first
     (async function init() {
       try {
-        const [s, e, c] = await Promise.all([
+        const [s, e, c, b] = await Promise.all([
           api('/students'),
           api('/expenses'),
           api('/courses'),
+          api('/batches'),
         ]);
         students = s;
         expenses = e;
         courses = c;
+        batches = b;
       } catch (err) {
         console.warn('Firestore unavailable:', err.message);
       }
+      renderBatchesTable();
       updateDashboard();
       updateStudentsTable();
       updateCourseFilters();

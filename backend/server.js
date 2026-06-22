@@ -227,6 +227,62 @@ app.delete('/api/expenses/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ─── BATCHES (stored as a single settings document) ───
+const DEFAULT_BATCHES = [
+  { id: 'batch-1', name: 'Batch 1', duration: 45 },
+  { id: 'batch-2', name: 'Batch 2', duration: 45 },
+  { id: 'batch-3', name: 'Batch 3', duration: 45 },
+  { id: 'batch-4', name: 'Batch 4', duration: 45 },
+];
+
+async function getBatches() {
+  try {
+    const doc = await getDB().collection('settings').doc('batches').get();
+    if (doc.exists) return doc.data().list || DEFAULT_BATCHES;
+  } catch (_) {}
+  return DEFAULT_BATCHES;
+}
+
+app.get('/api/batches', async (req, res) => {
+  try {
+    res.json(await getBatches());
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/batches', async (req, res) => {
+  try {
+    const { name, duration } = req.body;
+    if (!name || !duration) return res.status(400).json({ error: 'Name and duration required' });
+    const list = await getBatches();
+    const id = 'batch-' + Date.now();
+    list.push({ id, name, duration: parseInt(duration) });
+    await getDB().collection('settings').doc('batches').set({ list });
+    res.json({ id, name, duration: parseInt(duration) });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/batches/:id', async (req, res) => {
+  try {
+    const { name, duration } = req.body;
+    const list = await getBatches();
+    const idx = list.findIndex(b => b.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Batch not found' });
+    if (name) list[idx].name = name;
+    if (duration) list[idx].duration = parseInt(duration);
+    await getDB().collection('settings').doc('batches').set({ list });
+    res.json(list[idx]);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/batches/:id', async (req, res) => {
+  try {
+    let list = await getBatches();
+    list = list.filter(b => b.id !== req.params.id);
+    await getDB().collection('settings').doc('batches').set({ list });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // ─── DASHBOARD ───
 app.get('/api/dashboard', async (req, res) => {
   try {
