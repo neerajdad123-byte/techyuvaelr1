@@ -736,38 +736,11 @@
       .owner-section__header { flex-direction: column; align-items: flex-start; }
     }
 
-    /* Loading Overlay */
-    .loading-overlay {
-      position: fixed; inset: 0; z-index: 9999;
-      background: var(--paper);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 1rem;
-      transition: opacity .4s, visibility .4s;
-    }
-    .loading-overlay.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .loading-spinner {
-      width: 32px; height: 32px;
-      border: 2px solid var(--line);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text {
-      font-family: var(--font-mono);
-      font-size: .82rem;
-      color: var(--ink-soft);
-    }
   </style>
 </head>
 <body data-theme="paper">
 
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">Loading data...</div>
-  </div>
+  <!-- Content loads immediately, data fetches in background -->
 
   <!-- File Explorer Nav -->
   <header class="nav" id="nav">
@@ -2350,6 +2323,7 @@
     $('#expDate').value = new Date().toISOString().split('T')[0];
 
     // Init — load from Firestore first
+    // Init — load data in background, render immediately
     (async function init() {
       try {
         const [s, e, c, b] = await Promise.all([
@@ -2358,21 +2332,13 @@
           api('/courses'),
           api('/batches'),
         ]);
-        students = s;
-        expenses = e;
-        courses = c;
-        batches = b;
-      } catch (err) {
-        console.warn('Firestore unavailable:', err.message);
-      }
+        students = s; expenses = e; courses = c; batches = b;
+      } catch (err) { console.warn('API unavailable:', err.message); }
       renderBatchesTable();
       updateDashboard();
       updateStudentsTable();
       updateCourseFilters();
       populateCourseSelects();
-      // Hide loading overlay
-      const overlay = document.getElementById('loadingOverlay');
-      if (overlay) overlay.classList.add('is-hidden');
     })();
   </script>
 </body>
