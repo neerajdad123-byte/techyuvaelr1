@@ -163,14 +163,14 @@ app.get('/api/courses', async (req, res) => {
     const courses = snap.docs.map(formatDoc);
     if (courses.length === 0) {
       res.json([
-        { id:'default-1', name:'Web Development', duration:'12 weeks', fee:25000, badge:'Frontend · Backend' },
-        { id:'default-2', name:'Data Science', duration:'14 weeks', fee:35000, badge:'Python · ML · Stats' },
-        { id:'default-3', name:'Mobile App Development', duration:'10 weeks', fee:30000, badge:'Android · iOS' },
-        { id:'default-4', name:'UI/UX Design', duration:'8 weeks', fee:20000, badge:'Design · Research' },
-        { id:'default-5', name:'Cloud Computing', duration:'10 weeks', fee:28000, badge:'AWS · Azure · GCP' },
-        { id:'default-6', name:'Cybersecurity', duration:'12 weeks', fee:32000, badge:'Network · Security' },
-        { id:'default-7', name:'AI & Machine Learning', duration:'16 weeks', fee:40000, badge:'ML · Deep Learning' },
-        { id:'default-8', name:'Digital Marketing', duration:'8 weeks', fee:18000, badge:'SEO · Social Media' },
+        { id:'default-1', name:'Web Development', duration:'', endDate:'', fee:25000, badge:'Frontend · Backend' },
+        { id:'default-2', name:'Data Science', duration:'', endDate:'', fee:35000, badge:'Python · ML · Stats' },
+        { id:'default-3', name:'Mobile App Development', duration:'', endDate:'', fee:30000, badge:'Android · iOS' },
+        { id:'default-4', name:'UI/UX Design', duration:'', endDate:'', fee:20000, badge:'Design · Research' },
+        { id:'default-5', name:'Cloud Computing', duration:'', endDate:'', fee:28000, badge:'AWS · Azure · GCP' },
+        { id:'default-6', name:'Cybersecurity', duration:'', endDate:'', fee:32000, badge:'Network · Security' },
+        { id:'default-7', name:'AI & Machine Learning', duration:'', endDate:'', fee:40000, badge:'ML · Deep Learning' },
+        { id:'default-8', name:'Digital Marketing', duration:'', endDate:'', fee:18000, badge:'SEO · Social Media' },
       ]);
     } else res.json(courses);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -179,7 +179,7 @@ app.get('/api/courses', async (req, res) => {
 app.post('/api/courses', async (req, res) => {
   try {
     const d = req.body;
-    const ref = await getDB().collection('courses').add({ name: d.name, duration: d.duration || '', fee: parseFloat(d.fee) || 0, badge: d.badge || '', createdAt: new Date().toISOString() });
+    const ref = await getDB().collection('courses').add({ name: d.name, duration: d.duration || '', endDate: d.endDate || '', fee: parseFloat(d.fee) || 0, badge: d.badge || '', createdAt: new Date().toISOString() });
     const doc = await ref.get();
     res.json(formatDoc(doc));
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -188,11 +188,23 @@ app.post('/api/courses', async (req, res) => {
 app.put('/api/courses/:id', async (req, res) => {
   try {
     const d = req.body;
+    const docRef = getDB().collection('courses').doc(req.params.id);
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      // Default ID → create document instead
+      const ref = await getDB().collection('courses').add({
+        name: d.name, duration: d.duration || '', endDate: d.endDate || '',
+        fee: parseFloat(d.fee) || 0, badge: d.badge || '',
+        createdAt: new Date().toISOString(),
+      });
+      const newDoc = await ref.get();
+      return res.json(formatDoc(newDoc));
+    }
     const update = {};
-    ['name','duration','badge'].forEach(f => { if (d[f] !== undefined) update[f] = d[f]; });
+    ['name','duration','endDate','badge'].forEach(f => { if (d[f] !== undefined) update[f] = d[f]; });
     if (d.fee !== undefined) update.fee = parseFloat(d.fee);
-    await getDB().collection('courses').doc(req.params.id).update(update);
-    res.json(formatDoc(await getDB().collection('courses').doc(req.params.id).get()));
+    await docRef.update(update);
+    res.json(formatDoc(await docRef.get()));
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -264,9 +276,15 @@ app.post('/api/batches', async (req, res) => {
 app.put('/api/batches/:id', async (req, res) => {
   try {
     const { name, duration } = req.body;
-    const list = await getBatches();
+    let list = await getBatches();
     const idx = list.findIndex(b => b.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Batch not found' });
+    if (idx === -1) {
+      // Default ID or not found — add as new
+      const newBatch = { id: 'batch-' + Date.now(), name: name || 'Batch', duration: parseInt(duration) || 45 };
+      list.push(newBatch);
+      await getDB().collection('settings').doc('batches').set({ list });
+      return res.json(newBatch);
+    }
     if (name) list[idx].name = name;
     if (duration) list[idx].duration = parseInt(duration);
     await getDB().collection('settings').doc('batches').set({ list });

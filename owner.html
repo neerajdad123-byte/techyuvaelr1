@@ -969,14 +969,6 @@
               </select>
             </div>
             <div class="field">
-              <span>Course Status</span>
-              <select id="studentCourseStatus">
-                <option value="ongoing">Ongoing</option>
-                <option value="completed">Completed</option>
-                <option value="dropped">Dropped</option>
-              </select>
-            </div>
-            <div class="field">
               <span>Joining Date</span>
               <input type="date" id="studentJoinDate" />
             </div>
@@ -1058,7 +1050,6 @@
                 <th>Total Fee</th>
                 <th>Paid</th>
                 <th>Certificate</th>
-                <th>Course Status</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -1202,8 +1193,8 @@
               <input type="text" id="courseName" placeholder="e.g. Web Development" />
             </div>
             <div class="field">
-              <span>Duration</span>
-              <input type="text" id="courseDuration" placeholder="e.g. 12 weeks" />
+              <span>End Date</span>
+              <input type="date" id="courseEndDate" />
             </div>
             <div class="field">
               <span>Fee (₹)</span>
@@ -1611,14 +1602,6 @@
             </select>
           </div>
           <div class="field">
-            <span>Course Status</span>
-            <select id="editCourseStatus">
-              <option value="ongoing">Ongoing</option>
-              <option value="completed">Completed</option>
-              <option value="dropped">Dropped</option>
-            </select>
-          </div>
-          <div class="field">
             <span>Certificate Issued</span>
             <select id="editCertificate">
               <option value="no">No</option>
@@ -1852,14 +1835,13 @@
           <td>₹${(parseFloat(s.totalFee) || 0).toLocaleString('en-IN')}</td>
           <td>₹${(parseFloat(s.paidFee) || 0).toLocaleString('en-IN')}</td>
           <td>${certBadge}</td>
-          <td>${statusLabel}</td>
           <td>${getBadge(s.status)}</td>
           <td><div class="action-btns">
-            <button class="action-btn" onclick="editStudent(${s.id})" title="Edit">✏</button>
-            <button class="action-btn action-btn--success" onclick="openPaymentModal(${s.id})" title="Record Payment">₹</button>
-            <button class="action-btn action-btn--danger" onclick="deleteStudent(${s.id})" title="Delete">✕</button>
+            <button class="action-btn" onclick="editStudent('${s.id}')" title="Edit">✏</button>
+            <button class="action-btn action-btn--success" onclick="openPaymentModal('${s.id}')" title="Record Payment">₹</button>
+            <button class="action-btn action-btn--danger" onclick="deleteStudent('${s.id}')" title="Delete">✕</button>
           </div></td></tr>`;
-      }).join('') || emptyRow(12, 'No students found', 'Add a student or adjust filters');
+      }).join('') || emptyRow(11, 'No students found', 'Add a student or adjust filters');
     }
 
     function updateCourseFilters() {
@@ -1890,7 +1872,6 @@
       const paymentMode = $('#studentPaymentMode').value;
       const course = $('#studentCourse').value;
       const batch = $('#studentBatch').value;
-      const courseStatus = $('#studentCourseStatus').value;
       const joinDate = $('#studentJoinDate').value;
       const expectedEndDate = $('#studentExpectedEndDate').value;
       const totalFee = parseFloat($('#studentTotalFee').value) || 0;
@@ -1898,9 +1879,9 @@
       if (!name || !course || !batch || !joinDate) { showToast('Please fill name, course, batch, and join date', 'error'); return; }
       const status = paidFee >= totalFee && totalFee > 0 ? 'Paid' : paidFee > 0 ? 'Partial' : 'Pending';
       const payments = paidFee > 0 ? [{ id:Date.now()+1, amount:paidFee, date:joinDate, mode:paymentMode === 'internship' ? 'offline' : paymentMode }] : [];
-      const newStudent = { id:Date.now(), regNo, name, phone, phone2, address, reference, paymentMode, course, batch, courseStatus, certificateIssued:'no', joinDate, expectedEndDate, totalFee, paidFee, status, payments };
+      const newStudent = { regNo, name, phone, phone2, address, reference, paymentMode, course, batch, courseStatus:'ongoing', certificateIssued:'no', joinDate, expectedEndDate, totalFee, paidFee, status, payments };
       try {
-        const saved = await api('/students', { method: 'POST', body: JSON.stringify({ regNo, name, phone, phone2, address, reference, paymentMode, course, batch, courseStatus, certificateIssued:'no', joinDate, expectedEndDate, totalFee, paidFee, status, payments }) });
+        const saved = await api('/students', { method: 'POST', body: JSON.stringify({ regNo, name, phone, phone2, address, reference, paymentMode, course, batch, courseStatus:'ongoing', certificateIssued:'no', joinDate, expectedEndDate, totalFee, paidFee, status, payments }) });
         students.unshift(saved);
       } catch (err) { showToast('Failed: ' + err.message, 'error'); return; }
       clearStudentForm(); updateStudentsTable(); updateDashboard(); updateFeesTable(); updateCourses();
@@ -1916,7 +1897,7 @@
       $('#studentAddress').value = ''; $('#studentReference').value = '';
       $('#studentCourse').value = ''; $('#studentBatch').value = ''; $('#studentJoinDate').value = '';
       $('#studentExpectedEndDate').value = ''; $('#studentTotalFee').value = ''; $('#studentPaidFee').value = '0';
-      $('#studentPaymentMode').value = 'offline'; $('#studentCourseStatus').value = 'ongoing';
+      $('#studentPaymentMode').value = 'offline';
     }
 
     async function deleteStudent(id) {
@@ -1932,7 +1913,6 @@
       $('#editAddress').value = s.address || ''; $('#editReference').value = s.reference || '';
       $('#editCourse').value = s.course; $('#editBatch').value = s.batch || 'Batch 1 (45 days)';
       $('#editPaymentMode').value = s.paymentMode || 'offline';
-      $('#editCourseStatus').value = s.courseStatus || 'ongoing';
       $('#editCertificate').value = s.certificateIssued || 'no';
       $('#editTotalFee').value = s.totalFee; $('#editPaidFee').value = s.paidFee; $('#editStatus').value = s.status;
       $('#editModal').classList.add('is-active');
@@ -1946,7 +1926,7 @@
         phone: $('#editPhone').value.trim(), phone2: $('#editPhone2').value.trim(),
         address: $('#editAddress').value.trim(), reference: $('#editReference').value.trim(),
         course: $('#editCourse').value, batch: $('#editBatch').value,
-        paymentMode: $('#editPaymentMode').value, courseStatus: $('#editCourseStatus').value,
+        paymentMode: $('#editPaymentMode').value,
         certificateIssued: $('#editCertificate').value,
         totalFee: parseFloat($('#editTotalFee').value) || 0, paidFee: parseFloat($('#editPaidFee').value) || 0,
         status: $('#editStatus').value,
@@ -2047,7 +2027,7 @@
           <td style="color:var(--bad);font-weight:600;">₹${balance.toLocaleString('en-IN')}</td>
           <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${pct}%"></div></div><span class="progress-text">${pct}%</span></div></td>
           <td>${getBadge(s.status)}</td>
-          <td><div class="action-btns"><button class="action-btn action-btn--success" onclick="openPaymentModal(${s.id})" title="Record Payment">₹</button></div></td></tr>`;
+          <td><div class="action-btns"><button class="action-btn action-btn--success" onclick="openPaymentModal('${s.id}')" title="Record Payment">₹</button></div></td></tr>`;
       }).join('') || emptyRow(9, 'No fee records', 'Add students to see data');
 
       // Footer totals
@@ -2142,11 +2122,11 @@
         const data = courseData[c.name] || { students:0, totalRevenue:0, collected:0, pending:0 };
         const rate = data.totalRevenue > 0 ? Math.round((data.collected / data.totalRevenue) * 100) : 0;
         let pcls = rate >= 80 ? 'progress-fill--green' : rate >= 50 ? 'progress-fill--orange' : 'progress-fill--red';
-        return `<tr><td><a href="#" onclick="showCourseDetail('${c.name}');return false;" style="color:var(--accent);text-decoration:underline;font-weight:500;">${c.name}</a><div class="owner-table__meta">${c.duration || ''}</div></td><td><strong>${data.students}</strong></td><td>₹${data.totalRevenue.toLocaleString('en-IN')}</td><td style="color:var(--good);font-weight:600;">₹${data.collected.toLocaleString('en-IN')}</td><td style="color:var(--bad);font-weight:600;">₹${data.pending.toLocaleString('en-IN')}</td><td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${rate}%"></div></div><span class="progress-text">${rate}%</span></div></td><td><div class="action-btns"><button class="action-btn" onclick="editCourse('${c.name}')" title="Edit">✏</button><button class="action-btn action-btn--danger" onclick="deleteCourse('${c.name}')" title="Delete">✕</button></div></td></tr>`;
+        return `<tr><td><a href="#" onclick="showCourseDetail('${c.name}');return false;" style="color:var(--accent);text-decoration:underline;font-weight:500;">${c.name}</a><div class="owner-table__meta">${c.endDate ? 'Ends ' + formatDate(c.endDate) : ''}</div></td><td><strong>${data.students}</strong></td><td>₹${data.totalRevenue.toLocaleString('en-IN')}</td><td style="color:var(--good);font-weight:600;">₹${data.collected.toLocaleString('en-IN')}</td><td style="color:var(--bad);font-weight:600;">₹${data.pending.toLocaleString('en-IN')}</td><td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${pcls}" style="width:${rate}%"></div></div><span class="progress-text">${rate}%</span></div></td><td><div class="action-btns"><button class="action-btn" onclick="editCourse('${c.name}')" title="Edit">✏</button><button class="action-btn action-btn--danger" onclick="deleteCourse('${c.name}')" title="Delete">✕</button></div></td></tr>`;
       }).join('') || emptyRow(7, 'No courses added', 'Add a course using the form above');
       $('#courseCards').innerHTML = courseList.map(c => {
         const data = courseData[c.name] || { students:0, totalRevenue:0, collected:0, pending:0 };
-        return `<div class="course-mini-card" onclick="showCourseDetail('${c.name}')" style="cursor:pointer;"><div class="course-mini-card__head"><div class="course-mini-card__name">${c.name}</div><div><div class="course-mini-card__students">${data.students}</div><div class="course-mini-card__students-label">students</div></div></div><div class="course-mini-card__stats"><div><div class="course-mini-card__stat-label">Fee</div><div class="course-mini-card__stat-value">₹${(parseFloat(c.fee)||0).toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Duration</div><div class="course-mini-card__stat-value">${c.duration || '-'}</div></div><div><div class="course-mini-card__stat-label">Collected</div><div class="course-mini-card__stat-value course-mini-card__stat-value--green">₹${data.collected.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Pending</div><div class="course-mini-card__stat-value course-mini-card__stat-value--red">₹${data.pending.toLocaleString('en-IN')}</div></div></div></div>`;
+        return `<div class="course-mini-card" onclick="showCourseDetail('${c.name}')" style="cursor:pointer;"><div class="course-mini-card__head"><div class="course-mini-card__name">${c.name}</div><div><div class="course-mini-card__students">${data.students}</div><div class="course-mini-card__students-label">students</div></div></div><div class="course-mini-card__stats"><div><div class="course-mini-card__stat-label">Fee</div><div class="course-mini-card__stat-value">₹${(parseFloat(c.fee)||0).toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">End Date</div><div class="course-mini-card__stat-value">${c.endDate ? formatDate(c.endDate) : '-'}</div></div><div><div class="course-mini-card__stat-label">Collected</div><div class="course-mini-card__stat-value course-mini-card__stat-value--green">₹${data.collected.toLocaleString('en-IN')}</div></div><div><div class="course-mini-card__stat-label">Pending</div><div class="course-mini-card__stat-value course-mini-card__stat-value--red">₹${data.pending.toLocaleString('en-IN')}</div></div></div></div>`;
       }).join('');
     }
 
@@ -2154,33 +2134,33 @@
     function getCourseList() {
       if (courses && courses.length > 0) return courses;
       return [
-        { id:'default-1', name:'Web Development', duration:'12 weeks', fee:25000, badge:'Frontend · Backend' },
-        { id:'default-2', name:'Data Science', duration:'14 weeks', fee:35000, badge:'Python · ML · Stats' },
-        { id:'default-3', name:'Mobile App Development', duration:'10 weeks', fee:30000, badge:'Android · iOS' },
-        { id:'default-4', name:'UI/UX Design', duration:'8 weeks', fee:20000, badge:'Design · Research' },
-        { id:'default-5', name:'Cloud Computing', duration:'10 weeks', fee:28000, badge:'AWS · Azure · GCP' },
-        { id:'default-6', name:'Cybersecurity', duration:'12 weeks', fee:32000, badge:'Network · Security' },
-        { id:'default-7', name:'AI & Machine Learning', duration:'16 weeks', fee:40000, badge:'ML · Deep Learning' },
-        { id:'default-8', name:'Digital Marketing', duration:'8 weeks', fee:18000, badge:'SEO · Social Media' },
+        { id:'default-1', name:'Web Development', endDate:'', fee:25000, badge:'Frontend · Backend' },
+        { id:'default-2', name:'Data Science', endDate:'', fee:35000, badge:'Python · ML · Stats' },
+        { id:'default-3', name:'Mobile App Development', endDate:'', fee:30000, badge:'Android · iOS' },
+        { id:'default-4', name:'UI/UX Design', endDate:'', fee:20000, badge:'Design · Research' },
+        { id:'default-5', name:'Cloud Computing', endDate:'', fee:28000, badge:'AWS · Azure · GCP' },
+        { id:'default-6', name:'Cybersecurity', endDate:'', fee:32000, badge:'Network · Security' },
+        { id:'default-7', name:'AI & Machine Learning', endDate:'', fee:40000, badge:'ML · Deep Learning' },
+        { id:'default-8', name:'Digital Marketing', endDate:'', fee:18000, badge:'SEO · Social Media' },
       ];
     }
     function saveCourseData() {} // no-op — API handles persistence
 
     async function saveCourse() {
       const name = $('#courseName').value.trim();
-      const duration = $('#courseDuration').value.trim();
+      const endDate = $('#courseEndDate').value;
       const fee = parseFloat($('#courseFee').value) || 0;
       const badge = $('#courseBadge').value.trim();
       const editId = $('#editCourseId').value;
       if (!name) { showToast('Please enter a course name', 'error'); return; }
       try {
         if (editId) {
-          const updated = await api(`/courses/${editId}`, { method: 'PUT', body: JSON.stringify({ name, duration, fee, badge }) });
+          const updated = await api(`/courses/${editId}`, { method: 'PUT', body: JSON.stringify({ name, endDate, fee, badge }) });
           const idx = courses.findIndex(c => c.id === editId);
           if (idx !== -1) courses[idx] = updated;
         } else {
           if (courses.find(c => c.name.toLowerCase() === name.toLowerCase())) { showToast('Course already exists', 'error'); return; }
-          const saved = await api('/courses', { method: 'POST', body: JSON.stringify({ name, duration, fee, badge }) });
+          const saved = await api('/courses', { method: 'POST', body: JSON.stringify({ name, endDate, fee, badge }) });
           courses.push(saved);
         }
         clearCourseForm(); updateCourses(); updateCourseFilters();
@@ -2194,7 +2174,7 @@
       const c = list.find(x => x.name === name);
       if (!c) return;
       $('#editCourseId').value = c.id;
-      $('#courseName').value = c.name; $('#courseDuration').value = c.duration || '';
+      $('#courseName').value = c.name; $('#courseEndDate').value = c.endDate || '';
       $('#courseFee').value = c.fee || ''; $('#courseBadge').value = c.badge || '';
       $('#courseName').focus();
     }
@@ -2214,7 +2194,7 @@
 
     function clearCourseForm() {
       $('#editCourseId').value = '';
-      $('#courseName').value = ''; $('#courseDuration').value = '';
+      $('#courseName').value = ''; $('#courseEndDate').value = '';
       $('#courseFee').value = ''; $('#courseBadge').value = '';
     }
 
@@ -2271,7 +2251,7 @@
       const tbody = $('#expensesTable');
       tbody.innerHTML = filtered.map((e, i) => {
         const modeLabel = e.mode === 'online' ? '<span style="color:var(--good);font-weight:600;">Online</span>' : '<span style="color:var(--ink-soft);font-weight:600;">Cash</span>';
-        return `<tr><td>${i + 1}</td><td><div class="owner-table__name">${e.name}</div></td><td style="color:var(--bad);font-weight:600;">₹${(parseFloat(e.amount) || 0).toLocaleString('en-IN')}</td><td>${modeLabel}</td><td>${formatDate(e.date)}</td><td><div class="action-btns"><button class="action-btn action-btn--danger" onclick="deleteExpense(${e.id})" title="Delete">✕</button></div></td></tr>`;
+        return `<tr><td>${i + 1}</td><td><div class="owner-table__name">${e.name}</div></td><td style="color:var(--bad);font-weight:600;">₹${(parseFloat(e.amount) || 0).toLocaleString('en-IN')}</td><td>${modeLabel}</td><td>${formatDate(e.date)}</td><td><div class="action-btns"><button class="action-btn action-btn--danger" onclick="deleteExpense('${e.id}')" title="Delete">✕</button></div></td></tr>`;
       }).join('') || emptyRow(6, 'No expenses found', 'Add an expense or adjust filters');
 
       const fTotal = filtered.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
