@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     /* ============================================================
        OWNER PAGE — Dedicated Dashboard Styles
@@ -1703,16 +1703,21 @@
     $$('.owner-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         const panelId = tab.dataset.tab;
+        if (!panelId) return;
         $$('.owner-tab').forEach(t => t.classList.remove('is-active'));
         $$('.owner-tab-panel').forEach(p => p.classList.remove('is-active'));
         tab.classList.add('is-active');
-        $(`#panel-${panelId}`).classList.add('is-active');
-        if (panelId === 'students') { updateStudentsTable(); updateCourseFilters(); }
-        if (panelId === 'fees') { populateMonthFilter(); updateFeesTable(); }
-        if (panelId === 'courses') { updateCourses(); renderBatchesTable(); }
-        if (panelId === 'expenses') renderExpenses();
-        if (panelId === 'analytics') updateAnalytics();
-        if (panelId === 'studyzone') { updateStudyZoneMetaFields(); renderStudyZoneTable(); }
+        const panel = document.getElementById('panel-' + panelId);
+        if (!panel) return;
+        panel.classList.add('is-active');
+        // Force a reflow to ensure panel is visible before rendering data
+        void panel.offsetHeight;
+        try { if (panelId === 'students') { updateStudentsTable(); updateCourseFilters(); } } catch(e) { console.warn(e); }
+        try { if (panelId === 'fees') { populateMonthFilter(); updateFeesTable(); } } catch(e) { console.warn(e); }
+        try { if (panelId === 'courses') { updateCourses(); renderBatchesTable(); } } catch(e) { console.warn(e); }
+        try { if (panelId === 'expenses') renderExpenses(); } catch(e) { console.warn(e); }
+        try { if (panelId === 'analytics') updateAnalytics(); } catch(e) { console.warn(e); }
+        try { if (panelId === 'studyzone') { updateStudyZoneMetaFields(); renderStudyZoneTable(); } } catch(e) { console.warn(e); }
       });
     });
 
