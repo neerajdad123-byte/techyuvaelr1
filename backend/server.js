@@ -217,10 +217,10 @@ app.delete('/api/courses/:id', async (req, res) => {
 // ─── BATCHES (per-course) ───
 app.get('/api/batches', async (req, res) => {
   try {
-    let query = getDB().collection('batches').orderBy('order', 'asc');
-    if (req.query.courseId) query = query.where('courseId', '==', req.query.courseId);
-    const snap = await query.get();
-    res.json(snap.docs.map(formatDoc));
+    const snap = await getDB().collection('batches').orderBy('order', 'asc').get();
+    let batches = snap.docs.map(formatDoc);
+    if (req.query.courseId) batches = batches.filter(b => b.courseId === req.query.courseId);
+    res.json(batches);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
