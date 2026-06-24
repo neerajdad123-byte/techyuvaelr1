@@ -332,18 +332,29 @@
     async function loadZoneUpdates() {
       const ctr = document.getElementById('zoneUpdates');
       if (!ctr) return;
+      const colors = { 'career-roadmap':'#d4784a','placement-guideline':'#3d8b63','job-opening':'#4075a8','study-material':'#7b5ea7','mock-test':'#c74552' };
+      const labels = { 'career-roadmap':'Career','placement-guideline':'Placement','job-opening':'Job','study-material':'Material','mock-test':'Mock Test' };
       try {
         const items = await api('/studyzone');
         const recent = (items || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
         if (!recent.length) { ctr.innerHTML = '<p style="text-align:center;color:var(--ink-soft);padding:1rem;">No updates yet.</p>'; return; }
-        const labels = { 'career-roadmap':'Career','placement-guideline':'Placement','job-opening':'Job','study-material':'Material','mock-test':'Mock Test' };
         ctr.innerHTML = recent.map(item => {
-          const m = item.meta || {}; let tag = '';
-          if (item.type === 'job-opening' && m.company) tag = '<span style="font-size:.65rem;color:var(--ink-soft);">' + m.company + '</span>';
-          else if (item.type === 'mock-test' && m.difficulty) tag = '<span style="font-size:.65rem;color:var(--ink-soft);">' + m.difficulty + '</span>';
-          return '<a href="studyzone.html" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:10px;background:var(--paper);text-decoration:none;color:inherit;transition:border-color .2s;"><div style="display:flex;align-items:center;gap:.6rem;min-width:0;"><span style="font-size:.6rem;font-family:var(--font-mono);text-transform:uppercase;color:var(--ink-soft);background:var(--paper-2);padding:.15em .5em;border-radius:100px;white-space:nowrap;">' + (labels[item.type] || item.type) + '</span><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + item.title + '</span></div><div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">' + tag + '<span style="font-size:.65rem;color:var(--ink-faint);white-space:nowrap;">' + formatDate(item.createdAt) + '</span></div></a>';
+          const m = item.meta || {}; let tags = '';
+          if (item.type === 'career-roadmap' && Array.isArray(m.skills)) tags += m.skills.slice(0, 3).map(s => '<span class="sz-tag">' + s + '</span>').join('');
+          if (item.type === 'job-opening') { if (m.company) tags += '<span class="sz-tag sz-tag--a">' + m.company + '</span>'; if (m.location) tags += '<span class="sz-tag">' + m.location + '</span>'; }
+          if (item.type === 'study-material') { if (m.fileType) tags += '<span class="sz-tag">' + m.fileType + '</span>'; if (m.size) tags += '<span class="sz-tag">' + m.size + '</span>'; }
+          if (item.type === 'mock-test') { if (m.difficulty) tags += '<span class="sz-tag sz-tag--a">' + m.difficulty + '</span>'; if (m.topic) tags += '<span class="sz-tag">' + m.topic + '</span>'; }
+          const c = colors[item.type] || '#888';
+          const d = new Date(item.createdAt || Date.now());
+          return '<a class="sz-update-card" href="studyzone.html" style="--accent:' + c + '">' +
+            '<div class="sz-update__body"><div class="sz-update__top"><h3 class="sz-update__title">' + item.title + '</h3>' +
+            '<svg class="sz-update__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+            '<p class="sz-update__desc">' + (item.description || '') + '</p>' +
+            '<div class="sz-update__tags">' +
+            '<span class="sz-tag sz-tag--a" style="background:' + c + '15;color:' + c + ';border-color:' + c + '30;">' + (labels[item.type] || item.type) + '</span>' +
+            tags + '<span class="sz-update__date">' + d.toLocaleDateString('en-IN', { day:'numeric', month:'short' }) + '</span></div></div></a>';
         }).join('');
-      } catch (err) { ctr.innerHTML = '<p style="text-align:center;color:var(--ink-soft);">Unable to load updates.</p>'; }
+      } catch (err) { ctr.innerHTML = '<p style="text-align:center;color:var(--ink-soft);">Unable to load.</p>'; }
     }
     loadTrendingCourses();
     loadSchedule();
