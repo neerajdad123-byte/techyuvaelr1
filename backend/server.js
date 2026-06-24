@@ -232,6 +232,7 @@ app.post('/api/batches', async (req, res) => {
       courseId: d.courseId,
       name: d.name,
       duration: parseInt(d.duration),
+      timing: d.timing || '',
       order: parseInt(d.order) || 0,
       createdAt: new Date().toISOString(),
     });
@@ -248,6 +249,7 @@ app.put('/api/batches/:id', async (req, res) => {
     const update = {};
     if (d.courseId !== undefined) update.courseId = d.courseId;
     if (d.name !== undefined) update.name = d.name;
+    if (d.timing !== undefined) update.timing = d.timing;
     if (d.duration !== undefined) update.duration = parseInt(d.duration);
     if (d.order !== undefined) update.order = parseInt(d.order);
     await docRef.update(update);

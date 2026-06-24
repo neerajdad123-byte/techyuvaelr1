@@ -1669,6 +1669,10 @@ kbd {
   }
 }
 
+/* Section dividers */
+.section { border-top: 1px solid var(--line); padding-top: clamp(3rem, 6vh, 5rem); }
+.section:first-of-type { border-top: none; }
+
 @media (max-width: 480px) {
   body { font-size: 15px; }
   .link-arrow { font-size: .72rem; }
@@ -1704,7 +1708,6 @@ kbd {
   /* CTA */
   .cta__title { font-size: 1.8rem; }
   /* Results */
-  .results__grid { grid-template-columns: 1fr; }
   .card--chart { grid-column: span 1; }
 }
 

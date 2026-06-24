@@ -18,6 +18,22 @@
       --sz-test:    #c74552;  --sz-test-bg:   rgba(199,69,82,.06);
     }
 
+    /* Top filter nav */
+    .sz-nav {
+      display: flex; gap: .35rem; margin-bottom: 2.5rem;
+      position: sticky; top: 56px; z-index: 50;
+      background: var(--paper); padding: .5rem 0;
+      flex-wrap: wrap;
+    }
+    .sz-nav__btn {
+      font-family: var(--font-mono); font-size: .72rem; font-weight: 500;
+      padding: .45rem .9rem; border-radius: 100px;
+      border: 1px solid var(--line); background: var(--paper);
+      color: var(--ink-soft); cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .sz-nav__btn:hover { border-color: var(--accent); color: var(--ink); }
+    .sz-nav__btn.is-active { background: var(--ink); color: var(--paper); border-color: var(--ink); cursor: default; }
     .sz-page {
       padding: clamp(5rem, 10vh, 8rem) var(--pad) clamp(3rem, 6vh, 5rem);
       padding-left: calc(var(--nav-edge) + var(--pad));
@@ -167,6 +183,15 @@
   </header>
 
   <main class="sz-page">
+
+    <!-- Top filter nav -->
+    <nav class="sz-nav" id="szNav">
+      <button class="sz-nav__btn is-active" data-target="career">Career</button>
+      <button class="sz-nav__btn" data-target="placement">Placement</button>
+      <button class="sz-nav__btn" data-target="jobs">Jobs</button>
+      <button class="sz-nav__btn" data-target="materials">Materials</button>
+      <button class="sz-nav__btn" data-target="mocktest">Mock Tests</button>
+    </nav>
     <div class="sz-sec" id="career">
       <div class="sz-sec__head">
         <span class="sz-sec__dot"></span>
@@ -236,6 +261,35 @@
     $("#explorerToggle")?.addEventListener("click", () => $("#nav").classList.add("is-collapsed"));
     $("#navExpand")?.addEventListener("click", () => $("#nav").classList.remove("is-collapsed"));
 
+
+    /* Top filter nav — scroll to section */
+    const navBtns = $$('.sz-nav__btn');
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.target);
+        if (!target) return;
+        navBtns.forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    /* Update active on scroll */
+    const secs = $$('.sz-sec');
+    let ticking = false;
+    addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        let current = '';
+        secs.forEach(sec => {
+          if (sec.getBoundingClientRect().top <= 150) current = sec.id;
+        });
+        if (current) {
+          navBtns.forEach(b => b.classList.toggle('is-active', b.dataset.target === current));
+        }
+        ticking = false;
+      });
+    }, { passive: true });
     const sb = $("#scrollProgress")?.querySelector("span");
     if (sb) { const u = () => { const m = document.documentElement.scrollHeight - innerHeight; sb.style.width = m > 0 ? (scrollY / m) * 100 + "%" : "0%"; }; addEventListener("scroll", u, { passive: true }); addEventListener("resize", u); u(); }
 

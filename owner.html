@@ -1149,7 +1149,7 @@
           </div>
         </div>
         <div class="owner-section__body">
-          <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr auto;">
+          <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr 1fr auto;">
             <div class="field">
               <span>Course</span>
               <select id="batchCourse" onchange="renderBatchesTable()" style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;box-sizing:border-box;">
@@ -1164,6 +1164,10 @@
               <span>Duration (days)</span>
               <input type="number" id="batchDuration" placeholder="45" />
             </div>
+            <div class="field">
+              <span>Timing</span>
+              <input type="text" id="batchTiming" placeholder="e.g. 9:00 AM - 3:00 PM" />
+            </div>
             <div class="field" style="align-self:end;">
               <input type="hidden" id="editBatchId" value="" />
               <button class="btn btn--primary" onclick="saveBatch()" style="white-space:nowrap;">
@@ -1174,7 +1178,7 @@
           <div class="owner-table-wrap" style="margin-top:1rem;">
             <table class="owner-table">
               <thead>
-                <tr><th>Batch</th><th>Course</th><th>Duration</th><th>Label</th><th>Actions</th></tr>
+                <tr><th>Batch</th><th>Course</th><th>Duration</th><th>Timing</th><th>Label</th><th>Actions</th></tr>
               </thead>
               <tbody id="batchesTable"></tbody>
             </table>
@@ -1647,7 +1651,7 @@
     let currentPaymentId = null;
     let charts = {};
 
-    function batchLabel(b) { return `${b.name} (${b.duration} days)`; }
+    function batchLabel(b) { const t = b.timing ? ' · ' + b.timing : ''; return `${b.name} (${b.duration} days${t})`; }
     function getBatches() { return batches || []; }
     function getBatchesForCourse(courseName) {
       const course = (courses || []).find(c => c.name === courseName);
@@ -2048,12 +2052,13 @@
         <td><span class="owner-table__name">${b.name}</span></td>
         <td>${getCourseNameById(b.courseId)}</td>
         <td>${b.duration} days</td>
+        <td>${b.timing || '—'}</td>
         <td><span class="badge badge--partial">${batchLabel(b)}</span></td>
         <td><div class="action-btns">
           <button class="action-btn" onclick="editBatch('${b.id}')" title="Edit">✏</button>
           <button class="action-btn action-btn--danger" onclick="deleteBatch('${b.id}')" title="Delete">✕</button>
         </div></td>
-      </tr>`).join('') || '<tr><td colspan="5"><div class="empty-state"><div class="empty-state__title">No batches</div><div class="empty-state__desc">Select a course and add batches</div></div></td></tr>';
+      </tr>`).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="empty-state__title">No batches</div><div class="empty-state__desc">Select a course and add batches</div></div></td></tr>';
     }
 
     function editBatch(id) {
@@ -2063,12 +2068,12 @@
       $('#batchCourse').value = getCourseNameById(b.courseId);
       $('#batchName').value = b.name;
       $('#batchDuration').value = b.duration;
+      $('#batchTiming').value = b.timing || '';
     }
 
     async function saveBatch() {
       const courseName = $('#batchCourse').value;
-      const name = $('#batchName').value.trim();
-      const duration = parseInt($('#batchDuration').value);
+      const timing = $('#batchTiming').value.trim();
       const editId = $('#editBatchId').value;
       if (!courseName || !name || !duration) { showToast('Select course, enter name and duration', 'error'); return; }
       const course = (courses || []).find(c => c.name === courseName);
@@ -2076,20 +2081,17 @@
       const courseId = course.id;
       try {
         if (editId) {
-          await api(`/batches/${editId}`, { method: 'PUT', body: JSON.stringify({ courseId, name, duration }) });
+          await api(`/batches/${editId}`, { method: 'PUT', body: JSON.stringify({ courseId, name, duration, timing }) });
           const b = batches.find(x => x.id === editId);
-          if (b) { b.courseId = courseId; b.name = name; b.duration = duration; }
+          if (b) { b.courseId = courseId; b.name = name; b.duration = duration; b.timing = timing; }
         } else {
-          const saved = await api('/batches', { method: 'POST', body: JSON.stringify({ courseId, name, duration }) });
+          const saved = await api('/batches', { method: 'POST', body: JSON.stringify({ courseId, name, duration, timing }) });
           batches.push(saved);
         }
         $('#editBatchId').value = '';
-        $('#batchCourse').value = '';
-        $('#batchName').value = '';
-        $('#batchDuration').value = '';
-        renderBatchesTable();
-        updateBatchesForCourse();
-        updateCourseFilters();
+        $('#batchCourse').value = ''; $('#batchName').value = '';
+        $('#batchDuration').value = ''; $('#batchTiming').value = '';
+        renderBatchesTable(); updateBatchesForCourse(); updateCourseFilters();
         showToast(editId ? 'Batch updated!' : 'Batch added!', 'success');
       } catch (err) { showToast('Failed: ' + err.message, 'error'); }
     }
