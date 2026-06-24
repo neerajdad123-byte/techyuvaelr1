@@ -332,6 +332,7 @@ const CommandPalette = (() => {
   if (isTouch) return;
   const ring = $("#cursor");
   const dot  = $("#cursorDot");
+  if (!ring || !dot) return;
   let mx = innerWidth / 2, my = innerHeight / 2;
   let rx = mx, ry = my;
 
