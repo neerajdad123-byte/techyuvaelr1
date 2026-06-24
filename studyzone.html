@@ -4,443 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Zone — TechYuva</title>
-  <meta name="description" content="TechYuva Study Zone — Career roadmap, placement prep, job openings, study materials, and mock tests." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ============================================================
-       STUDY ZONE — Dedicated Page Styles
-       Career Roadmap · Placement · Jobs · Materials · Mock Tests
-       ============================================================ */
-
     .sz-page {
-      padding-top: clamp(6rem, 14vh, 9rem);
+      padding: clamp(5rem, 10vh, 8rem) var(--pad) clamp(2rem, 4vh, 4rem);
       padding-left: calc(var(--nav-edge) + var(--pad));
-      padding-right: var(--pad);
-      padding-bottom: clamp(4rem, 10vh, 7rem);
-      max-width: 1200px;
-      margin: 0 auto;
     }
-
-    /* ---------- Page Header ---------- */
-    .sz-head {
-      margin-bottom: clamp(3rem, 6vh, 4.5rem);
-      position: relative;
+    /* All sections — big, same level */
+    .sz-sec { margin-bottom: 3rem; }
+    .sz-sec__head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 1.2rem;
+      font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+      font-size: clamp(2.4rem, 5.5vw, 3.6rem); letter-spacing: -.02em; line-height: 1.05;
     }
-    .sz-head::before {
-      content: "study-zone/";
-      font-family: var(--font-mono);
-      font-size: .72rem;
-      text-transform: uppercase;
-      letter-spacing: .2em;
-      color: var(--accent);
-      display: block;
-      margin-bottom: 1rem;
+    #career .sz-sec__head { font-style: italic; }
+    .sz-sec__count {
+      font-family: var(--font-mono); font-size: .68rem; color: var(--ink-soft);
+      font-weight: 400; white-space: nowrap; margin-left: .6rem; font-style: normal;
     }
-    .sz-head h1 {
-      font-family: var(--font-display);
-      font-weight: 400;
-      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
-      line-height: 1.05;
-      letter-spacing: -.01em;
-    }
-    .sz-head h1 em { font-style: italic; color: var(--accent); }
-    .sz-head p {
-      color: var(--ink-soft);
-      margin-top: 1rem;
-      max-width: 52ch;
-      font-size: .98rem;
-      line-height: 1.65;
-    }
-
-    /* ---------- Section Box Component ---------- */
-    .sz-section {
-      margin-bottom: clamp(3.5rem, 7vh, 5rem);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      overflow: hidden;
-      background: var(--paper);
-      transition: border-color .4s, box-shadow .4s;
-    }
-    .sz-section:hover {
-      border-color: rgba(184, 92, 56, .3);
-      box-shadow: 0 20px 50px -20px rgba(28, 25, 21, .1);
-    }
-
-    .sz-section__header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1.4rem 1.8rem;
-      border-bottom: 1px solid var(--line);
-      background: var(--paper-2);
-      flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .sz-section__title {
-      display: flex;
-      align-items: center;
-      gap: .8rem;
-    }
-    .sz-section__icon {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      background: var(--accent-soft);
-      display: grid; place-items: center;
-      color: var(--accent);
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-    .sz-section__icon--green { background: rgba(74, 124, 89, .1); color: var(--good); }
-    .sz-section__icon--blue { background: rgba(90, 107, 138, .1); color: #5a6b8a; }
-    .sz-section__icon--purple { background: rgba(139, 69, 19, .08); color: var(--python); }
-    .sz-section__icon--red { background: rgba(160, 48, 48, .08); color: var(--bad); }
-
-    .sz-section__title h2 {
-      font-family: var(--font-display);
-      font-weight: 400;
-      font-size: clamp(1.3rem, 2.4vw, 1.7rem);
-      line-height: 1.1;
-    }
-    .sz-section__title span {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: .68rem;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: var(--ink-soft);
-      margin-top: .2rem;
-    }
-    .sz-section__count {
-      font-family: var(--font-mono);
-      font-size: .72rem;
-      color: var(--ink-soft);
-    }
-
-    /* ---------- Two-Column Study Zone Layout ---------- */
-    .sz-split {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 2rem;
-      padding: clamp(1.4rem, 3vw, 2rem);
-      align-items: start;
-    }
-
-    .sz-sidebar {
-      position: sticky;
-      top: 90px;
-      display: flex;
-      flex-direction: column;
-      gap: .35rem;
-      max-height: calc(100vh - 120px);
-      overflow-y: auto;
-      padding-right: .25rem;
-    }
-    .sz-sidebar__item {
-      text-align: left;
-      padding: .75rem .9rem;
-      border-radius: 8px;
-      font-family: var(--font-mono);
-      font-size: .74rem;
-      color: var(--ink-soft);
-      border: 1px solid transparent;
-      transition: all .2s;
-      line-height: 1.4;
-      cursor: pointer;
-    }
-    .sz-sidebar__item:hover,
-    .sz-sidebar__item.is-active {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-color: rgba(184, 92, 56, .2);
-    }
-    .sz-sidebar__empty {
-      font-size: .75rem;
-      color: var(--ink-faint);
-      padding: .5rem;
-    }
-
-    .sz-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      min-width: 0;
-    }
-
-    .sz-card {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 1.3rem 1.5rem;
-      background: var(--paper);
-      transition: border-color .3s, transform .3s var(--ease-out), box-shadow .3s;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-    .sz-card:hover {
-      border-color: var(--accent);
-      transform: translateX(4px);
-      box-shadow: 0 12px 24px -16px rgba(28, 25, 21, .12);
-    }
-    .sz-card__head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: .5rem;
+    .sz-card:hover { border-color: var(--accent); }
+    .sz-card__top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: .4rem; margin-bottom: .2rem;
     }
     .sz-card__title {
-      font-family: var(--font-display);
-      font-weight: 400;
-      font-size: 1.25rem;
-      line-height: 1.2;
+      font-family: var(--font-display); font-weight: 400;
+      font-size: 1rem; line-height: 1.25;
     }
-    .sz-card__arrow {
-      color: var(--accent);
-      flex-shrink: 0;
-      transition: transform .3s;
-    }
-    .sz-card:hover .sz-card__arrow {
-      transform: translateX(4px);
-    }
+    .sz-card__arrow { color: var(--accent); flex-shrink: 0; margin-top: 1px; transition: .2s; }
+    .sz-card:hover .sz-card__arrow { transform: translateX(3px); }
     .sz-card__desc {
-      font-size: .9rem;
-      color: var(--ink-soft);
-      line-height: 1.6;
-      margin-bottom: .8rem;
+      font-size: .76rem; color: var(--ink-soft); line-height: 1.45;
+      margin-bottom: .4rem; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
-    .sz-card__meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .5rem;
-    }
+    .sz-card__tags { display: flex; flex-wrap: wrap; gap: .3rem; }
     .sz-card__tag {
-      font-family: var(--font-mono);
-      font-size: .65rem;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      padding: .25em .7em;
-      border-radius: 100px;
-      background: var(--paper-2);
-      color: var(--ink-soft);
-      border: 1px solid var(--line);
+      font-family: var(--font-mono); font-size: .58rem; text-transform: uppercase;
+      letter-spacing: .05em; padding: .15em .5em; border-radius: 100px;
+      background: var(--paper-2); color: var(--ink-soft); border: 1px solid var(--line);
     }
-    .sz-card__tag--accent {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-color: rgba(184, 92, 56, .2);
-    }
-    .sz-card__link {
-      display: inline-flex;
-      align-items: center;
-      gap: .35rem;
-      font-family: var(--font-mono);
-      font-size: .72rem;
-      color: var(--accent);
-      margin-top: .8rem;
-    }
-    .sz-card__link svg { width: 14px; height: 14px; }
+    .sz-card__tag--a { background: var(--accent-soft); color: var(--accent); border-color: rgba(184,92,56,.2); }
+    .sz-empty { grid-column: 1/-1; color: var(--ink-faint); font-size: .78rem; }
 
-    .sz-empty {
-      color: var(--ink-soft);
-      font-size: .9rem;
-      padding: 1rem 0;
-    }
-
-    /* ============================================================
-       5. MOCK TEST — LeetCode Style (UNCHANGED)
-       ============================================================ */
-    .mocktest__intro {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 2rem;
-      align-items: center;
-      margin-bottom: 1.8rem;
-      flex-wrap: wrap;
-    }
-    .mocktest__intro p {
-      color: var(--ink-soft);
-      font-size: .92rem;
-      line-height: 1.6;
-      max-width: 50ch;
-    }
-    .mocktest__stats {
-      display: flex;
-      gap: 1.5rem;
-    }
-    .mocktest__stat {
-      text-align: center;
-    }
-    .mocktest__stat b {
-      display: block;
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 400;
-      color: var(--accent);
-    }
-    .mocktest__stat small {
-      font-family: var(--font-mono);
-      font-size: .6rem;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--ink-soft);
-    }
-
-    .problems-list {
-      display: grid;
-      gap: .6rem;
-    }
-    .problem-row {
-      display: grid;
-      grid-template-columns: auto 1fr auto auto auto;
-      align-items: center;
-      gap: 1rem;
-      padding: .9rem 1.2rem;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--paper);
-      transition: all .3s var(--ease-out);
-      font-family: var(--font-mono);
-      font-size: .82rem;
-    }
-    .problem-row:hover {
-      border-color: var(--accent);
-      background: var(--paper-2);
-      transform: translateX(3px);
-    }
-    .problem-row__status {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .problem-row__status--easy { background: var(--good); }
-    .problem-row__status--medium { background: #c4a030; }
-    .problem-row__status--hard { background: var(--bad); }
-
-    .problem-row__title {
-      color: var(--ink);
-      font-weight: 500;
-    }
-    .problem-row__title span {
-      color: var(--ink-faint);
-      font-weight: 400;
-      margin-left: .5rem;
-    }
-
-    .problem-row__diff {
-      font-size: .68rem;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      padding: .2em .6em;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-    .problem-row__diff--easy { background: rgba(74, 124, 89, .1); color: var(--good); }
-    .problem-row__diff--medium { background: rgba(196, 160, 48, .1); color: #a08020; }
-    .problem-row__diff--hard { background: rgba(160, 48, 48, .1); color: var(--bad); }
-
-    .problem-row__topic {
-      font-size: .68rem;
-      color: var(--ink-soft);
-      flex-shrink: 0;
-    }
-    .problem-row__solve {
-      font-size: .7rem;
-      color: var(--accent);
-      padding: .35rem .8rem;
-      border: 1px solid var(--accent);
-      border-radius: 100px;
-      transition: all .3s;
-      flex-shrink: 0;
-      white-space: nowrap;
-      background: transparent;
-      cursor: pointer;
-    }
-    .problem-row__solve:hover {
-      background: var(--accent);
-      color: var(--paper);
-    }
-
-    /* Progress bar for mock test section */
-    .mocktest__progress {
-      margin-bottom: 1.5rem;
-    }
-    .mocktest__progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: .68rem;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--ink-soft);
-      margin-bottom: .4rem;
-    }
-    .mocktest__progress-bar {
-      height: 4px;
-      background: var(--paper-3);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-    .mocktest__progress-bar span {
-      display: block;
-      height: 100%;
-      width: var(--p, 0%);
-      background: linear-gradient(90deg, var(--accent), var(--good));
-      border-radius: 100px;
-      transition: width 1s var(--ease);
-    }
-
-    /* Section entrance stagger */
-    .sz-section.reveal { transition-delay: 0s; }
-    .sz-section.reveal:nth-of-type(2) { transition-delay: .06s; }
-    .sz-section.reveal:nth-of-type(3) { transition-delay: .12s; }
-    .sz-section.reveal:nth-of-type(4) { transition-delay: .18s; }
-    .sz-section.reveal:nth-of-type(5) { transition-delay: .24s; }
-
-    @media (max-width: 900px) {
-      .sz-page { padding-left: var(--pad); }
-      .sz-split { grid-template-columns: 1fr; gap: 1rem; }
-      .sz-sidebar { position: static; max-height: none; flex-direction: row; flex-wrap: wrap; gap: .3rem; }
-      .sz-sidebar__item { flex: 1 1 120px; font-size: .7rem; padding: .6rem .7rem; }
-    }
+    @media (max-width: 900px) { .sz-page { padding-left: var(--pad); } }
     @media (max-width: 640px) {
-      .sz-head h1 { font-size: 1.8rem; }
-      .sz-head p { font-size: .85rem; }
-      .sz-section__header { flex-direction: column; align-items: flex-start; gap: .5rem; padding: 1rem 1.2rem; }
-      .sz-section__title h2 { font-size: 1.15rem; }
-      .sz-section__body { padding: 1rem; }
-      .sz-card { padding: 1rem 1.1rem; }
-      .sz-card__title { font-size: 1.05rem; }
-      .sz-card__desc { font-size: .82rem; }
-      .sz-sidebar { flex-direction: column; gap: .25rem; }
-      .sz-sidebar__item { flex: none; font-size: .74rem; }
-      .sz-section__count { font-size: .68rem; }
-    }
-    @media (max-width: 420px) {
-      .sz-head h1 { font-size: 1.5rem; }
-      .sz-section__header { padding: .8rem 1rem; }
-      .sz-card { padding: .85rem 1rem; border-radius: 10px; }
-      .sz-card__title { font-size: .95rem; }
-      .section-header .link-arrow { font-size: .68rem; }
+      .sz-sec__head { font-size: 1.8rem; }
+      .sz-grid { grid-template-columns: 1fr; gap: .4rem; }
+      .sz-card { padding: .75rem .9rem; }
     }
   </style>
 </head>
 <body data-theme="paper">
 
-  <!-- Scroll Progress -->
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"><span></span></div>
 
-  <!-- File Explorer Nav -->
   <header class="nav" id="nav">
     <button class="nav__expand" id="navExpand" aria-label="Show explorer">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
     <div class="nav__explorer" id="navExplorer">
       <div class="nav__explorer-head">
         <span class="nav__explorer-title">EXPLORER</span>
@@ -450,339 +75,126 @@
       </div>
       <div class="nav__tree" id="navTree">
         <div class="nav__tree-item nav__tree-item--root">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
-          <span>techyuva</span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg><span>techyuva</span>
         </div>
         <div class="nav__tree-children">
-          <a href="index.html#top" class="nav__tree-item" data-file="index.html">
+          <a href="index.html" class="nav__tree-item">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>index.html</span>
+            <span>Main</span>
           </a>
-          <a href="index.html#about" class="nav__tree-item" data-file="about.md">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>about.md</span>
-          </a>
-          <a href="menu.html" class="nav__tree-item" data-file="courses/">
+          <a href="menu.html" class="nav__tree-item">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>courses/</span>
+            <span>Courses</span>
           </a>
-          <a href="studyzone.html" class="nav__tree-item is-active" data-file="student-zone/">
+          <a href="studyzone.html" class="nav__tree-item is-active">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>student-zone/</span>
+            <span>Study Zone</span>
           </a>
-          <a href="owner.html" class="nav__tree-item" data-file="owner.html">
+          <a href="owner.html" class="nav__tree-item">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>owner.html</span>
-          </a>
-          <a href="index.html#analysis" class="nav__tree-item" data-file="practice.md">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>practice.md</span>
+            <span>Owner</span>
           </a>
         </div>
       </div>
     </div>
     <div class="nav__bar">
-      <a href="index.html#top" class="nav__logo">
-        <span class="nav__logo-mark">>_</span>TechYuva
-      </a>
-      <div class="nav__actions">
-        <a href="index.html" class="link-arrow" style="font-size:.78rem;">← Back home</a>
-      </div>
+      <a href="index.html#top" class="nav__logo"><span class="nav__logo-mark">>_</span>TechYuva</a>
+      <div class="nav__actions"><a href="index.html" class="link-arrow" style="font-size:.78rem;">← Back home</a></div>
     </div>
   </header>
 
   <main class="sz-page">
-
-    <!-- Page Header -->
-    <div class="sz-head reveal">
-      <h1>Study <em>Zone</em></h1>
-      <p>Everything you need after enrollment — roadmap your career, prep for placements, find openings, access materials, and sharpen your skills with mock tests.</p>
+    <div class="sz-sec reveal" id="career">
+      <div class="sz-sec__head">Career Roadmap <span class="sz-sec__count" id="careerCount">0</span></div>
+      <div class="sz-grid" id="careerGrid"></div>
     </div>
-
-    <!-- 1. CAREER ROADMAP -->
-    <section class="sz-section reveal" id="career">
-      <div class="sz-section__header">
-        <div class="sz-section__title">
-          <div class="sz-section__icon">🗺</div>
-          <div>
-            <h2>Career Roadmap</h2>
-            <span>Your path from learner to engineer</span>
-          </div>
-        </div>
-        <span class="sz-section__count" id="careerCount">0 stages</span>
-      </div>
-      <div class="sz-section__body">
-        <div class="sz-split" id="careerContainer">
-          <aside class="sz-sidebar" id="careerSidebar"></aside>
-          <div class="sz-content" id="careerContent"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. PLACEMENT GUIDELINES -->
-    <section class="sz-section reveal" id="placement">
-      <div class="sz-section__header">
-        <div class="sz-section__title">
-          <div class="sz-section__icon sz-section__icon--green">📋</div>
-          <div>
-            <h2>Placement Guidelines</h2>
-            <span>What it takes to get hired</span>
-          </div>
-        </div>
-        <span class="sz-section__count" id="placementCount">0 rules</span>
-      </div>
-      <div class="sz-section__body">
-        <div class="sz-split" id="placementContainer">
-          <aside class="sz-sidebar" id="placementSidebar"></aside>
-          <div class="sz-content" id="placementContent"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. JOB OPENINGS -->
-    <section class="sz-section reveal" id="jobs">
-      <div class="sz-section__header">
-        <div class="sz-section__title">
-          <div class="sz-section__icon sz-section__icon--blue">💼</div>
-          <div>
-            <h2>Job Openings</h2>
-            <span>Curated opportunities for our students</span>
-          </div>
-        </div>
-        <span class="sz-section__count" id="jobsCount">0 openings</span>
-      </div>
-      <div class="sz-section__body">
-        <div class="sz-split" id="jobsContainer">
-          <aside class="sz-sidebar" id="jobsSidebar"></aside>
-          <div class="sz-content" id="jobsContent"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. STUDY MATERIALS -->
-    <section class="sz-section reveal" id="materials">
-      <div class="sz-section__header">
-        <div class="sz-section__title">
-          <div class="sz-section__icon sz-section__icon--purple">📚</div>
-          <div>
-            <h2>Study Materials</h2>
-            <span>Notes, cheatsheets, and reference guides</span>
-          </div>
-        </div>
-        <span class="sz-section__count" id="materialsCount">0 resources</span>
-      </div>
-      <div class="sz-section__body">
-        <div class="sz-split" id="materialsContainer">
-          <aside class="sz-sidebar" id="materialsSidebar"></aside>
-          <div class="sz-content" id="materialsContent"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. MOCK TEST — UNCHANGED -->
-    <section class="sz-section reveal" id="mocktest">
-      <div class="sz-section__header">
-        <div class="sz-section__title">
-          <div class="sz-section__icon sz-section__icon--red">⚔</div>
-          <div>
-            <h2>Mock Test Arena</h2>
-            <span>Practice problems. Track progress. Level up.</span>
-          </div>
-        </div>
-        <span class="sz-section__count" id="mocktestCount">0 problems</span>
-      </div>
-      <div class="sz-section__body">
-
-        <div class="sz-split" id="mocktestContainer">
-          <aside class="sz-sidebar" id="mocktestSidebar"></aside>
-          <div class="sz-content" id="mocktestContent"></div>
-        </div>
-    </section>
-
+    <div class="sz-sec reveal" id="placement">
+      <div class="sz-sec__head">Placement <span class="sz-sec__count" id="placementCount">0</span></div>
+      <div class="sz-grid" id="placementGrid"></div>
+    </div>
+    <div class="sz-sec reveal" id="jobs">
+      <div class="sz-sec__head">Jobs <span class="sz-sec__count" id="jobsCount">0</span></div>
+      <div class="sz-grid" id="jobsGrid"></div>
+    </div>
+    <div class="sz-sec reveal" id="materials">
+      <div class="sz-sec__head">Materials <span class="sz-sec__count" id="materialsCount">0</span></div>
+      <div class="sz-grid" id="materialsGrid"></div>
+    </div>
+    <div class="sz-sec reveal" id="mocktest">
+      <div class="sz-sec__head">Mock Tests <span class="sz-sec__count" id="mocktestCount">0</span></div>
+      <div class="sz-grid" id="mocktestGrid"></div>
+    </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer" style="padding-left: calc(var(--nav-edge) + var(--pad));">
+  <footer class="footer">
     <span class="footer__logo">>_TechYuva</span>
     <p>Online coding institute. Built for learners, by engineers.</p>
-    <span class="footer__year">© 2026 TechYuva</span>
+    <span class="footer__year">&copy; 2026 TechYuva</span>
   </footer>
 
   <script>
-    // API helpers (inlined — no module imports for file:// compatibility)
     const API_BASE = (!window.location.hostname || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'http://localhost:3001/api'
-      : window.location.origin + '/api';
-
-    async function api(path, options = {}) {
-      const config = { headers: { 'Content-Type': 'application/json' }, ...options };
-      const res = await fetch(`${API_BASE}${path}`, config);
-      if (!res.ok) { const err = await res.json().catch(() => ({ error: res.statusText })); throw new Error(err.error || `API error ${res.status}`); }
-      return res.json();
+      ? 'http://localhost:3001/api' : window.location.origin + '/api';
+    async function api(p, o = {}) {
+      const c = { headers: { 'Content-Type': 'application/json' }, ...o };
+      const r = await fetch(API_BASE + p, c);
+      if (!r.ok) { const e = await r.json().catch(() => ({ error: r.statusText })); throw new Error(e.error || 'API error'); }
+      return r.json();
     }
+    async function getItems(t) { return api('/studyzone' + (t ? '?type=' + encodeURIComponent(t) : '')); }
 
-    async function getStudyZoneItems(type) {
-      const query = type ? `?type=${encodeURIComponent(type)}` : '';
-      return api('/studyzone' + query);
-    }
-
-    const $  = (s, c = document) => c.querySelector(s);
+    const $ = (s, c = document) => c.querySelector(s);
     const $$ = (s, c = document) => [...c.querySelectorAll(s)];
-    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    /* ===== File Explorer Nav ===== */
-    const nav = $("#nav");
-    $("#explorerToggle")?.addEventListener("click", () => nav.classList.add("is-collapsed"));
-    $("#navExpand")?.addEventListener("click", () => nav.classList.remove("is-collapsed"));
+    $("#explorerToggle")?.addEventListener("click", () => $("#nav").classList.add("is-collapsed"));
+    $("#navExpand")?.addEventListener("click", () => $("#nav").classList.remove("is-collapsed"));
 
-    /* ===== Scroll Progress ===== */
-    const bar = $("#scrollProgress")?.querySelector("span");
-    if (bar) {
-      const update = () => {
-        const max = document.documentElement.scrollHeight - innerHeight;
-        bar.style.width = max > 0 ? (scrollY / max) * 100 + "%" : "0%";
-      };
-      addEventListener("scroll", update, { passive: true });
-      addEventListener("resize", update);
-      update();
-    }
+    const sb = $("#scrollProgress")?.querySelector("span");
+    if (sb) { const u = () => { const m = document.documentElement.scrollHeight - innerHeight; sb.style.width = m > 0 ? (scrollY / m) * 100 + "%" : "0%"; }; addEventListener("scroll", u, { passive: true }); addEventListener("resize", u); u(); }
 
-    /* ===== Scroll Reveals ===== */
-    const revealObserver = new IntersectionObserver(entries => {
-      entries.forEach(en => {
-        if (!en.isIntersecting) return;
-        en.target.classList.add("is-visible");
-        revealObserver.unobserve(en.target);
-      });
-    }, { threshold: 0.1, rootMargin: "0px 0px -5% 0px" });
-    $$(".reveal").forEach(el => revealObserver.observe(el));
+    const ro = new IntersectionObserver(es => { es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add("is-visible"); ro.unobserve(e.target); }); }, { threshold: 0.1 });
+    $$(".reveal").forEach(el => ro.observe(el));
 
-    /* ===== Smooth Anchor Scroll ===== */
-    $$('a[href^="#"]').forEach(link => {
-      link.addEventListener("click", e => {
-        const target = $(link.getAttribute("href"));
-        if (!target) return;
-        e.preventDefault();
-        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
-      });
-    });
-
-    /* ===== Study Zone Renderers ===== */
-    const TYPE_CONFIG = {
-      'career-roadmap': { label: 'stage', plural: 'stages', countEl: '#careerCount', sidebarEl: '#careerSidebar', contentEl: '#careerContent' },
-      'placement-guideline': { label: 'rule', plural: 'rules', countEl: '#placementCount', sidebarEl: '#placementSidebar', contentEl: '#placementContent' },
-      'job-opening': { label: 'opening', plural: 'openings', countEl: '#jobsCount', sidebarEl: '#jobsSidebar', contentEl: '#jobsContent' },
-      'study-material': { label: 'resource', plural: 'resources', countEl: '#materialsCount', sidebarEl: '#materialsSidebar', contentEl: '#materialsContent' },
-      'mock-test': { label: 'problem', plural: 'problems', countEl: '#mocktestCount', sidebarEl: '#mocktestSidebar', contentEl: '#mocktestContent' },
+    const CFG = {
+      'career-roadmap': { count: '#careerCount', grid: '#careerGrid' },
+      'placement-guideline': { count: '#placementCount', grid: '#placementGrid' },
+      'job-opening': { count: '#jobsCount', grid: '#jobsGrid' },
+      'study-material': { count: '#materialsCount', grid: '#materialsGrid' },
+      'mock-test': { count: '#mocktestCount', grid: '#mocktestGrid' },
     };
 
-    function isExternalLink(url) {
-      if (!url) return false;
-      return /^https?:\/\//i.test(url);
-    }
+    function tags(arr, a) { return Array.isArray(arr) && arr.length ? arr.map(t => `<span class="sz-card__tag${a ? ' sz-card__tag--a' : ''}">${t}</span>`).join('') : ''; }
 
-    function renderTags(tags, accentClass) {
-      if (!Array.isArray(tags) || !tags.length) return '';
-      return tags.map(t => `<span class="sz-card__tag ${accentClass || ''}">${t}</span>`).join('');
-    }
-
-    function renderSection(type, items) {
-      const cfg = TYPE_CONFIG[type];
-      if (!cfg) return;
-      $(cfg.countEl).textContent = `${items.length} ${items.length === 1 ? cfg.label : cfg.plural}`;
-      const sidebar = $(cfg.sidebarEl);
-      const content = $(cfg.contentEl);
-      if (!items.length) {
-        sidebar.innerHTML = '<span class="sz-sidebar__empty">No items yet.</span>';
-        content.innerHTML = '<p class="sz-empty">No items yet. Content will appear here once added.</p>';
-        return;
-      }
-
-      sidebar.innerHTML = items.map((item, idx) => `
-        <button class="sz-sidebar__item" data-target="${type}-${idx}" data-link="${item.link || ''}">
-          ${item.icon ? item.icon + ' ' : ''}${item.title}
-        </button>
-      `).join('');
-
-      content.innerHTML = items.map((item, idx) => {
-        const meta = item.meta || {};
-        let extraTags = '';
-        if (type === 'career-roadmap' && Array.isArray(meta.skills)) {
-          extraTags = renderTags(meta.skills.slice(0, 6), 'sz-card__tag--accent');
-        } else if (type === 'job-opening') {
-          const tags = [];
-          if (meta.company) tags.push(meta.company);
-          if (meta.location) tags.push(meta.location);
-          if (Array.isArray(meta.tags)) tags.push(...meta.tags);
-          extraTags = renderTags(tags.slice(0, 6));
-        } else if (type === 'study-material') {
-          const tags = [];
-          if (meta.fileType) tags.push(meta.fileType);
-          if (meta.size) tags.push(meta.size);
-          extraTags = renderTags(tags);
-        } else if (type === 'mock-test') {
-          const tags = [];
-          if (meta.difficulty) tags.push(meta.difficulty);
-          if (meta.topic) tags.push(meta.topic);
-          if (meta.platform) tags.push(meta.platform);
-          extraTags = renderTags(tags, 'sz-card__tag--accent');
-        }
-        const numBadge = type === 'placement-guideline'
-          ? `<span class="sz-card__tag sz-card__tag--accent">${String(idx + 1).padStart(2, '0')}</span>`
-          : type === 'mock-test'
-          ? `<span class="sz-card__tag sz-card__tag--accent">#${idx + 1}</span>`
-          : '';
-        const link = item.link || '#';
-        const external = isExternalLink(link) ? 'target="_blank" rel="noopener"' : '';
-        return `
-          <a class="sz-card" id="${type}-${idx}" href="${link}" ${external}>
-            <div class="sz-card__head">
-              <h3 class="sz-card__title">${item.title}</h3>
-              <svg class="sz-card__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <p class="sz-card__desc">${item.description || ''}</p>
-            <div class="sz-card__meta">
-              ${numBadge}
-              ${extraTags}
-            </div>
-            <span class="sz-card__link">
-              ${isExternalLink(link) ? 'Open link' : 'View'}
-              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </a>`;
+    function render(type, items) {
+      const c = CFG[type]; if (!c) return;
+      $(c.count).textContent = items.length;
+      const g = $(c.grid);
+      if (!items.length) { g.innerHTML = '<span class="sz-empty">Nothing yet</span>'; return; }
+      g.innerHTML = items.map((it, i) => {
+        const m = it.meta || {}; let t = [];
+        if (type === 'career-roadmap') t = (m.skills || []).slice(0, 4);
+        else if (type === 'job-opening') { if (m.company) t.push(m.company); if (m.location) t.push(m.location); if (Array.isArray(m.tags)) t.push(...m.tags); }
+        else if (type === 'study-material') { if (m.fileType) t.push(m.fileType); if (m.size) t.push(m.size); }
+        else if (type === 'mock-test') { if (m.difficulty) t.push(m.difficulty); if (m.topic) t.push(m.topic); if (m.platform) t.push(m.platform); }
+        const lk = it.link || '#', ex = /^https?:\/\//i.test(lk) ? ' target="_blank" rel="noopener"' : '';
+        const num = type === 'mock-test' ? `<span class="sz-card__tag sz-card__tag--a">#${i + 1}</span>` : '';
+        return `<a class="sz-card" href="${lk}"${ex}>
+          <div class="sz-card__top"><h3 class="sz-card__title">${it.title}</h3>
+            <svg class="sz-card__arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="sz-card__desc">${it.description || ''}</p>
+          <div class="sz-card__tags">${num}${tags(t.slice(0, 4), type === 'mock-test' || type === 'career-roadmap')}</div>
+        </a>`;
       }).join('');
-
-      // Sidebar click: if external link, let it navigate; otherwise scroll to card
-      $$('.sz-sidebar__item', sidebar).forEach(btn => {
-        btn.addEventListener('click', () => {
-          const link = btn.dataset.link;
-          if (isExternalLink(link)) {
-            window.open(link, '_blank', 'noopener');
-            return;
-          }
-          const target = $(`#${btn.dataset.target}`);
-          if (target) {
-            $$('.sz-sidebar__item', sidebar).forEach(b => b.classList.remove('is-active'));
-            btn.classList.add('is-active');
-            target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
-          }
-        });
-      });
     }
 
-    async function loadStudyZone() {
+    (async () => {
       try {
-        const types = Object.keys(TYPE_CONFIG);
-        const results = await Promise.all(types.map(t => getStudyZoneItems(t).catch(() => [])));
-        types.forEach((t, i) => renderSection(t, results[i]));
-      } catch (err) {
-        console.warn('Could not load study zone:', err.message);
-      }
-    }
-
-    loadStudyZone();
-
-    /* ===== No hardcoded content — all dynamic from API ===== */
+        const ks = Object.keys(CFG);
+        const rs = await Promise.all(ks.map(k => getItems(k).catch(() => [])));
+        ks.forEach((k, i) => render(k, rs[i]));
+      } catch (e) { console.warn('Study zone:', e.message); }
+    })();
   </script>
 </body>
 </html>
