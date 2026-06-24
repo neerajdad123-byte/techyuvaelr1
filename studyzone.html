@@ -9,107 +9,123 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    .sz-page {
-      padding: clamp(5rem, 10vh, 8rem) var(--pad) clamp(2rem, 4vh, 4rem);
-      padding-left: calc(var(--nav-edge) + var(--pad));
-    }
-    /* --- Color Palette —— warm, distinct per section --- */
+    /* --- Color Palette —— matching our scheme --- */
     :root {
-      --sz-career:   #d4784a;
-      --sz-career-bg:rgba(212,120,74,.07);
-      --sz-place:    #3d8b63;
-      --sz-place-bg: rgba(61,139,99,.07);
-      --sz-jobs:     #4075a8;
-      --sz-jobs-bg:  rgba(64,117,168,.07);
-      --sz-mats:     #7b5ea7;
-      --sz-mats-bg:  rgba(123,94,167,.07);
-      --sz-test:     #c74552;
-      --sz-test-bg:  rgba(199,69,82,.07);
+      --sz-career:  #d4784a;  --sz-career-bg: rgba(212,120,74,.06);
+      --sz-place:   #3d8b63;  --sz-place-bg:  rgba(61,139,99,.06);
+      --sz-jobs:    #4075a8;  --sz-jobs-bg:   rgba(64,117,168,.06);
+      --sz-mats:    #7b5ea7;  --sz-mats-bg:   rgba(123,94,167,.06);
+      --sz-test:    #c74552;  --sz-test-bg:   rgba(199,69,82,.06);
     }
 
+    .sz-page {
+      padding: clamp(5rem, 10vh, 8rem) var(--pad) clamp(3rem, 6vh, 5rem);
+      padding-left: calc(var(--nav-edge) + var(--pad));
+      max-width: 960px; margin: 0 auto;
+    }
+
+    /* --- Section headers — cleaner, with colored dots --- */
     .sz-sec { margin-bottom: 3rem; }
     .sz-sec__head {
-      display: flex; align-items: baseline; justify-content: space-between;
-      margin-bottom: 1.2rem;
-      font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
-      font-size: clamp(2.4rem, 5.5vw, 3.6rem); letter-spacing: -.02em; line-height: 1.05;
+      display: flex; align-items: center; gap: .65rem;
+      margin-bottom: 1rem; padding-bottom: .6rem;
+      border-bottom: 1px solid var(--line);
     }
-    /* Per-section heading colors */
-    #career .sz-sec__head     { color: var(--sz-career); font-style: italic; }
-    #placement .sz-sec__head  { color: var(--sz-place); }
-    #jobs .sz-sec__head       { color: var(--sz-jobs); }
-    #materials .sz-sec__head  { color: var(--sz-mats); }
-    #mocktest .sz-sec__head   { color: var(--sz-test); }
+    .sz-sec__dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .sz-sec__title {
+      font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+      font-size: 1.25rem; letter-spacing: -.01em;
+    }
+    #career .sz-sec__dot       { background: var(--sz-career); }
+    #career .sz-sec__title     { color: var(--sz-career); }
+    #placement .sz-sec__dot    { background: var(--sz-place); }
+    #placement .sz-sec__title  { color: var(--sz-place); }
+    #jobs .sz-sec__dot         { background: var(--sz-jobs); }
+    #jobs .sz-sec__title       { color: var(--sz-jobs); }
+    #materials .sz-sec__dot    { background: var(--sz-mats); }
+    #materials .sz-sec__title  { color: var(--sz-mats); }
+    #mocktest .sz-sec__dot     { background: var(--sz-test); }
+    #mocktest .sz-sec__title   { color: var(--sz-test); }
 
     .sz-sec__count {
-      font-family: var(--font-mono); font-size: .68rem; color: var(--ink-soft);
-      font-weight: 400; white-space: nowrap; margin-left: .6rem; font-style: normal;
+      font-family: var(--font-mono); font-size: .7rem; font-weight: 500;
+      color: var(--ink-soft); background: var(--paper-2);
+      border: 1px solid var(--line); padding: .12rem .55rem;
+      border-radius: 100px; margin-left: auto; white-space: nowrap;
     }
 
-    /* Cards — left accent border matching section */
+    /* --- Cards — full-width with ::before accent line --- */
+    .sz-grid { display: flex; flex-direction: column; gap: .7rem; }
     .sz-card {
-      border-left: 3px solid var(--line);
-      transition: border-color .25s, border-left-color .25s, background .25s, transform .2s;
+      position: relative; overflow: hidden;
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 12px; padding: 1.1rem 1.3rem;
+      text-decoration: none; color: inherit;
+      transition: border-color .2s, box-shadow .2s, transform .15s;
     }
-    /* Full-width — one card per row */
-    .sz-grid { display: flex; flex-direction: column; gap: .5rem; padding: 0; }
-    #career .sz-card:hover    { border-left-color: var(--sz-career); border-color: var(--sz-career); background: var(--sz-career-bg); }
-    #placement .sz-card:hover { border-left-color: var(--sz-place);  border-color: var(--sz-place);  background: var(--sz-place-bg); }
-    #jobs .sz-card:hover      { border-left-color: var(--sz-jobs);   border-color: var(--sz-jobs);   background: var(--sz-jobs-bg); }
-    #materials .sz-card:hover { border-left-color: var(--sz-mats);   border-color: var(--sz-mats);   background: var(--sz-mats-bg); }
+    .sz-card:hover {
+      border-color: var(--line-strong);
+      box-shadow: 0 3px 12px rgba(0,0,0,.05);
+      transform: translateY(-1px);
+    }
+    /* Left accent line — colors on hover */
+    .sz-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 4px; background: var(--line); transition: background .25s;
+    }
+    #career .sz-card:hover::before    { background: var(--sz-career); }
+    #placement .sz-card:hover::before { background: var(--sz-place); }
+    #jobs .sz-card:hover::before      { background: var(--sz-jobs); }
+    #materials .sz-card:hover::before { background: var(--sz-mats); }
+    #mocktest .sz-card:hover::before  { background: var(--sz-test); }
 
-    /* Card with image — horizontal layout */
-    .sz-card:has(.sz-card__img) {
-      flex-direction: row; align-items: center; gap: .8rem;
-    }
     .sz-card__img {
-      width: 40px; height: 40px; border-radius: 8px; object-fit: contain;
-      flex-shrink: 0;
+      width: 44px; height: 44px; border-radius: 8px;
+      object-fit: contain; flex-shrink: 0;
+      background: var(--paper-2); padding: 5px;
     }
     .sz-card__body { flex: 1; min-width: 0; }
-    #mocktest .sz-card:hover  { border-left-color: var(--sz-test);   border-color: var(--sz-test);   background: var(--sz-test-bg); }
-
-    /* Tag colors per section */
-    #career .sz-card__tag--a    { background: var(--sz-career-bg); color: var(--sz-career); border-color: rgba(212,120,74,.25); }
-    #placement .sz-card__tag--a { background: var(--sz-place-bg);  color: var(--sz-place);  border-color: rgba(61,139,99,.25); }
-    #jobs .sz-card__tag--a      { background: var(--sz-jobs-bg);   color: var(--sz-jobs);   border-color: rgba(64,117,168,.25); }
-    #materials .sz-card__tag--a { background: var(--sz-mats-bg);   color: var(--sz-mats);   border-color: rgba(123,94,167,.25); }
-    #mocktest .sz-card__tag--a  { background: var(--sz-test-bg);   color: var(--sz-test);   border-color: rgba(199,69,82,.25); }
-
-    /* Arrow color per section */
-    #career .sz-card__arrow    { color: var(--sz-career); }
-    #placement .sz-card__arrow { color: var(--sz-place); }
-    #jobs .sz-card__arrow      { color: var(--sz-jobs); }
-    #materials .sz-card__arrow { color: var(--sz-mats); }
-    #mocktest .sz-card__arrow  { color: var(--sz-test); }
-
-    /* Card base styles */
     .sz-card__top {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      gap: .4rem; margin-bottom: .2rem;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: .6rem; margin-bottom: .25rem;
     }
     .sz-card__title {
       font-family: var(--font-display); font-weight: 400;
-      font-size: 1rem; line-height: 1.25;
+      font-size: 1.05rem; line-height: 1.3;
     }
+    .sz-card__arrow {
+      color: var(--ink-soft); flex-shrink: 0;
+      transition: transform .2s, color .2s;
+    }
+    .sz-card:hover .sz-card__arrow { color: var(--ink); transform: translateX(2px); }
     .sz-card__desc {
-      font-size: .76rem; color: var(--ink-soft); line-height: 1.45;
-      margin-bottom: .4rem; flex: 1;
+      font-size: .8rem; color: var(--ink-soft); line-height: 1.5;
+      margin-bottom: .55rem;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
-    .sz-card__tags { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .sz-card__tags { display: flex; flex-wrap: wrap; gap: .35rem; }
     .sz-card__tag {
-      font-family: var(--font-mono); font-size: .58rem; text-transform: uppercase;
-      letter-spacing: .05em; padding: .15em .5em; border-radius: 100px;
-      background: var(--paper-2); color: var(--ink-soft); border: 1px solid var(--line);
+      font-family: var(--font-mono); font-size: .62rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .04em;
+      padding: .15em .55em; border-radius: 100px;
+      background: var(--paper-2); color: var(--ink-soft);
+      border: 1px solid var(--line);
     }
-    .sz-empty { grid-column: 1/-1; color: var(--ink-faint); font-size: .78rem; }
+    .sz-empty {
+      text-align: center; color: var(--ink-faint); font-size: .8rem;
+      padding: 1.2rem; border: 1px dashed var(--line);
+      border-radius: 8px; background: var(--paper);
+    }
 
-    @media (max-width: 900px) { .sz-page { padding-left: var(--pad); } }
+    @media (max-width: 900px) { .sz-page { padding-left: var(--pad); max-width: none; } }
     @media (max-width: 640px) {
-      .sz-sec__head { font-size: 1.8rem; }
-      .sz-grid { gap: .35rem; }
-      .sz-card { padding: .75rem .9rem; }
+      .sz-sec__title { font-size: 1.1rem; }
+      .sz-card { padding: .9rem 1rem; gap: .7rem; }
+      .sz-card__title { font-size: .95rem; }
+      .sz-card__img { width: 36px; height: 36px; }
     }
   </style>
 </head>
@@ -133,22 +149,14 @@
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg><span>techyuva</span>
         </div>
         <div class="nav__tree-children">
-          <a href="index.html" class="nav__tree-item">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>Main</span>
-          </a>
-          <a href="menu.html" class="nav__tree-item">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>Courses</span>
-          </a>
-          <a href="studyzone.html" class="nav__tree-item is-active">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>Study Zone</span>
-          </a>
-          <a href="owner.html" class="nav__tree-item">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>Owner</span>
-          </a>
+          <a href="index.html" class="nav__tree-item" data-file="main">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg><span>Main</span></a>
+          <a href="menu.html" class="nav__tree-item" data-file="courses">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg><span>Courses</span></a>
+          <a href="studyzone.html" class="nav__tree-item is-active" data-file="study-zone">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg><span>Study Zone</span></a>
+          <a href="owner.html" class="nav__tree-item" data-file="owner">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg><span>Owner</span></a>
         </div>
       </div>
     </div>
@@ -159,24 +167,48 @@
   </header>
 
   <main class="sz-page">
-    <div class="sz-sec reveal" id="career">
-      <div class="sz-sec__head">Career Roadmap <span class="sz-sec__count" id="careerCount">0</span></div>
+    <div class="sz-sec" id="career">
+      <div class="sz-sec__head">
+        <span class="sz-sec__dot"></span>
+        <span class="sz-sec__title">Career Roadmap</span>
+        <span class="sz-sec__count" id="careerCount">0</span>
+      </div>
       <div class="sz-grid" id="careerGrid"></div>
     </div>
-    <div class="sz-sec reveal" id="placement">
-      <div class="sz-sec__head">Placement <span class="sz-sec__count" id="placementCount">0</span></div>
+
+    <div class="sz-sec" id="placement">
+      <div class="sz-sec__head">
+        <span class="sz-sec__dot"></span>
+        <span class="sz-sec__title">Placement</span>
+        <span class="sz-sec__count" id="placementCount">0</span>
+      </div>
       <div class="sz-grid" id="placementGrid"></div>
     </div>
-    <div class="sz-sec reveal" id="jobs">
-      <div class="sz-sec__head">Jobs <span class="sz-sec__count" id="jobsCount">0</span></div>
+
+    <div class="sz-sec" id="jobs">
+      <div class="sz-sec__head">
+        <span class="sz-sec__dot"></span>
+        <span class="sz-sec__title">Jobs</span>
+        <span class="sz-sec__count" id="jobsCount">0</span>
+      </div>
       <div class="sz-grid" id="jobsGrid"></div>
     </div>
-    <div class="sz-sec reveal" id="materials">
-      <div class="sz-sec__head">Materials <span class="sz-sec__count" id="materialsCount">0</span></div>
+
+    <div class="sz-sec" id="materials">
+      <div class="sz-sec__head">
+        <span class="sz-sec__dot"></span>
+        <span class="sz-sec__title">Materials</span>
+        <span class="sz-sec__count" id="materialsCount">0</span>
+      </div>
       <div class="sz-grid" id="materialsGrid"></div>
     </div>
-    <div class="sz-sec reveal" id="mocktest">
-      <div class="sz-sec__head">Mock Tests <span class="sz-sec__count" id="mocktestCount">0</span></div>
+
+    <div class="sz-sec" id="mocktest">
+      <div class="sz-sec__head">
+        <span class="sz-sec__dot"></span>
+        <span class="sz-sec__title">Mock Tests</span>
+        <span class="sz-sec__count" id="mocktestCount">0</span>
+      </div>
       <div class="sz-grid" id="mocktestGrid"></div>
     </div>
   </main>
@@ -207,24 +239,22 @@
     const sb = $("#scrollProgress")?.querySelector("span");
     if (sb) { const u = () => { const m = document.documentElement.scrollHeight - innerHeight; sb.style.width = m > 0 ? (scrollY / m) * 100 + "%" : "0%"; }; addEventListener("scroll", u, { passive: true }); addEventListener("resize", u); u(); }
 
-    const ro = new IntersectionObserver(es => { es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add("is-visible"); ro.unobserve(e.target); }); }, { threshold: 0.1 });
-    $$(".reveal").forEach(el => ro.observe(el));
-
     const CFG = {
-      'career-roadmap': { count: '#careerCount', grid: '#careerGrid' },
+      'career-roadmap':  { count: '#careerCount',    grid: '#careerGrid' },
       'placement-guideline': { count: '#placementCount', grid: '#placementGrid' },
-      'job-opening': { count: '#jobsCount', grid: '#jobsGrid' },
-      'study-material': { count: '#materialsCount', grid: '#materialsGrid' },
-      'mock-test': { count: '#mocktestCount', grid: '#mocktestGrid' },
+      'job-opening':     { count: '#jobsCount',      grid: '#jobsGrid' },
+      'study-material':  { count: '#materialsCount',  grid: '#materialsGrid' },
+      'mock-test':       { count: '#mocktestCount',    grid: '#mocktestGrid' },
     };
 
-    function tags(arr, a) { return Array.isArray(arr) && arr.length ? arr.map(t => `<span class="sz-card__tag${a ? ' sz-card__tag--a' : ''}">${t}</span>`).join('') : ''; }
+    function esc(s) { return s ? String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) : ''; }
+    function tags(arr) { return Array.isArray(arr) && arr.length ? arr.map(t => `<span class="sz-card__tag">${esc(t)}</span>`).join('') : ''; }
 
     function render(type, items) {
       const c = CFG[type]; if (!c) return;
-      $(c.count).textContent = items.length;
+      $(c.count).textContent = items.length + ' item' + (items.length !== 1 ? 's' : '');
       const g = $(c.grid);
-      if (!items.length) { g.innerHTML = '<span class="sz-empty">Nothing yet</span>'; return; }
+      if (!items.length) { g.innerHTML = '<div class="sz-empty">Nothing here yet.</div>'; return; }
       g.innerHTML = items.map((it, i) => {
         const m = it.meta || {}; let t = [];
         if (type === 'career-roadmap') t = (m.skills || []).slice(0, 4);
@@ -232,16 +262,17 @@
         else if (type === 'study-material') { if (m.fileType) t.push(m.fileType); if (m.size) t.push(m.size); }
         else if (type === 'mock-test') { if (m.difficulty) t.push(m.difficulty); if (m.topic) t.push(m.topic); if (m.platform) t.push(m.platform); }
         const lk = it.link || '#', ex = /^https?:\/\//i.test(lk) ? ' target="_blank" rel="noopener"' : '';
-        const num = type === 'mock-test' ? `<span class="sz-card__tag sz-card__tag--a">#${i + 1}</span>` : '';
-        const img = it.icon && /^https?:\/\//i.test(it.icon) ? `<img src="${it.icon}" alt="${it.title}" class="sz-card__img" />` : '';
-        return `<a class="sz-card" href="${lk}"${ex}>
+        const num = type === 'mock-test' ? `<span class="sz-card__tag">#${i + 1}</span>` : '';
+        const img = it.icon && /^https?:\/\//i.test(it.icon) ? `<img src="${esc(it.icon)}" alt="${esc(it.title)}" class="sz-card__img" />` : '';
+        return `<a class="sz-card" href="${esc(lk)}"${ex}>
           ${img}
           <div class="sz-card__body">
-            <div class="sz-card__top"><h3 class="sz-card__title">${it.title}</h3>
-              <svg class="sz-card__arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="sz-card__top">
+              <h3 class="sz-card__title">${esc(it.title)}</h3>
+              <svg class="sz-card__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <p class="sz-card__desc">${it.description || ''}</p>
-            <div class="sz-card__tags">${num}${tags(t.slice(0, 4), type === 'mock-test' || type === 'career-roadmap')}</div>
+            <p class="sz-card__desc">${esc(it.description || '')}</p>
+            <div class="sz-card__tags">${num}${tags(t.slice(0, 4))}</div>
           </div>
         </a>`;
       }).join('');
