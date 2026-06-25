@@ -399,6 +399,28 @@ app.put('/api/expenses/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ─── AUTH ───
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    let stored = 'admin123';
+    if (db) {
+      const doc = await getDB().collection('settings').doc('password').get();
+      stored = doc.exists ? doc.data().password : 'admin123';
+    }
+    if (req.body.password === stored) {
+      res.json({ success: true, token: 'techyuva_owner_session' });
+    } else {
+      res.status(401).json({ error: 'Invalid password' });
+    }
+  } catch (err) {
+    if (req.body.password === 'admin123') {
+      res.json({ success: true, token: 'techyuva_owner_session' });
+    } else {
+      res.status(401).json({ error: 'Invalid password' });
+    }
+  }
+});
+
 // ─── SETTINGS ───
 app.get('/api/settings/whatsapp', async (req, res) => {
   try {
@@ -413,6 +435,15 @@ app.put('/api/settings/whatsapp', async (req, res) => {
     if (!number) return res.status(400).json({ error: 'number required' });
     await getDB().collection('settings').doc('whatsapp').set({ number, updatedAt: new Date().toISOString() });
     res.json({ number });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/settings/password', async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password || password.length < 4) return res.status(400).json({ error: 'Password must be at least 4 characters' });
+    await getDB().collection('settings').doc('password').set({ password, updatedAt: new Date().toISOString() });
+    res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

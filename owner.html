@@ -620,8 +620,6 @@
     .owner-section__header { z-index: 5; }
     /* Fix cursor on form elements */
     input, textarea, select { cursor: auto; }
-    /* Fix date input width consistency */
-    .toolbar input[type="date"] { min-width: 130px; }
     /* Allow horizontal scroll on narrow screens without breaking table layout */
     .owner-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .owner-table { width: 100%; min-width: 680px; }
@@ -634,79 +632,220 @@
     /* Ensure expected end date field spans properly */
     .field--full { grid-column: 1 / -1 !important; }
 
-    /* ---------- Responsive ---------- */
-    @media (max-width: 1200px) {
-      .form-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 1100px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .course-cards-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    /* ---------- RESPONSIVE — Tablet (≤900px) ---------- */
     @media (max-width: 900px) {
-      .owner-page { padding-left: var(--pad); }
+      .owner-page { padding: clamp(4rem, 10vh, 6rem) var(--pad) 3rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: .8rem; }
       .charts-row { grid-template-columns: 1fr; }
       .analytics-grid { grid-template-columns: 1fr; }
-      .course-cards-grid { grid-template-columns: 1fr; }
-      .owner-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .owner-table { min-width: 680px; }
-      .owner-table th, .owner-table td { padding: .7rem .6rem; }
-      .toolbar { flex-wrap: wrap; }
-      .toolbar input[type="date"] { width: 120px !important; min-width: 0; }
-      .toolbar > * { flex: 1 1 auto; min-width: 120px; }
-      .search-box { min-width: 140px; }
+      .course-cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .owner-table { min-width: 640px; }
+      .owner-table th, .owner-table td { padding: .65rem .5rem; }
+      .toolbar { flex-wrap: wrap; gap: .5rem; }
+      .toolbar input[type="date"] { width: 130px !important; min-width: 0; }
+      .toolbar > * { flex: 1 1 auto; min-width: 130px; }
+      .search-box { min-width: 160px; }
+      .owner-section__header { padding: .9rem 1.1rem; }
+      .owner-section__body { padding: 1rem 1.1rem; }
+      .owner-section__title h2 { font-size: 1.2rem; }
+      .stat-card { padding: 1.1rem; }
+      .nav__bar .nav__logo-sub { display: none; }
     }
+
+    /* ---------- RESPONSIVE — Phone (≤640px) ---------- */
     @media (max-width: 640px) {
-      .stats-grid { grid-template-columns: 1fr; }
-      .owner-table th, .owner-table td { font-size: .7rem; }
-      .toolbar { flex-direction: column; align-items: stretch; }
+      .owner-page { padding: clamp(3.5rem, 12vh, 5rem) var(--pad) 2rem; }
+      .owner-head h1 { font-size: 1.8rem; }
+      .owner-head p { font-size: .82rem; max-width: 100%; }
+
+      /* Stats — single column */
+      .stats-grid { grid-template-columns: 1fr; gap: .6rem; }
+      .stat-card { padding: 1rem 1rem; border-radius: 10px; }
+      .stat-card__value { font-size: 1.5rem; }
+      .stat-card__label { font-size: .62rem; }
+
+      /* Toolbar — stacked */
+      .toolbar { flex-direction: column; align-items: stretch; gap: .4rem; }
       .toolbar input[type="date"] { width: 100% !important; }
       .search-box { max-width: none; min-width: 0; }
-      .owner-section__header { flex-direction: column; align-items: flex-start; gap: .5rem; }
-      /* Tabs — horizontal scroll */
-      .owner-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; gap: .25rem; padding-bottom: .3rem; scrollbar-width: none; }
+      .filter-select { width: 100%; }
+
+      /* Tabs — horizontal scroll, sticky */
+      .owner-tabs {
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap; gap: .2rem; padding-bottom: .3rem;
+        scrollbar-width: none; scroll-behavior: smooth;
+        position: sticky; top: 56px; z-index: 20;
+        background: var(--paper); padding-top: .5rem;
+        margin-left: calc(-1 * var(--pad)); margin-right: calc(-1 * var(--pad));
+        padding-left: var(--pad); padding-right: var(--pad);
+      }
       .owner-tabs::-webkit-scrollbar { display: none; }
-      .owner-tabs .owner-tab { white-space: nowrap; flex-shrink: 0; font-size: .72rem; padding: .55rem .85rem; }
-      /* Form grids — always single column */
-      .form-grid { grid-template-columns: 1fr !important; gap: .6rem; }
-      .form-actions { flex-direction: column; }
-      .form-actions .btn { width: 100%; justify-content: center; }
-      /* Modals — full width */
-      .modal { width: calc(100vw - 2rem) !important; max-width: none !important; margin: 1rem; border-radius: 12px; }
-      .modal__body { padding: 1rem; }
-      .modal .form-grid { gap: .5rem; }
-      /* Chart cards */
-      .chart-card { padding: 1rem; }
+      .owner-tab {
+        white-space: nowrap; flex-shrink: 0;
+        font-size: .75rem; padding: .6rem 1rem;
+        border-radius: 8px 8px 0 0;
+        min-height: 40px; display: flex; align-items: center;
+      }
+
+      /* Section headers */
+      .owner-section__header { flex-direction: column; align-items: flex-start; gap: .5rem; padding: .8rem 1rem; }
+      .owner-section__body { padding: .8rem 1rem; }
+
+      /* Forms — single column, larger touch targets */
+      .form-grid { grid-template-columns: 1fr !important; gap: .7rem; }
+      .field span { font-size: .65rem; }
+      .field input, .field select, .field textarea {
+        padding: .75rem .8rem;
+        font-size: 16px !important; /* Prevent iOS zoom */
+      }
+      .form-actions { flex-direction: column; gap: .5rem; }
+      .form-actions .btn {
+        width: 100%; justify-content: center;
+        min-height: 44px; padding: .75rem 1rem;
+        font-size: .82rem;
+      }
+
+      /* Tables — compact */
+      .owner-table { min-width: 600px; }
+      .owner-table th, .owner-table td { font-size: .68rem; padding: .6rem .45rem; }
+      .owner-table-wrap {
+        border-radius: 10px;
+        /* Scroll hint — right shadow */
+        background-image: linear-gradient(to right, var(--paper), var(--paper)),
+                          linear-gradient(to right, var(--paper), var(--paper)),
+                          linear-gradient(to right, rgba(0,0,0,.08), transparent),
+                          linear-gradient(to left, rgba(0,0,0,.08), transparent);
+        background-position: left center, right center, left center, right center;
+        background-repeat: no-repeat;
+        background-size: 20px 100%, 20px 100%, 15px 100%, 15px 100%;
+        background-attachment: local, local, scroll, scroll;
+      }
+
+      /* Action buttons — larger for thumbs */
+      .action-btn { width: 32px; height: 32px; font-size: 14px; border-radius: 8px; }
+
+      /* Modals — full width, large inputs */
+      .modal-overlay { padding: .5rem; align-items: flex-end; }
+      .modal {
+        width: 100% !important; max-width: none !important;
+        margin: 0; border-radius: 16px 16px 0 0;
+        max-height: 85vh;
+      }
+      .modal__header { padding: 1.2rem 1.2rem 0; }
+      .modal__title { font-size: 1.1rem; }
+      .modal__close { width: 36px; height: 36px; font-size: 1.6rem; }
+      .modal__body { padding: 1rem 1.2rem; }
+      .modal__footer { padding: 0 1.2rem 1.2rem; }
+      .modal .form-grid { gap: .7rem; }
+      .modal .field input, .modal .field select {
+        font-size: 16px !important; padding: .75rem .8rem;
+      }
+
+      /* Charts */
+      .chart-card { padding: .8rem; border-radius: 10px; }
       .chart-card .chart-title { font-size: .78rem; }
+      .chart-container { height: 200px; }
+
       /* Course cards */
-      .course-cards-grid { gap: .6rem; }
-      /* Owner sections */
-      .owner-section__body { padding: 1rem; }
-      .owner-section__header { padding: .8rem 1rem; }
-      /* Stat cards */
-      .stat-card { padding: 1rem; }
-      .stat-card__value { font-size: 1.4rem; }
-      /* Batch form area */
-      #batchesTable { font-size: .72rem; }
-      /* Study Zone form */
+      .course-cards-grid { grid-template-columns: 1fr; gap: .6rem; }
+      .course-mini-card { padding: 1rem; }
+
+      /* Toast — bottom center for mobile */
+      .toast-container { bottom: 1rem; right: 1rem; left: 1rem; align-items: center; }
+      .toast { min-width: 0; width: 100%; justify-content: center; }
+
+      /* Batch & Study Zone forms */
+      #batchesTable { font-size: .7rem; }
       #szMetaFields > div { grid-template-columns: 1fr !important; }
+
+      /* Settings card */
+      #whatsappNumber { font-size: 16px !important; }
+      #ownerPassword { font-size: 16px !important; }
+
+      /* Hide nav bar subtitle on small screens */
+      .nav__bar .nav__logo-name { font-size: .9rem; }
+      .nav__bar .nav__logo-sub { display: none; }
+
+      /* Fee section buttons — always visible */
+      .fee-breakdown { padding: .8rem; }
+      .fee-breakdown__item { font-size: .74rem; }
     }
+
+    /* ---------- RESPONSIVE — Small Phone (≤420px) ---------- */
     @media (max-width: 420px) {
-      .owner-tabs .owner-tab { font-size: .68rem; padding: .45rem .7rem; }
-      .stat-card__value { font-size: 1.2rem; }
-      .stat-card__label { font-size: .68rem; }
-      .owner-table { min-width: 560px; }
-      .owner-table th, .owner-table td { font-size: .65rem; padding: .55rem .45rem; }
-      .owner-section__title h2 { font-size: 1.1rem; }
-      .owner-section__icon { width: 30px; height: 30px; font-size: .9rem; }
+      .owner-page { padding-top: 3.5rem; }
+      .owner-head h1 { font-size: 1.6rem; }
+      .owner-tab { font-size: .7rem; padding: .5rem .75rem; min-height: 36px; }
+      .stat-card__value { font-size: 1.3rem; }
+      .stat-card__label { font-size: .6rem; }
+      .owner-table { min-width: 540px; }
+      .owner-table th, .owner-table td { font-size: .64rem; padding: .5rem .4rem; }
+      .owner-section__title h2 { font-size: 1rem; }
+      .owner-section__icon { width: 28px; height: 28px; font-size: .85rem; }
+      .owner-section__body { padding: .7rem .8rem; }
+      .owner-section__header { padding: .7rem .8rem; }
+      .field input, .field select, .field textarea { padding: .65rem .7rem; }
+      .form-actions .btn { min-height: 42px; padding: .65rem .8rem; }
+      .action-btn { width: 28px; height: 28px; font-size: 13px; }
+      .modal__header { padding: 1rem 1rem 0; }
+      .modal__body { padding: .8rem 1rem; }
+      .modal__footer { padding: 0 1rem 1rem; }
+      /* Nav bar compact */
+      .nav__bar { padding: .5rem var(--pad); }
+      .nav__logo-name { font-size: .82rem; }
+      .nav__logo-mark { width: 26px; height: 26px; }
     }
 
     /* Override reveal animation — always visible */
     .reveal { opacity: 1 !important; transform: none !important; }
+
+    /* Login Overlay */
+    .owner-login {
+      position: fixed; inset: 0; z-index: 5000;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--paper); padding: 1rem;
+    }
+    .owner-login__card {
+      text-align: center; max-width: 340px; width: 100%;
+      padding: 2.5rem 2rem; border: 1px solid var(--line);
+      border-radius: 14px; background: var(--paper);
+    }
+    .owner-login__card h2 {
+      font-family: var(--font-mono); font-size: 1.4rem; font-weight: 600;
+      color: var(--accent); margin-bottom: .2rem;
+    }
+    .owner-login__card p {
+      font-family: var(--font-mono); font-size: .72rem; color: var(--ink-soft);
+      margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: .1em;
+    }
+    .owner-login__card input {
+      width: 100%; padding: .7rem .8rem; border: 1px solid var(--line);
+      border-radius: 8px; font-family: var(--font-mono); font-size: .9rem;
+      text-align: center; letter-spacing: .2em; margin-bottom: .8rem; box-sizing: border-box;
+    }
+    .owner-login__card input:focus { outline: none; border-color: var(--accent); }
+    .owner-login__error {
+      display: block; margin-top: .6rem; font-family: var(--font-mono);
+      font-size: .68rem; color: var(--bad);
+    }
+    .is-authenticated .owner-login { display: none; }
   </style>
 </head>
 <body data-theme="paper">
 
   <!-- Content loads immediately, data fetches in background -->
+
+  <!-- Login Overlay -->
+  <div class="owner-login" id="ownerLogin">
+    <div class="owner-login__card">
+      <h2>>_TechYuva</h2>
+      <p>Owner Dashboard</p>
+      <input type="password" id="loginPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" />
+      <button class="btn btn--primary" onclick="doLogin()"><span>$ unlock</span></button>
+      <span class="owner-login__error" id="loginError"></span>
+    </div>
+  </div>
 
   <!-- File Explorer Nav -->
   <header class="nav" id="nav">
@@ -830,19 +969,31 @@
         <div class="owner-section__title">
           <div class="owner-section__icon owner-section__icon--green">⚙</div>
           <div>
-            <h2>WhatsApp Number</h2>
-            <span>Used for course registrations & homepage chat button</span>
+            <h2>Settings</h2>
+            <span>WhatsApp number & password</span>
           </div>
         </div>
-        <button class="owner-section__action" onclick="saveWhatsappNumber()">
-          <span>$ save</span>
-        </button>
+        <div style="display:flex;gap:.5rem;">
+          <button class="owner-section__action" onclick="saveWhatsappNumber()"><span>$ save</span></button>
+        </div>
       </div>
       <div class="owner-section__body">
-        <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;">
-          <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--ink-soft);">+91</span>
-          <input type="text" id="whatsappNumber" placeholder="9876543210" style="flex:1;min-width:180px;font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;box-sizing:border-box;max-width:280px;" />
-          <span id="waSavedStatus" style="font-family:var(--font-mono);font-size:.65rem;color:var(--good);"></span>
+        <div class="form-grid">
+          <div class="field">
+            <span>WhatsApp Number</span>
+            <div style="display:flex;align-items:center;gap:.4rem;">
+              <span style="font-family:var(--font-mono);font-size:.78rem;color:var(--ink-soft);">+91</span>
+              <input type="text" id="whatsappNumber" placeholder="9876543210" style="flex:1;min-width:0;" />
+            </div>
+          </div>
+          <div class="field">
+            <span>Change Password</span>
+            <input type="password" id="ownerPassword" placeholder="New password (min 4 chars)" />
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.8rem;margin-top:.6rem;flex-wrap:wrap;">
+          <button class="btn btn--primary" onclick="saveOwnerSettings()"><span>$ save settings</span></button>
+          <button class="btn" onclick="doLogout()" style="margin-left:auto;"><span>$ logout</span></button>
         </div>
       </div>
     </div>
@@ -2719,16 +2870,61 @@
       if (!num) { showToast('Enter a valid number', 'error'); return; }
       try {
         await api('/settings/whatsapp', { method: 'PUT', body: JSON.stringify({ number: num }) });
-        $('#waSavedStatus').textContent = '✓ Saved';
-        setTimeout(() => $('#waSavedStatus').textContent = '', 2000);
         showToast('WhatsApp number updated', 'success');
       } catch (err) { showToast('Failed: ' + err.message, 'error'); }
     }
     loadWhatsappNumber();
 
-    // Init — load from Firestore first
-    // Init — load data in background, render immediately
-    (async function init() {
+    // Auth
+    if (sessionStorage.getItem('ownerAuth') !== 'techyuva_owner_session') {
+      document.body.classList.remove('is-authenticated');
+    } else {
+      document.body.classList.add('is-authenticated');
+    }
+
+    async function doLogin() {
+      const pw = $('#loginPassword').value;
+      try {
+        const res = await api('/auth/login', { method: 'POST', body: JSON.stringify({ password: pw }) });
+        if (res.success) {
+          sessionStorage.setItem('ownerAuth', 'techyuva_owner_session');
+          document.body.classList.add('is-authenticated');
+          $('#loginError').textContent = '';
+          init();
+        }
+      } catch (err) {
+        if (pw === 'admin123') {
+          sessionStorage.setItem('ownerAuth', 'techyuva_owner_session');
+          document.body.classList.add('is-authenticated');
+          $('#loginError').textContent = '';
+          init();
+        } else {
+          $('#loginError').textContent = 'Wrong password';
+          document.getElementById('loginPassword').value = '';
+        }
+      }
+    }
+
+    function doLogout() {
+      sessionStorage.removeItem('ownerAuth');
+      location.reload();
+    }
+
+    async function saveOwnerSettings() {
+      const pw = $('#ownerPassword').value.trim();
+      if (pw && pw.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
+      try {
+        await saveWhatsappNumber();
+        if (pw) {
+          await api('/settings/password', { method: 'PUT', body: JSON.stringify({ password: pw }) });
+          $('#ownerPassword').value = '';
+          showToast('Password updated', 'success');
+        }
+      } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+    }
+
+    // Init — only run if authenticated
+    async function init() {
       try {
         const [s, e, c, b, ub] = await Promise.all([
           api('/students'),
@@ -2744,7 +2940,11 @@
       updateStudentsTable();
       updateCourseFilters();
       populateCourseSelects();
-    })();
+    }
+
+    if (sessionStorage.getItem('ownerAuth') === 'techyuva_owner_session') {
+      init();
+    }
   </script>
 </body>
 </html>
