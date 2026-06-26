@@ -16,7 +16,7 @@ function normalizePrivateKey(key) {
 function initFirebase() {
   try {
     admin = require('firebase-admin');
-    const projectId = process.env.FIREBASE_PROJECT_ID || 'techyuya';
+    const projectId = process.env.FIREBASE_PROJECT_ID || 'techyuva-19645';
 
     // Strategy 1: Individual env vars (recommended for Vercel)
     if (process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {

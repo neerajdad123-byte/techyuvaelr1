@@ -9,6 +9,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase Web SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyArg4bQAOblW-EHTRsEJi25pDsBODf2x0M",
+      authDomain: "techyuva-19645.firebaseapp.com",
+      projectId: "techyuva-19645",
+      storageBucket: "techyuva-19645.firebasestorage.app",
+      messagingSenderId: "266294653012",
+      appId: "1:266294653012:web:cc2199e3f0c2a0e25a7dc1",
+      measurementId: "G-T73CGDZN71"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
   <style>
     /* ---------- Course Page Specific ---------- */
     .course-page {
