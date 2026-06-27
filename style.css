@@ -2100,6 +2100,39 @@ kbd {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Splash Screen */
+.splash {
+  position: fixed; inset: 0; z-index: 10000;
+  background: var(--paper);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+  transition: opacity .4s, visibility .4s;
+}
+.splash.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash__logo {
+  font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700;
+  color: var(--accent);
+}
+.splash .spinner { width: 28px; height: 28px; }
+
+/* Back to Top */
+.btt {
+  position: fixed; bottom: 140px; right: 1rem;
+  z-index: 900;
+  width: 40px; height: 40px;
+  border-radius: 50%; border: 1px solid var(--line);
+  background: var(--paper); color: var(--ink-soft);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s, border-color .2s;
+}
+.btt.is-visible { opacity: 1; visibility: visible; }
+.btt:hover { border-color: var(--accent); color: var(--accent); }
+
+@media (min-width: 901px) { .btt { display: none; } }
+
+/* Page Transition */
+body { animation: pageIn .35s ease-out; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
 /* ============================================================
    FOOTER CREDITS
    ============================================================ */
