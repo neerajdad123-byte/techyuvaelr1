@@ -427,7 +427,7 @@ kbd {
   /* ─── WhatsApp ─── */
   #waFloat { bottom: 80px !important; right: 1rem; width: 44px !important; height: 44px !important; z-index: 999 !important; }
   #waFloat svg { width: 18px; height: 18px; }
-  #helpBtn { bottom: 200px !important; right: 1rem; width: 44px; height: 44px; z-index: 999; }
+  #helpBtn { bottom: 135px !important; right: 1rem; width: 44px; height: 44px; z-index: 999; }
 
   /* ─── Nav ─── */
   .nav__expand { width: 36px; height: 36px; }
