@@ -1358,6 +1358,10 @@
             <button class="btn" onclick="clearCourseForm()">
               <span>$ clear</span>
             </button>
+            <button class="btn" onclick="triggerCoursesImport()" style="margin-left:auto;">
+              <span>$ import course+batch</span>
+            </button>
+            <input type="file" id="importCoursesFile" accept=".csv" onchange="importCourses()" style="display:none;" />
           </div>
         </div>
       </div>
@@ -2491,6 +2495,60 @@
       $('#editCourseId').value = '';
       $('#courseName').value = ''; $('#courseEndDate').value = '';
       $('#courseFee').value = ''; $('#courseBadge').value = ''; $('#courseInfoLink').value = ''; $('#courseTrending').checked = false;
+    }
+
+    function triggerCoursesImport() { document.getElementById('importCoursesFile').click(); }
+
+    async function importCourses() {
+      var file = document.getElementById('importCoursesFile').files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = async function(e) {
+        var lines = e.target.result.split('\n');
+        if (lines.length < 2) { showToast('CSV empty', 'error'); return; }
+        var headers = lines[0].split(',');
+        var ci = 0, bi = 0, courseMap = {};
+        for (var i = 1; i < lines.length; i++) {
+          var row = parseCSVLine(lines[i]);
+          if (!row || row.length < 3) continue;
+          var vals = {};
+          headers.forEach(function(h, k) { vals[h.trim().toLowerCase()] = (row[k] || '').trim(); });
+          var type = vals['type'] || '';
+          if (type.toLowerCase() === 'course') {
+            var name = vals['name'] || '';
+            if (!name || courses.find(function(c) { return c.name.toLowerCase() === name.toLowerCase(); })) continue;
+            var fee = parseFloat(vals['fee'] || 0);
+            var badge = vals['badge'] || '';
+            var infoLink = vals['infolink'] || '';
+            var trending = (vals['trending'] || '').toLowerCase() === 'yes';
+            try {
+              var saved = await api('/courses', { method: 'POST', body: JSON.stringify({ name: name, fee: fee, badge: badge, infoLink: infoLink, trending: trending }) });
+              courses.push(saved); courseMap[name.toLowerCase()] = saved.id; ci++;
+            } catch(err) { console.warn('Course skip:', name, err.message); }
+          } else if (type.toLowerCase() === 'batch') {
+            var courseName = vals['name'] || '';
+            var batchName = vals['batch'] || '';
+            var duration = parseInt(vals['duration'] || 45);
+            var timing = vals['timing'] || '';
+            if (!courseName || !batchName) continue;
+            var courseId = courseMap[courseName.toLowerCase()];
+            if (!courseId) {
+              var c = courses.find(function(x) { return x.name.toLowerCase() === courseName.toLowerCase(); });
+              if (c) courseId = c.id;
+            }
+            if (!courseId) continue;
+            try {
+              var saved = await api('/batches', { method: 'POST', body: JSON.stringify({ courseId: courseId, name: batchName, duration: duration, timing: timing }) });
+              batches.push(saved); bi++;
+            } catch(err) { console.warn('Batch skip:', batchName, err.message); }
+          }
+        }
+        updateCourses(); renderBatchesTable(); updateCourseFilters();
+        if (typeof populateCourseSelects === 'function') populateCourseSelects();
+        showToast('Imported ' + ci + ' courses, ' + bi + ' batches', 'success');
+        document.getElementById('importCoursesFile').value = '';
+      };
+      reader.readAsText(file);
     }
 
     function showCourseDetail(courseName) {
