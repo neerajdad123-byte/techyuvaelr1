@@ -425,8 +425,9 @@ kbd {
   .footer-credits { font-size: .58rem; padding: .45rem 1rem; text-align: center; }
 
   /* ─── WhatsApp ─── */
-  .wa-float { bottom: 80px !important; right: 1rem; width: 44px !important; height: 44px !important; z-index: 999 !important; }
-  .wa-float svg { width: 18px; height: 18px; }
+  #waFloat { bottom: 80px !important; right: 1rem; width: 44px !important; height: 44px !important; z-index: 999 !important; }
+  #waFloat svg { width: 18px; height: 18px; }
+  #helpBtn { bottom: 200px !important; right: 1rem; width: 44px; height: 44px; z-index: 999; }
 
   /* ─── Nav ─── */
   .nav__expand { width: 36px; height: 36px; }
