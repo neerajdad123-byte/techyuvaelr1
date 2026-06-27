@@ -570,5 +570,53 @@
     }
   </script>
 
+  <!-- Walkthrough Tour -->
+  <div class="tour-overlay" id="tourOverlay" hidden>
+    <div class="tour-backdrop"></div>
+    <div class="tour-card">
+      <div class="tour-step" id="tourStep">1/5</div>
+      <h3 id="tourTitle">Welcome to TechYuva</h3>
+      <p id="tourDesc">Your journey to mastering code starts here.</p>
+      <div class="tour-actions">
+        <button class="btn" onclick="skipTour()"><span>$ skip</span></button>
+        <button class="btn btn--primary" id="tourNext"><span>$ next</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var tourSteps = [
+      { title: 'Welcome', desc: 'TechYuva — Best Computer Training Institute in Eluru. Let us show you around.', el: null },
+      { title: 'Trending Courses', desc: 'Explore our most popular courses. Tap any to see details and enroll.', el: '#trending' },
+      { title: 'Upcoming Batches', desc: 'Check batch starting dates and timings. Countdown shows days remaining.', el: '#schedule' },
+      { title: 'Study Zone', desc: 'Free resources — roadmaps, job openings, mock tests. All at your fingertips.', el: '#zone' },
+      { title: 'Get in Touch', desc: 'Contact us anytime. Phone, email, or follow us on social media.', el: '#contact' }
+    ];
+    var tourIdx = 0;
+    function showTour() {
+      if (localStorage.getItem('tourDone')) return;
+      var s = tourSteps[tourIdx];
+      document.getElementById('tourStep').textContent = (tourIdx + 1) + '/' + tourSteps.length;
+      document.getElementById('tourTitle').textContent = s.title;
+      document.getElementById('tourDesc').textContent = s.desc;
+      document.getElementById('tourNext').innerHTML = tourIdx === tourSteps.length - 1 ? '<span>$ finish</span>' : '<span>$ next</span>';
+      document.getElementById('tourOverlay').hidden = false;
+      if (s.el) { var el = document.querySelector(s.el); if (el) el.scrollIntoView({behavior:'smooth',block:'center'}); }
+      if (navigator.vibrate) navigator.vibrate(15);
+    }
+    function nextTour() {
+      tourIdx++;
+      if (tourIdx >= tourSteps.length) { skipTour(); return; }
+      showTour();
+    }
+    function skipTour() {
+      document.getElementById('tourOverlay').hidden = true;
+      localStorage.setItem('tourDone', '1');
+      tourIdx = 0;
+    }
+    document.getElementById('tourNext').addEventListener('click', nextTour);
+    if (!localStorage.getItem('tourDone')) { setTimeout(showTour, 1200); }
+  </script>
+
 </body>
 </html>

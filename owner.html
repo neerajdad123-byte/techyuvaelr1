@@ -851,6 +851,19 @@
       font-size: .68rem; color: var(--bad);
     }
     .is-authenticated .owner-login { display: none; }
+
+    /* Admin Help Button */
+    .admin-help {
+      position: fixed; bottom: 1rem; left: 1rem;
+      z-index: 950;
+      width: 40px; height: 40px;
+      border-radius: 50%; border: 1px solid var(--line);
+      background: var(--paper); color: var(--ink-soft);
+      font-family: var(--font-mono); font-size: 1rem; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: border-color .2s, color .2s;
+    }
+    .admin-help:hover { border-color: var(--accent); color: var(--accent); }
   </style>
 </head>
 <body data-theme="paper">
@@ -1126,10 +1139,16 @@
               <span>Manage student records</span>
             </div>
           </div>
-          <button class="owner-section__action" onclick="exportToCSV('students')">
-            <span>Export CSV</span>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          <div style="display:flex;gap:.4rem;">
+            <button class="owner-section__action" onclick="exportToCSV('students')">
+              <span>Export CSV</span>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="owner-section__action" onclick="printStudents()">
+              <span>Print</span>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="14" width="12" height="8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
         </div>
         <div class="owner-section__body">
           <div class="toolbar">
@@ -2865,6 +2884,22 @@
       showToast('Exported ' + filename, 'success');
     }
 
+    function printStudents() {
+      if (students.length === 0) { showToast('No students to print', 'error'); return; }
+      var w = window.open('', '_blank', 'width=800,height=600');
+      var h = '<html><head><title>TechYuva — Students</title><style>body{font-family:monospace;font-size:12px;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left;}th{background:#f5f5f5;}h2{margin-bottom:16px;}@media print{body{padding:0;}}</style></head><body>';
+      h += '<h2>TechYuva — Student Records</h2>';
+      h += '<p>Printed: ' + new Date().toLocaleDateString('en-IN') + '</p>';
+      h += '<table><thead><tr><th>Reg No</th><th>Name</th><th>Phone</th><th>Course</th><th>Batch</th><th>Join Date</th><th>Total Fee</th><th>Paid</th><th>Status</th></tr></thead><tbody>';
+      students.forEach(function(s) {
+        var total = parseFloat(s.totalFee)||0, paid = parseFloat(s.paidFee)||0;
+        h += '<tr><td>'+(s.regNo||'-')+'</td><td>'+s.name+'</td><td>'+s.phone+'</td><td>'+s.course+'</td><td>'+(s.batch||'-')+'</td><td>'+(s.joinDate||'-')+'</td><td>₹'+total.toLocaleString('en-IN')+'</td><td>₹'+paid.toLocaleString('en-IN')+'</td><td>'+s.status+'</td></tr>';
+      });
+      h += '</tbody></table></body></html>';
+      w.document.write(h); w.document.close();
+      setTimeout(function(){ w.print(); }, 500);
+    }
+
     // ==================== UTILITIES ====================
     function getBadge(status) { const classes = { 'Paid':'badge--paid', 'Partial':'badge--partial', 'Pending':'badge--pending' }; return '<span class="badge ' + (classes[status]||'badge--pending') + '">' + status + '</span>'; }
     function formatDate(dateStr) { if (!dateStr) return '-'; const d = new Date(dateStr); return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }); }
@@ -2895,6 +2930,11 @@
       } catch (err) { showToast('Failed: ' + err.message, 'error'); }
     }
     loadWhatsappNumber();
+
+    function toggleAdminHelp() {
+      var el = document.getElementById('adminTourOverlay');
+      el.hidden = !el.hidden;
+    }
 
     // Auth
     if (sessionStorage.getItem('ownerAuth') !== 'techyuva_owner_session') {
@@ -2967,5 +3007,24 @@
       init();
     }
   </script>
+
+  <!-- Admin Help -->
+  <button class="admin-help" id="adminHelp" onclick="toggleAdminHelp()" title="Help">?</button>
+  <div class="tour-overlay" id="adminTourOverlay" hidden>
+    <div class="tour-backdrop" onclick="toggleAdminHelp()"></div>
+    <div class="tour-card">
+      <div class="tour-step">Quick Guide</div>
+      <h3>Owner Dashboard</h3>
+      <p style="text-align:left;font-size:.75rem;line-height:1.6;">
+        <b>Tabs</b> — Register, Students, Fees, Courses, Expenses, Analytics, Study Zone, Upcoming.<br>
+        <b>Register</b> — Add a new student with course and batch.<br>
+        <b>Settings</b> — Change WhatsApp number and admin password.<br>
+        <b>Logout</b> — Exit dashboard (top Settings card).
+      </p>
+      <div class="tour-actions">
+        <button class="btn btn--primary" onclick="toggleAdminHelp()"><span>$ got it</span></button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

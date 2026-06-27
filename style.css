@@ -414,7 +414,7 @@ kbd {
   .footer-credits { font-size: .58rem; padding: .45rem 1rem; text-align: center; }
 
   /* ─── WhatsApp ─── */
-  .wa-float { bottom: 1rem; right: 1rem; width: 40px; height: 40px; }
+  .wa-float { bottom: 1rem; right: 1rem; width: 40px; height: 40px; z-index: 950; }
   .wa-float svg { width: 18px; height: 18px; }
 
   /* ─── Nav ─── */
@@ -2133,4 +2133,48 @@ kbd {
 
 /* Owner — hidden discreet link */
 .footer-credits a { color: inherit; text-decoration: none; opacity: 1; }
+
+/* ============================================================
+   WALKTHROUGH TOUR
+   ============================================================ */
+.tour-overlay {
+  position: fixed; inset: 0; z-index: 3000;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 1rem; padding-bottom: 2rem;
+}
+.tour-overlay[hidden] { display: none; }
+.tour-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(28,25,21,.6);
+  backdrop-filter: blur(6px);
+}
+.tour-card {
+  position: relative; z-index: 1;
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: 16px; padding: 1.5rem 1.5rem 1.2rem;
+  max-width: 340px; width: 100%;
+  text-align: center;
+  animation: tourIn .4s var(--ease-out);
+}
+@keyframes tourIn {
+  from { opacity: 0; transform: translateY(20px) scale(.95); }
+  to { opacity: 1; transform: none; }
+}
+.tour-step {
+  font-family: var(--font-mono); font-size: .62rem;
+  color: var(--accent); text-transform: uppercase;
+  letter-spacing: .12em; margin-bottom: .6rem;
+}
+.tour-card h3 {
+  font-family: var(--font-display); font-size: 1.3rem;
+  font-weight: 400; margin-bottom: .5rem; color: var(--ink);
+}
+.tour-card p {
+  font-size: .82rem; color: var(--ink-soft); line-height: 1.5;
+  margin-bottom: 1rem;
+}
+.tour-actions {
+  display: flex; gap: .6rem; justify-content: center;
+}
+.tour-actions .btn { font-size: .72rem; padding: .5rem 1.2rem; }
 

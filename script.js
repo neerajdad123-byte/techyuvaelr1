@@ -1190,4 +1190,33 @@ $$('a[href^="#"]').forEach(link => {
    ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
   Preloader.init();
+  SoundFX.init();
 });
+
+/* ============================================================
+   23. SOUND FX + HAPTIC
+   ============================================================ */
+const SoundFX = (() => {
+  let ctx = null;
+  function init() {
+    try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    document.addEventListener('click', function(e) {
+      var tag = e.target.tagName;
+      if (tag === 'BUTTON' || tag === 'A' || e.target.closest('button') || e.target.closest('a')) {
+        playClick();
+        if (navigator.vibrate) navigator.vibrate(10);
+      }
+    });
+  }
+  function playClick() {
+    if (!ctx) return;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine'; osc.frequency.value = 800;
+    gain.gain.value = 0.02;
+    osc.start(); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    osc.stop(ctx.currentTime + 0.05);
+  }
+  return { init };
+})();
