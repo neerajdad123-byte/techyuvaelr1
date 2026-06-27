@@ -1,17 +1,7 @@
-const CACHE = 'techyuva-v3';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/menu.html',
-  '/studyzone.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json'
-];
+const CACHE = 'techyuva-v4';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
 });
 
 self.addEventListener('activate', e => {
@@ -21,6 +11,13 @@ self.addEventListener('activate', e => {
     ))
   );
   clients.claim();
+  clients.matchAll().then(ws => ws.forEach(w => w.postMessage('update')));
+});
+
+self.addEventListener('message', e => {
+  if (e.data === 'reload') {
+    clients.matchAll().then(ws => ws.forEach(w => w.navigate(w.url)));
+  }
 });
 
 self.addEventListener('fetch', e => {
