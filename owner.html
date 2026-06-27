@@ -1147,6 +1147,11 @@
               <span>Export CSV</span>
               <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
+            <button class="owner-section__action" onclick="triggerImport()">
+              <span>Import CSV</span>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5m0 0-6 6m6-6 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <input type="file" id="importFile" accept=".csv" onchange="importStudents()" style="display:none;" />
             <button class="owner-section__action" onclick="printStudents()">
               <span>Print</span>
               <svg viewBox="0 0 24 24" fill="none"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="14" width="12" height="8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2901,6 +2906,67 @@
       h += '</tbody></table></body></html>';
       w.document.write(h); w.document.close();
       setTimeout(function(){ w.print(); }, 500);
+    }
+
+    function triggerImport() { document.getElementById('importFile').click(); }
+
+    async function importStudents() {
+      var file = document.getElementById('importFile').files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = async function(e) {
+        var text = e.target.result;
+        var lines = text.split('\n');
+        if (lines.length < 2) { showToast('CSV is empty or missing header', 'error'); return; }
+        var headers = lines[0].split(',');
+        var total = 0, imported = 0;
+        for (var i = 1; i < lines.length; i++) {
+          var row = parseCSVLine(lines[i]);
+          if (!row || row.length < 2) continue;
+          var s = {};
+          headers.forEach(function(h, k) { s[h.trim().toLowerCase()] = (row[k] || '').trim(); });
+          if (!s.name) continue;
+          total++;
+          var totalFee = parseFloat(s['total fee']) || 0;
+          var paidFee = parseFloat(s['paid fee']) || 0;
+          var paymentMode = (s['type'] || 'offline').toLowerCase().includes('online') ? 'online' : 'offline';
+          var batch = s['batch'] || '';
+          var status = paidFee >= totalFee && totalFee > 0 ? 'Paid' : paidFee > 0 ? 'Partial' : 'Pending';
+          var payments = paidFee > 0 ? [{ id:Date.now()+i, amount:paidFee, date:s['join date']||new Date().toISOString().split('T')[0], mode:paymentMode }] : [];
+          var courseStatus = (s['course status'] || '').toLowerCase() === 'drop' ? 'dropped' : 'ongoing';
+          var certificate = (s['certificate'] || '').toLowerCase() === 'yes' ? 'yes' : 'no';
+          var body = {
+            regNo: s['reg no'] || '', name: s['name'] || '', phone: s['phone'] || '',
+            phone2: s['phone2'] || '', address: s['address'] || '', reference: s['reference'] || '',
+            paymentMode: paymentMode, course: s['course'] || '', batch: batch,
+            joinDate: s['join date'] || '', expectedEndDate: s['expected end'] || '',
+            totalFee: totalFee, paidFee: paidFee, status: status, payments: payments,
+            courseStatus: courseStatus, certificateIssued: certificate
+          };
+          try {
+            var saved = await api('/students', { method: 'POST', body: JSON.stringify(body) });
+            students.unshift(saved);
+            imported++;
+          } catch(err) { console.warn('Import skip:', s.name, err.message); }
+        }
+        updateStudentsTable(); updateDashboard(); updateCourseFilters(); updateFeesTable();
+        showToast('Imported ' + imported + ' of ' + total + ' students', imported > 0 ? 'success' : 'error');
+        document.getElementById('importFile').value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCSVLine(line) {
+      if (!line.trim()) return null;
+      var result = [], current = '', inQuotes = false;
+      for (var i = 0; i < line.length; i++) {
+        var ch = line[i];
+        if (ch === '"') { inQuotes = !inQuotes; continue; }
+        if (ch === ',' && !inQuotes) { result.push(current); current = ''; continue; }
+        current += ch;
+      }
+      result.push(current);
+      return result;
     }
 
     // ==================== UTILITIES ====================
