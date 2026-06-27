@@ -3072,11 +3072,6 @@
     }
     loadWhatsappNumber();
 
-    function toggleAdminHelp() {
-      var el = document.getElementById('adminTourOverlay');
-      el.hidden = !el.hidden;
-    }
-
     // Auth
     if (sessionStorage.getItem('ownerAuth') !== 'techyuva_owner_session') {
       document.body.classList.remove('is-authenticated');
