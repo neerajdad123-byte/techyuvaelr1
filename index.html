@@ -565,9 +565,6 @@
       }).then(function() {
         navigator.serviceWorker.register('/sw.js?v=2').catch(function(){});
       });
-      navigator.serviceWorker.addEventListener('message', function(e) {
-        if (e.data === 'update') location.reload();
-      });
     }
 
     /* ─── Tour ─── */

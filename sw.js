@@ -11,13 +11,6 @@ self.addEventListener('activate', e => {
     ))
   );
   clients.claim();
-  clients.matchAll().then(ws => ws.forEach(w => w.postMessage('update')));
-});
-
-self.addEventListener('message', e => {
-  if (e.data === 'reload') {
-    clients.matchAll().then(ws => ws.forEach(w => w.navigate(w.url)));
-  }
 });
 
 self.addEventListener('fetch', e => {
