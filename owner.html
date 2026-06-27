@@ -2521,10 +2521,10 @@
             var badge = vals['badge'] || '';
             var infoLink = vals['infolink'] || '';
             var trending = (vals['trending'] || '').toLowerCase() === 'yes';
-            try {
-              var saved = await api('/courses', { method: 'POST', body: JSON.stringify({ name: name, fee: fee, badge: badge, infoLink: infoLink, trending: trending }) });
-              courses.push(saved); courseMap[name.toLowerCase()] = saved.id; ci++;
-            } catch(err) { console.warn('Course skip:', name, err.message); }
+          try {
+            var saved = await api('/courses', { method: 'POST', body: JSON.stringify({ name: name, fee: fee, badge: badge, infoLink: infoLink, trending: trending }) });
+            courses.push(saved); courseMap[name.toLowerCase()] = saved.id; ci++;
+          } catch(err) { console.warn('Course skip:', name, err.message); showToast('Course skip: ' + name + ' - ' + err.message, 'error'); }
           } else if (type.toLowerCase() === 'batch') {
             var courseName = vals['name'] || '';
             var batchName = vals['batch'] || '';
@@ -2540,7 +2540,7 @@
             try {
               var saved = await api('/batches', { method: 'POST', body: JSON.stringify({ courseId: courseId, name: batchName, duration: duration, timing: timing }) });
               batches.push(saved); bi++;
-            } catch(err) { console.warn('Batch skip:', batchName, err.message); }
+            } catch(err) { console.warn('Batch skip:', batchName, err.message); showToast('Batch skip: ' + batchName + ' - ' + err.message, 'error'); }
           }
         }
         updateCourses(); renderBatchesTable(); updateCourseFilters();
@@ -3005,7 +3005,7 @@
             var saved = await api('/students', { method: 'POST', body: JSON.stringify(body) });
             students.unshift(saved);
             imported++;
-          } catch(err) { console.warn('Import skip:', s.name, err.message); }
+          } catch(err) { console.warn('Import skip:', s.name, err.message); showToast('Skip: ' + s.name + ' - ' + err.message, 'error'); }
         }
         updateStudentsTable(); updateDashboard(); updateCourseFilters(); updateFeesTable();
         showToast('Imported ' + imported + ' of ' + total + ' students', imported > 0 ? 'success' : 'error');
