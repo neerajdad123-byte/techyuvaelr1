@@ -373,6 +373,11 @@
 </head>
 <body data-theme="paper">
 
+  <div class="splash" id="splash">
+    <span class="splash__logo">TechYuva</span>
+    <div class="spinner"></div>
+  </div>
+
   <!-- Scroll Progress -->
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"><span></span></div>
 
@@ -684,6 +689,10 @@
     }
 
     loadCourses();
+    /* Splash fade */
+    window.addEventListener('load', function(){
+      setTimeout(function(){ var s = document.getElementById('splash'); if(s) s.classList.add('is-done'); }, 400);
+    });
   </script>
 </body>
 </html>

@@ -228,6 +228,11 @@
 </head>
 <body data-theme="paper">
 
+  <div class="splash" id="splash">
+    <span class="splash__logo">TechYuva</span>
+    <div class="spinner"></div>
+  </div>
+
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"><span></span></div>
 
   <header class="nav" id="nav">
@@ -499,5 +504,8 @@
         ks.forEach((k, i) => render(k, rs[i]));
       } catch (e) { console.warn('Study zone:', e.message); }
     })();
+    window.addEventListener('load', function(){
+      setTimeout(function(){ var s = document.getElementById('splash'); if(s) s.classList.add('is-done'); }, 400);
+    });
   </script>
 </html>
