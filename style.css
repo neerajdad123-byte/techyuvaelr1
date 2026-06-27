@@ -414,7 +414,7 @@ kbd {
   .footer-credits { font-size: .58rem; padding: .45rem 1rem; text-align: center; }
 
   /* ─── WhatsApp ─── */
-  .wa-float { bottom: 80px; right: 1rem; width: 42px; height: 42px; z-index: 950; }
+  .wa-float { bottom: 80px !important; right: 1rem; width: 44px !important; height: 44px !important; z-index: 999 !important; box-shadow: 0 2px 12px rgba(0,0,0,.12); }
   .wa-float svg { width: 18px; height: 18px; }
 
   /* ─── Nav ─── */
