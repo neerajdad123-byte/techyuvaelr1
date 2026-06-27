@@ -132,7 +132,7 @@
               <span class="btn__text">$ techyuva enroll</span>
               <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a href="#zone" class="link-arrow">Student zone →</a>
+            <a href="#trending" class="link-arrow">Explore features →</a>
           </div>
         </div>
 
@@ -556,6 +556,26 @@
       var a = document.querySelector('.bottom-nav__item.is-active');
       var l = document.querySelector('.bottom-nav__liquid');
       if (a && l) { l.style.left = a.offsetLeft+'px'; l.style.width = a.offsetWidth+'px'; }
+    })();
+
+    /* ─── Code Rain (mobile hero) ─── */
+    (function(){
+      if (window.innerWidth > 900) return;
+      var chars = ['0','1','{','}',';','#','&','|','/','*'];
+      var hero = document.querySelector('.hero');
+      if (!hero) return;
+      function drop(){
+        var s = document.createElement('span');
+        s.textContent = chars[Math.floor(Math.random()*chars.length)];
+        s.style.cssText = 'position:absolute;font-family:JetBrains Mono,monospace;font-size:'+(8+Math.random()*8)+'px;color:'+(Math.random()>.5?'var(--accent)':'var(--ink-faint)')+';opacity:0;left:'+(Math.random()*95)+'%;top:-5%;pointer-events:none;animation:codeDrop '+(2+Math.random()*3)+'s linear forwards;z-index:0;';
+        hero.appendChild(s);
+        setTimeout(function(){ s.remove(); }, 4000);
+      }
+      var style = document.createElement('style');
+      style.textContent = '@keyframes codeDrop{0%{opacity:0;transform:translateY(0)}10%{opacity:.15}90%{opacity:.08}100%{opacity:0;transform:translateY('+(hero.offsetHeight+50)+'px)}}';
+      document.head.appendChild(style);
+      setInterval(function(){ drop(); }, 300);
+      for (var i=0;i<10;i++) setTimeout(drop, i*200);
     })();
 
     /* ─── Swipe Nav ─── */
