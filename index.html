@@ -170,10 +170,10 @@
         <h2 class="section__title reveal" data-ascii-title>Upcoming <em>Batches</em></h2>
         <p class="section__sub reveal">New batches starting soon. Reserve your seat before they fill up.</p>
       </div>
-      <div class="schedule-wrap" style="margin:0 auto;max-width:900px;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;">
+      <div class="schedule-wrap" style="margin:0 auto;max-width:900px;background:#f7f4ed;border:1px solid var(--line);border-radius:14px;overflow:hidden;">
         <table style="width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;">
           <thead>
-            <tr style="background:var(--paper-2);border-bottom:2px solid var(--line);">
+            <tr style="background:#ede8dc;border-bottom:2px solid var(--line);">
               <th style="padding:.85rem 1.1rem;text-align:left;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Course</th>
               <th style="padding:.85rem 1.1rem;text-align:left;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Batch</th>
               <th style="padding:.85rem 1.1rem;text-align:left;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Starting Date</th>
@@ -468,8 +468,8 @@
         if (!upcoming.length) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="empty-state__title">No upcoming batches</div><div class="empty-state__desc">Check back soon for new batches!</div></div></td></tr>'; return; }
         let rows = '', even = false;
         upcoming.forEach(b => {
-          const bg = even ? 'var(--paper-2)' : 'var(--paper)';
-          const cell = 'padding:.7rem 1.1rem;border-bottom:1px solid var(--line);color:var(--ink);';
+          const bg = even ? '#ede8dc' : '#f7f4ed';
+          const cell = 'padding:.7rem 1.1rem;border-bottom:1px solid #e0d9cc;color:#1c1915;';
           rows += '<tr style="background:' + bg + ';">' +
             '<td style="' + cell + 'font-weight:600;">' + b.courseName + '</td>' +
             '<td style="' + cell + '">' + b.batchName + '</td>' +
