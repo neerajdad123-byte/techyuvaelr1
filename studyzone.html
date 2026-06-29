@@ -287,16 +287,15 @@
   <script>
     (function(){
       var pages = ['index.html','menu.html','studyzone.html'];
-      var touchStartX = 0, touchEndX = 0;
-      document.addEventListener('touchstart', function(e){ touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+      var sx=0, ex=0, sy=0, ey=0;
+      document.addEventListener('touchstart', function(e){ sx=e.changedTouches[0].screenX; sy=e.changedTouches[0].screenY; }, {passive:true});
       document.addEventListener('touchend', function(e){
-        touchEndX = e.changedTouches[0].screenX;
-        var diff = touchStartX - touchEndX;
-        var idx = pages.indexOf('studyzone.html');
-        if (Math.abs(diff) > 80) {
-          if (navigator.vibrate) navigator.vibrate(10);
-          if (diff > 0 && idx < pages.length - 1) window.location = pages[idx + 1];
-          if (diff < 0 && idx > 0) window.location = pages[idx - 1];
+        ex=e.changedTouches[0].screenX; ey=e.changedTouches[0].screenY;
+        var dx=sx-ex, dy=sy-ey, idx=pages.indexOf('studyzone.html');
+        if(Math.abs(dx)>70 && Math.abs(dx)>Math.abs(dy)*2) {
+          if(navigator.vibrate)navigator.vibrate(10);
+          if(dx>0&&idx<2)location=pages[idx+1];
+          if(dx<0&&idx>0)location=pages[idx-1];
         }
       }, {passive:true});
     })();
