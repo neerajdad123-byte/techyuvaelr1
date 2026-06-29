@@ -2142,6 +2142,10 @@
       const courseBatches = courseName ? getBatchesForCourse(courseName) : getBatches();
       const batchSelect = $('#studentBatch');
       batchSelect.innerHTML = '<option value="">Select Batch</option>' + courseBatches.map(b => `<option value="${batchLabel(b)}">${batchLabel(b)}</option>`).join('');
+      if (courseName) {
+        const course = (courses || []).find(c => c.name === courseName);
+        if (course && course.fee) { $('#studentTotalFee').value = course.fee; }
+      }
       updateExpectedEndDate();
     }
     function updateEditBatchForCourse() {
