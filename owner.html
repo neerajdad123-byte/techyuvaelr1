@@ -2173,7 +2173,7 @@
       const joinDate = $('#studentJoinDate').value;
       const expectedEndDate = $('#studentExpectedEndDate').value;
       const totalFee = parseFloat($('#studentTotalFee').value) || 0;
-      if (!name || !course || !joinDate) { showToast('Please fill name, course, and join date', 'error'); return; }
+      if (!name) { showToast('Please enter student name', 'error'); return; }
       const newStudent = { regNo, name, phone, phone2, address, reference, paymentMode, course, batch, courseStatus:'ongoing', certificateIssued:'no', joinDate, expectedEndDate, totalFee, paidFee: 0, status: 'Pending', payments: [] };
       try {
         const saved = await api('/students', { method: 'POST', body: JSON.stringify({ regNo, name, phone, phone2, address, reference, paymentMode, course, batch, courseStatus:'ongoing', certificateIssued:'no', joinDate, expectedEndDate, totalFee, paidFee: 0, status: 'Pending', payments: [] }) });
@@ -2270,7 +2270,7 @@
       if (!currentPaymentId) return;
       const amount = parseFloat($('#paymentAmount').value) || 0;
       const mode = $('#paymentModeSelect') ? $('#paymentModeSelect').value : 'offline';
-      if (amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
+      if (amount < 0) { showToast('Enter a valid amount', 'error'); return; }
       const s = students.find(x => x.id === currentPaymentId);
       const balance = (parseFloat(s.totalFee) || 0) - (parseFloat(s.paidFee) || 0);
       if (amount > balance) { showToast('Amount exceeds balance', 'error'); return; }
@@ -2388,7 +2388,7 @@
       const courseName = $('#batchCourse').value;
       const timing = $('#batchTiming').value.trim();
       const editId = $('#editBatchId').value;
-      if (!courseName || !name || !duration) { showToast('Select course, enter name and duration', 'error'); return; }
+      if (!courseName || !name) { showToast('Select course and enter batch name', 'error'); return; }
       const course = (courses || []).find(c => c.name === courseName);
       if (!course) { showToast('Course not found', 'error'); return; }
       const courseId = course.id;
@@ -2768,7 +2768,7 @@
       const amount = parseFloat($('#expAmount').value) || 0;
       const mode = $('#expMode').value;
       const date = $('#expDate').value;
-      if (!name || amount <= 0 || !date) { showToast('Please fill name, amount, and date', 'error'); return; }
+      if (!name) { showToast('Please enter expense name', 'error'); return; }
       try {
         if (editId) {
           await api(`/expenses/${editId}`, { method: 'PUT', body: JSON.stringify({ name, amount, date, mode }) });
