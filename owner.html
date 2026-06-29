@@ -1008,17 +1008,14 @@
     </div>
 
     <!-- WhatsApp Number Setting -->
-    <div class="owner-section reveal" style="margin-bottom:2rem;">
+    <div class="owner-section reveal" style="margin-bottom:1.5rem;">
       <div class="owner-section__header">
         <div class="owner-section__title">
           <div class="owner-section__icon owner-section__icon--green">⚙</div>
           <div>
             <h2>Settings</h2>
-            <span>WhatsApp number & password</span>
+            <span>WhatsApp number & admin password</span>
           </div>
-        </div>
-        <div style="display:flex;gap:.5rem;">
-          <button class="owner-section__action" onclick="saveWhatsappNumber()"><span>$ save</span></button>
         </div>
       </div>
       <div class="owner-section__body">
@@ -1036,7 +1033,8 @@
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:.8rem;margin-top:.6rem;flex-wrap:wrap;">
-          <button class="btn btn--primary" onclick="saveOwnerSettings()"><span>$ save settings</span></button>
+          <button class="btn btn--primary" onclick="saveWhatsappNumber()"><span>$ save whatsapp</span></button>
+          <button class="btn" onclick="changePassword()"><span>$ change password</span></button>
           <button class="btn" onclick="doLogout()" style="margin-left:auto;"><span>$ logout</span></button>
         </div>
       </div>
@@ -1331,10 +1329,6 @@
             <div class="field">
               <span>Course Name</span>
               <input type="text" id="courseName" placeholder="e.g. Web Development" />
-            </div>
-            <div class="field">
-              <span>End Date</span>
-              <input type="date" id="courseEndDate" />
             </div>
             <div class="field">
               <span>Fee (₹)</span>
@@ -2452,7 +2446,6 @@
 
     async function saveCourse() {
       const name = $('#courseName').value.trim();
-      const endDate = $('#courseEndDate').value;
       const fee = parseFloat($('#courseFee').value) || 0;
       const badge = $('#courseBadge').value.trim();
       const infoLink = $('#courseInfoLink').value.trim();
@@ -2461,12 +2454,12 @@
       if (!name) { showToast('Please enter a course name', 'error'); return; }
       try {
         if (editId) {
-          const updated = await api(`/courses/${editId}`, { method: 'PUT', body: JSON.stringify({ name, endDate, fee, badge, infoLink, trending }) });
+          const updated = await api(`/courses/${editId}`, { method: 'PUT', body: JSON.stringify({ name, fee, badge, infoLink, trending }) });
           const idx = courses.findIndex(c => c.id === editId);
           if (idx !== -1) courses[idx] = updated;
         } else {
           if (courses.find(c => c.name.toLowerCase() === name.toLowerCase())) { showToast('Course already exists', 'error'); return; }
-          const saved = await api('/courses', { method: 'POST', body: JSON.stringify({ name, endDate, fee, badge, infoLink, trending }) });
+          const saved = await api('/courses', { method: 'POST', body: JSON.stringify({ name, fee, badge, infoLink, trending }) });
           courses.push(saved);
         }
         clearCourseForm(); updateCourses(); updateCourseFilters();
@@ -2480,7 +2473,7 @@
       const c = list.find(x => x.name === name);
       if (!c) return;
       $('#editCourseId').value = c.id;
-      $('#courseName').value = c.name; $('#courseEndDate').value = c.endDate || '';
+      $('#courseName').value = c.name;
       $('#courseFee').value = c.fee || ''; $('#courseBadge').value = c.badge || '';
       $('#courseInfoLink').value = c.infoLink || '';
       $('#courseTrending').checked = !!c.trending;
@@ -2502,7 +2495,7 @@
 
     function clearCourseForm() {
       $('#editCourseId').value = '';
-      $('#courseName').value = ''; $('#courseEndDate').value = '';
+      $('#courseName').value = '';
       $('#courseFee').value = ''; $('#courseBadge').value = ''; $('#courseInfoLink').value = ''; $('#courseTrending').checked = false;
     }
 
@@ -3076,6 +3069,16 @@
         showToast('WhatsApp number updated', 'success');
       } catch (err) { showToast('Failed: ' + err.message, 'error'); }
     }
+
+    async function changePassword() {
+      const pw = $('#ownerPassword').value.trim();
+      if (!pw || pw.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
+      try {
+        await api('/settings/password', { method: 'PUT', body: JSON.stringify({ password: pw }) });
+        $('#ownerPassword').value = '';
+        showToast('Password updated', 'success');
+      } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+    }
     loadWhatsappNumber();
 
     // Auth
@@ -3111,19 +3114,6 @@
     function doLogout() {
       sessionStorage.removeItem('ownerAuth');
       location.reload();
-    }
-
-    async function saveOwnerSettings() {
-      const pw = $('#ownerPassword').value.trim();
-      if (pw && pw.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
-      try {
-        await saveWhatsappNumber();
-        if (pw) {
-          await api('/settings/password', { method: 'PUT', body: JSON.stringify({ password: pw }) });
-          $('#ownerPassword').value = '';
-          showToast('Password updated', 'success');
-        }
-      } catch (err) { showToast('Failed: ' + err.message, 'error'); }
     }
 
     // Init — only run if authenticated

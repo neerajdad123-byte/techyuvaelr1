@@ -82,10 +82,6 @@
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 4H8L6 2H2v12h12V4z" stroke="currentColor" stroke-width="1.2"/></svg>
             <span>About</span>
           </a>
-          <a href="owner.html" class="nav__tree-item" data-file="owner">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-            <span>Owner</span>
-          </a>
         </div>
       </div>
     </div>
@@ -182,9 +178,10 @@
               <th style="padding:.85rem 1.1rem;text-align:left;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Batch</th>
               <th style="padding:.85rem 1.1rem;text-align:left;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Starting Date</th>
               <th style="padding:.85rem 1.1rem;text-align:left;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Timing</th>
+              <th style="padding:.85rem 1.1rem;text-align:center;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);">Action</th>
             </tr>
           </thead>
-          <tbody id="scheduleTable"><tr><td colspan="4"><table style="width:100%;" class="skeleton-table"><tr><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td></tr><tr><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td></tr><tr><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td></tr></table></td></tr></tbody>
+          <tbody id="scheduleTable"><tr><td colspan="5"><table style="width:100%;" class="skeleton-table"><tr><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td></tr><tr><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td></tr><tr><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td><td><div class="skeleton skeleton--text"></div></td></tr></table></td></tr></tbody>
         </table>
       </div>
     </section>
@@ -477,7 +474,8 @@
             '<td style="' + cell + 'font-weight:600;">' + b.courseName + '</td>' +
             '<td style="' + cell + '">' + b.batchName + '</td>' +
             '<td style="' + cell + 'font-family:var(--font-mono);">' + (b.startingDate ? formatDate(b.startingDate) + '<br><span style="font-size:.65rem;">' + countdownLabel(b.startingDate) + '</span>' : '—') + '</td>' +
-            '<td style="' + cell + 'font-family:var(--font-mono);">' + (b.timing || '—') + '</td></tr>';
+            '<td style="' + cell + 'font-family:var(--font-mono);">' + (b.timing || '—') + '</td>' +
+            '<td style="padding:.7rem .6rem;border-bottom:1px solid var(--line);text-align:center;"><a href="https://wa.me/' + (window._waNumber || '919848635599') + '?text=Hi%20TechYuva%2C%20I%20want%20to%20enroll%20for%20' + encodeURIComponent(b.courseName) + '.' + (b.batchName ? '%20' + encodeURIComponent(b.batchName) : '') + '%20Please%20share%20details." target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:.65rem;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:100px;padding:.25em .8em;white-space:nowrap;">Enroll Now</a></td></tr>';
           even = !even;
         });
         tbody.innerHTML = rows;
