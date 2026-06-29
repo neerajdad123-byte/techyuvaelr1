@@ -1050,6 +1050,7 @@
       <button class="owner-tab" data-tab="analytics">Analytics</button>
       <button class="owner-tab" data-tab="studyzone">Study Zone</button>
       <button class="owner-tab" data-tab="upcoming">Upcoming</button>
+      <button class="owner-tab" data-tab="gallery">Gallery</button>
     </div>
 
     <!-- TAB: Register -->
@@ -1782,6 +1783,69 @@
       </div>
     </div>
 
+    <!-- TAB: Gallery -->
+    <div class="owner-tab-panel" id="panel-gallery">
+      <div class="owner-section reveal">
+        <div class="owner-section__header">
+          <div class="owner-section__title">
+            <div class="owner-section__icon owner-section__icon--blue">🖼</div>
+            <div>
+              <h2>Institute Gallery</h2>
+              <span>Manage photos shown on About page</span>
+            </div>
+          </div>
+        </div>
+        <div class="owner-section__body">
+          <div class="form-grid">
+            <div class="field">
+              <span>Image URL</span>
+              <input type="url" id="galleryImageUrl" placeholder="https://example.com/photo.jpg" />
+            </div>
+            <div class="field">
+              <span>Caption (optional)</span>
+              <input type="text" id="galleryCaption" placeholder="e.g. Campus building" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn--primary" onclick="saveGalleryItem()">
+              <span>$ add image</span>
+            </button>
+          </div>
+          <div class="owner-table-wrap" style="margin-top:1rem;">
+            <table class="owner-table">
+              <thead><tr><th>Image</th><th>Caption</th><th>Actions</th></tr></thead>
+              <tbody id="galleryTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="owner-section reveal">
+        <div class="owner-section__header">
+          <div class="owner-section__title">
+            <div class="owner-section__icon owner-section__icon--green">📝</div>
+            <div>
+              <h2>Institute Info</h2>
+              <span>Update about section text</span>
+            </div>
+          </div>
+          <button class="owner-section__action" onclick="saveInstituteInfo()">
+            <span>$ save info</span>
+          </button>
+        </div>
+        <div class="owner-section__body">
+          <div class="field field--full">
+            <span>Title</span>
+            <input type="text" id="instituteTitle" placeholder="About TechYuva Computers" />
+          </div>
+          <div class="field field--full" style="margin-top:.6rem;">
+            <span>Description</span>
+            <textarea id="instituteDesc" rows="5" placeholder="Institute information..." style="font:inherit;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem;font-family:var(--font-mono);font-size:.82rem;width:100%;resize:vertical;box-sizing:border-box;"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- Footer -->
@@ -2030,6 +2094,7 @@
         try { if (panelId === 'analytics') updateAnalytics(); } catch(e) { console.warn(e); }
         try { if (panelId === 'studyzone') { updateStudyZoneMetaFields(); renderStudyZoneTable(); } } catch(e) { console.warn(e); }
         try { if (panelId === 'upcoming') renderUpcomingTable(); } catch(e) { console.warn(e); }
+        try { if (panelId === 'gallery') { renderGalleryTable(); loadInstituteInfo(); } } catch(e) { console.warn(e); }
       });
     });
 
@@ -2943,6 +3008,50 @@
         renderUpcomingTable();
         showToast('Upcoming batch deleted', 'success');
       } catch (err) { showToast('Delete failed: ' + err.message, 'error'); }
+    }
+
+    // ==================== GALLERY ====================
+    async function renderGalleryTable() {
+      try {
+        var items = await api('/gallery');
+        $('#galleryTable').innerHTML = items.map(function(item) {
+          return '<tr><td><img src="' + item.imageUrl + '" onerror="this.style.display=\'none\'" style="max-width:80px;max-height:50px;border-radius:6px;" /></td><td>' + (item.caption || '—') + '</td><td><div class="action-btns"><button class="action-btn action-btn--danger" onclick="deleteGalleryItem(\'' + item.id + '\')">✕</button></div></td></tr>';
+        }).join('') || emptyRow(3, 'No gallery images', 'Add one using the form above');
+      } catch (e) { }
+    }
+
+    async function saveGalleryItem() {
+      var url = $('#galleryImageUrl').value.trim();
+      var caption = $('#galleryCaption').value.trim();
+      if (!url) { showToast('Enter image URL', 'error'); return; }
+      try {
+        await api('/gallery', { method: 'POST', body: JSON.stringify({ imageUrl: url, caption: caption }) });
+        $('#galleryImageUrl').value = ''; $('#galleryCaption').value = '';
+        renderGalleryTable(); showToast('Image added', 'success');
+      } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+    }
+
+    async function deleteGalleryItem(id) {
+      if (!confirm('Delete this image?')) return;
+      try { await api('/gallery/' + id, { method: 'DELETE' }); renderGalleryTable(); showToast('Deleted', 'success'); }
+      catch (err) { showToast('Failed', 'error'); }
+    }
+
+    async function loadInstituteInfo() {
+      try {
+        var info = await api('/institute-info');
+        $('#instituteTitle').value = info.title || '';
+        $('#instituteDesc').value = info.description || '';
+      } catch (e) { }
+    }
+
+    async function saveInstituteInfo() {
+      var title = $('#instituteTitle').value.trim();
+      var desc = $('#instituteDesc').value.trim();
+      try {
+        await api('/institute-info', { method: 'PUT', body: JSON.stringify({ title: title, description: desc }) });
+        showToast('Institute info saved', 'success');
+      } catch (err) { showToast('Failed: ' + err.message, 'error'); }
     }
 
     // ==================== EXPORTS ====================

@@ -319,7 +319,50 @@ app.delete('/api/upcoming-batches/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─── STUDY ZONE ITEMS ───
+// ─── GALLERY ───
+app.get('/api/gallery', async (req, res) => {
+  try {
+    const snap = await getDB().collection('gallery').orderBy('order', 'asc').get();
+    res.json(snap.docs.map(formatDoc));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/gallery', async (req, res) => {
+  try {
+    const d = req.body;
+    if (!d.imageUrl) return res.status(400).json({ error: 'imageUrl required' });
+    const ref = await getDB().collection('gallery').add({
+      imageUrl: d.imageUrl,
+      caption: d.caption || '',
+      order: parseInt(d.order) || 0,
+      createdAt: new Date().toISOString(),
+    });
+    res.json(formatDoc(await ref.get()));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/gallery/:id', async (req, res) => {
+  try {
+    await getDB().collection('gallery').doc(req.params.id).delete();
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ─── INSTITUTE INFO ───
+app.get('/api/institute-info', async (req, res) => {
+  try {
+    const doc = await getDB().collection('settings').doc('institute').get();
+    res.json(doc.exists ? doc.data() : { title: '', description: '' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/institute-info', async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    await getDB().collection('settings').doc('institute').set({ title, description, updatedAt: new Date().toISOString() });
+    res.json({ title, description });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
 const STUDY_ZONE_TYPES = ['career-roadmap', 'placement-guideline', 'job-opening', 'study-material', 'mock-test'];
 
 app.get('/api/studyzone', async (req, res) => {
